@@ -2,9 +2,11 @@
 
 1. Clone the repository.
 2. Install dependencies
-    aiplanet/backend/
-     > npm install
-     > nodemon(node) app.js
-    aiplanet/frontend/
-     > npm install
-     > npm start
+3. aiplanet/backend/
+   > npm install
+   > nodemon(node) app.js
+5. aiplanet/frontend/
+   > npm install
+   > npm start
+
+
