@@ -1,0 +1,22 @@
+.result-card{
+    width: 100%;
+    /* background-color: yellow; */
+    /* background-color: blue; */
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid #bababa;
+    font-weight: 500;
+    /* color: var(--main-color); */
+}
+.result-card b{
+    /* color: var(--color-heading) !important; */
+    color: var(--color-navlinks) !important;
+}
+.result-card .solution{
+    color: var(--main-color);
+}
+.question, .marks{
+    color: var(--color-heading);
+}

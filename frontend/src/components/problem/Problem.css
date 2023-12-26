@@ -1,0 +1,56 @@
+.problem{
+    width: 50%;
+    height: 40vh;
+   background-color: white;
+   margin-top: 50px;
+   /* background-color: red; */
+   /* border-right: 1px solid var(--color-heading); */
+}
+.problem_header{
+    height: 3rem;
+    width: 100%;
+    /* background-color: aquamarine; */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.6rem;
+    font-size: 1.2rem;
+}
+/* .problem_header button{
+    color: var(--color-heading);
+} */
+.back_btn, .next_btn{
+    /* background-color: yellow; */
+    background: transparent;
+    padding: 6px;
+    cursor: pointer;
+    border: none;
+}
+
+.problem_body{
+    padding: 0.5rem 1rem;
+    width: 100%;
+    height: calc(100% - 3rem);
+    overflow-y: scroll;
+    font-size: 1rem;
+    font-weight: 400;
+    ::-webkit-scrollbar{
+        display: block !important;
+      }
+    /* background-color: gray; */
+}
+/* .problem_body .examples{
+    background-color: yellow;
+    display: flex;
+    flex-direction: column;
+    gap: 0rem;
+} */
+.problem_body_heading{
+    color: var(--color-heading);
+}
+.problem ::-webkit-scrollbar{
+    display: block;
+  }
+  .problem ::-webkit-scrollbar-thumb {
+  background-color: #58565691; /* Set the color of the scrollbar thumb */
+}

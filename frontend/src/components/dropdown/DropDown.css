@@ -1,0 +1,9 @@
+.dropdowns_btn{
+    background-color: red;
+}
+.dropdown{
+    background-color: var(--main-color) !important;
+}
+#dropdown-basic-button{
+    background-color: var(--main-color) !important;
+}

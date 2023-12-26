@@ -1,0 +1,110 @@
+.mcq-screen {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  width: 100vw;
+  min-height: calc(100vh - 50px);
+  font-family: var(--font-family);
+  padding: 2.2rem 0rem;
+  background-color: var(--bg-color);
+  /* background-color: yellow; */
+  margin-top: 50px;
+}
+
+.mcq-head {
+  padding: 1rem 2rem;
+  width: 90%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  /* border-bottom: 1px solid var(--color-text);s */
+  /* border-bottom: 0.2rem solid var(--color-text); */
+}
+.mcq-head .right-btn {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.mcq-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  height: calc(100vh - 100px);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  background-color: white;
+}
+.mcq-question {
+  width: 50%;
+  height: 100%;
+  /* background-color: brown; */
+  padding: 2rem;
+  overflow-y: auto;
+}
+.mcq-question p {
+  font-size: 1.1rem;
+  color: var(--color-text);
+}
+.mcq-options {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  height: 100%;
+  padding: 2rem;
+  overflow-y: auto;
+}
+.mcq-options .checked {
+  border: 2px solid var(--color-heading);
+  background-color: var(--main-color);
+  color: white;
+}
+
+.mcq-options h4 {
+  color: var(--color-heading);
+}
+.choice {
+  color: var(--color-text);
+  margin: 1rem 0rem;
+  padding: 1rem 0.5rem;
+  background-color: white;
+  border-radius: 0.4rem;
+  border: 2px solid var(--color-text);
+  transition: all 0.1s;
+  cursor: pointer;
+}
+.choice:hover {
+  /* color: var(--main-color); */
+  border-color: var(--color-heading);
+}
+
+@media screen and (max-width: 768px) {
+  .mcq-screen .ctabutton {
+    padding: 0.2rem 1rem;
+    font-size: 0.97rem;
+  }
+  .mcq-body {
+    flex-direction: column;
+    /* width: 100%; */
+  }
+  .mcq-question {
+    width: 100%;
+    height: 30%;
+  }
+  .mcq-options {
+    width: 100%;
+    height: 70%;
+  }
+  .choice {
+    padding: 0.7rem 0.6rem;
+  }
+  .mcq-head {
+    padding: 0.8rem 1rem;
+  }
+  .mcq-head .right-btn {
+    gap: 0.5rem;
+  }
+}

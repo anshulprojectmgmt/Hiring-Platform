@@ -1,0 +1,15 @@
+.setting_option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+.modal-dialog{
+  font-family: var(--font-family) !important;
+}
+.modal-title{
+  color: var(--color-heading);
+}
+.setting_option_data h5{
+ 
+  color: var(--color-text);
+}

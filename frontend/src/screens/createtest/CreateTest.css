@@ -1,0 +1,101 @@
+.client-create .logo{
+	/* color: black; */
+    font-weight: 600;
+    color: var(--main-color);
+}
+
+.client-create {
+	min-height: 100vh;
+	width: 100vw;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1em;
+	padding: 2.2rem 0rem;
+	margin-top: -1rem;
+    background-color: var(--bg-color);
+	/* background-color: red; */
+}
+.title-heading{
+    color: var(--color-heading);
+}
+
+.client-create .create-form {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.8em;
+	margin-top: -1.4rem;
+	/* background-color: red; */
+	/* margin-bottom: -.6rem; */
+}
+
+.input-fields {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1em;
+    margin-bottom: 1rem;
+	/* background-color: green; */
+}
+
+.input-fields input {
+    /* color: red; */
+	width: 25%;
+    color: var(--color-navlinks);
+	padding: 0.4rem 0.9rem;
+	font-size: 1rem;
+}
+.input-fields select {
+	width: 25%;
+	border: 1px solid var(--color-input-border);
+	padding: 0.4rem .9rem;
+	border-radius: 0.9rem;
+	font-family: Inter;
+	font-size: 1rem;
+	font-weight: 400;
+    color: var(--color-navlinks);
+}
+
+select:active,
+select:focus {
+	outline: none;
+}
+
+.testCode{
+	width: 100% ;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.8rem;
+	/* background-color: yellow; */
+	margin-top: -1rem;
+}
+.testCode input{
+	width: 20%;
+	padding: 0.4rem;
+	color: var(--main-color);
+	text-align: center;
+}
+.testCode h6{
+	cursor: pointer;
+}
+
+
+
+@media screen and (max-width: 760px) {
+	.input-fields input {
+		width: 60%;
+	}
+	.input-fields select{
+		width: 60%;
+	}
+	.testCode input{
+		width: 40%;
+	}
+}

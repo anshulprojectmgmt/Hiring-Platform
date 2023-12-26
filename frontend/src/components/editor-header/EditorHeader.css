@@ -1,0 +1,118 @@
+.editor_header{
+    height: 3rem;
+    width: 100%;
+    display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 0.8rem;
+  background-color: white;
+  border-bottom: 1px solid var(--color-heading);
+  /* border-top: 1px solid var(--color-heading); */
+}
+.editor_header_left{
+  display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+}
+.editor_header_left .info{
+  /* background-color: yellow; */
+  color: var(--color-heading);
+  font-size: 12px;
+}
+.editor_header_right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .editor_header_setting,
+.editor_header_reset {
+  padding: 0.5rem 0.5rem;
+  border: none;
+  color: var(--color-heading);
+  background-color: white;
+  font-size: 1.1rem;
+}
+
+.editor_header_right_options {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+.run_code_btn{
+  border: none;
+  padding: 3.8px 10px;
+  /* background-color: #1CAC78; */
+  background-color: var(--main-color);
+  /* font-weight: 400; */
+  font-size: 15px;
+  border-radius: 5px;
+  color: white;
+  transition: all 0.3s;
+}
+.run_code_btn:active{
+  transform: scale(0.9);
+}
+.submit_code_btn{
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 3.8px 10px;
+  background-color: var(--main-color);
+  font-weight: 400;
+  border-radius: 5px;
+  color: white;
+  transition: all 0.3s;
+  font-size: 15px;
+}
+.submit_code_btn:active{
+	transform: scale(0.9);
+}
+
+.evaluate_btn{
+  border: none;
+  padding: 3.8px 10px;
+  background-color: var(--main-color);
+  font-weight: 400;
+  border-radius: 5px;
+  color: white;
+  transition: all 0.3s;
+}
+.evaluate_btn:active{
+	transform: scale(0.7);
+}
+.score{
+  font-size: 38px;
+  color: green;
+}
+.solution_head{
+  padding: 6px;
+  font-weight: 600;
+  font-size: 20px;
+}
+.solution_body{
+  max-height: 400px;
+  padding: 8px;
+  overflow: auto;
+}
+table{
+  width: 100%;
+  text-align: center;
+}
+table, thead{
+  border: 1px solid black !important;
+  border-radius: 8px;
+  /* width: 100%; */
+  
+}
+
+@media screen and (max-width: 768px) {
+  /* .editor_header_left{
+    gap: 1.4rem;
+  } */
+}

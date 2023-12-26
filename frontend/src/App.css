@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+:root {
+	--font-family: 'Inter', sans-serif;
+	--bg-color: #F7FCFF;
+    --main-color: #5880F0;
+	--color-heading: #1c4b74;
+	--color-navlinks: #5c5c5c;
+	--color-text: #878899;
+	--color-input-border: #00000029;
+	--color-input-placeholder: #00000033;
+	--bg-second: #F2F2F2;
+}
+::-webkit-scrollbar{
+    display: none;
+  }
+body {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-family: var(--font-family) !important;
+}
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	scroll-behavior: smooth;
+}

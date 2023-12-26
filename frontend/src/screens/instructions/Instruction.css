@@ -1,0 +1,42 @@
+.instruction-fullscreen{
+    font-family: var(--font-family);
+    display: flex;
+    flex-direction: row;
+}
+.instruction-body{
+    background-color: var(--bg-color);
+    min-height: calc(100vh - 50px);
+    width: 100%;
+    /* display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 1rem;
+    padding: 2rem 3rem; */
+    margin-top: 50px;
+    /* background-color: yellow; */
+}
+.instruction-heading{
+    color: var(--main-color);
+    margin-bottom: 1rem;
+}
+.instruction-content p{
+    font-weight: 500;
+}
+.instruction-body h3{
+    color: var(--color-heading);
+}
+.instruction-images{
+    background-color: var(--bg-color);
+    margin-top: 50px;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.instruction-images img{
+    width: 70%;
+    height: 20%;
+    object-fit: contain;
+
+}
