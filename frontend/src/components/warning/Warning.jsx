@@ -20,7 +20,7 @@ const Warning = () => {
           2. To maintain a fair and secure testing environment, we've implemented
            some proctoring features. These measures help us to<br /> maintain the integrity of the testing process.
         </p>
-        <p>3. Please click next to go through few <span>warnings</span> that should be considered before taking the test.</p>
+        <p>3. Please click next to go through few <span>steps and warnings</span> that should be considered before taking the test.</p>
       </div>
       <h3>Best Of Luck For Your Exam</h3>
       <div className="warning-footer">

@@ -8,6 +8,7 @@ import { Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Instruction from "./screens/instructions/Instruction";
+import Camera2 from "./screens/camera2/Camera2";
 import Login from "./screens/login/Login";
 import Dashboard from "./screens/dashboard/Dashboard";
 import TestResult from "./screens/testresults/TestResult";
@@ -26,6 +27,7 @@ function App() {
         <Route path="/test" element={<Test />} />
         <Route path="/testend" element={<EndScreen />} />
         <Route path="/instruction" element={<Instruction />} />
+        <Route path="/camera2/:cid" element={<Camera2 />} />
         <Route path="/login-dashboard" element={<Login />} />
         <Route path="/dashboard/:hrId" element={<Dashboard />} />
         <Route path="/:hrid/:test" element={<TestResult />} />

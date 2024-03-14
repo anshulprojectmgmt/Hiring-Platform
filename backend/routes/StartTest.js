@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const HiringManager = require("../models/HiringManager");
 const Candidate = require("../models/Candidates");
+const mongoose = require("mongoose");
 
 router.post("/start-test", async (req, res) => {
   const { name, email, phonenumber, testcode } = req.body;
@@ -37,8 +38,10 @@ router.post("/start-test", async (req, res) => {
           phonenumber: phonenumber,
           testcode: testcode,
         });
-      //   console.log(isValidTest);
-        res.status(200).json({ success: true, info: isValidTest, candidateEmail: email });
+        // console.log(isValidTest);
+        let userData = await Candidate.findOne({ email, testcode });
+        // console.log(userData._id.valueOf());
+        res.status(200).json({ success: true, info: isValidTest, candidateEmail: email, cid: userData._id.valueOf() });
       } catch (error) {
         console.log(error);
         res.json({ success: false, message: "something went wrong" });
@@ -47,5 +50,51 @@ router.post("/start-test", async (req, res) => {
     
   }
 });
+
+router.post("/validate-camera2-session", async (req,res) => {
+  let _id = req.body.cid;
+
+  try {
+    const validCandidate = await Candidate.find({_id});
+    if(validCandidate.length > 0){
+      const updated = await Candidate.updateOne({_id: _id},{
+        $set: {
+          cam2: 1
+        },
+      });
+      if (updated.acknowledged) {
+        return res.json({success: true, candidateEmail: validCandidate[0].email, testCode: validCandidate[0].testcode});
+      } else {
+        return res.json({success: false, error: "Unable to start cam2 session"});
+      }
+    }
+    else{
+      return res.json({success: false, error: "invalid candidate"});
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, error: "server error" });
+  }
+})
+
+router.post("/check-if-cam2-enabled", async (req,res) => {
+  let _id = req.body.cid;
+
+  try {
+    // console.log(_id);
+    const validCam2 = await Candidate.find({_id: new mongoose.Types.ObjectId(_id), cam2: 1});
+    // console.log(validCam2[0].cam2);
+    // console.log(validCam2);
+    if(validCam2.length > 0){
+      return res.json({success: true, cam2status: validCam2[0].cam2});
+    }
+    else{
+      return res.json({success: false, cam2status: 0, error: "Cam2 not started"});
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, error: "server error" });
+  }
+})
 
 module.exports = router;

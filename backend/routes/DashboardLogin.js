@@ -33,6 +33,7 @@ router.post("/get-dashboard-data", async (req,res) => {
   let email = req.body;
   try {
     let userData = await HiringManager.findOne(email);
+    console.log(HiringManager.findOne(email));
     const {hiring_manager, tests, _id} = userData;
     res.json({ success: true, hrname:hiring_manager, tests:tests, hrid:_id});
   } catch (error) {

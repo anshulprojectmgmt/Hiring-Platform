@@ -28,6 +28,10 @@ const candidateSchema = new Schema({
       type: Number,
       default: 0,
     },
+    cam2: {
+      type: Number,
+      default: null,
+    },
     result: {
       type: [
         {
