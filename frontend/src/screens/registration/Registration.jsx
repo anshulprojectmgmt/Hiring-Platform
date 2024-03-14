@@ -31,7 +31,9 @@ const Home = () => {
       // console.log(data.message);
       toast.error(data.message);
     } else {
-       dispatch({
+      console.log(data);
+      localStorage.setItem('cid', data.cid);
+      dispatch({
         type: "TEST_INFO",
         testtype: data.info.tests[0].type,
         language: data.info.tests[0].language,

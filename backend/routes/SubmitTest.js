@@ -126,32 +126,46 @@ router.post("/submit-test", async (req, res) => {
     const testCode = req.body.testCode;
     const timetaken = req.body.timetaken;
     const tabswitch = req.body.tabswitch;
-    const testData = Data.slice(1);
-    const filteredTestData = await testData.filter(item => item.score === -1);
-    // console.log(filteredTestData);
-    const updatedTestData = await Promise.all(filteredTestData.map(makeAPICall));
-    const combinedData = testData.map(originalItem => {
-      const updatedItem = updatedTestData.find(updatedItem => updatedItem.queNumber === originalItem.queNumber);
-      if (updatedItem) {
-        return {
-          ...originalItem,
-          score: updatedItem.score,
-        };
+    const cam2 = req.body.cam2;
+    if(cam2 === 2) {
+      const candidateCam2 = await Candidate.updateOne({email: candidateEmail, testcode: testCode},{
+        $set: {
+          cam2: cam2
+        },
+      });
+      if (candidateCam2.acknowledged) {
+        res.status(200).json({success:true, message: 'Cam2 submitted successfully'});
       } else {
-        return originalItem;
+        res.status(400).json({success:false, message: 'Cam2 not submitted'});
       }
-    });
-    const candidate = await Candidate.updateOne({email: candidateEmail, testcode: testCode},{
-      $set: {
-        result: combinedData,
-        timetaken: timetaken,
-        tabswitch: tabswitch,
-      },
-    });
-    if (candidate.acknowledged) {
-      res.status(200).json({success:true, message: 'Test submitted successfully'});
     } else {
-      res.status(400).json({success:false, message: 'Test not submitted'});
+      const testData = Data.slice(1);
+      const filteredTestData = await testData.filter(item => item.score === -1);
+      // console.log(filteredTestData);
+      const updatedTestData = await Promise.all(filteredTestData.map(makeAPICall));
+      const combinedData = testData.map(originalItem => {
+        const updatedItem = updatedTestData.find(updatedItem => updatedItem.queNumber === originalItem.queNumber);
+        if (updatedItem) {
+          return {
+            ...originalItem,
+            score: updatedItem.score,
+          };
+        } else {
+          return originalItem;
+        }
+      });
+      const candidate = await Candidate.updateOne({email: candidateEmail, testcode: testCode},{
+        $set: {
+          result: combinedData,
+          timetaken: timetaken,
+          tabswitch: tabswitch,
+        },
+      });
+      if (candidate.acknowledged) {
+        res.status(200).json({success:true, message: 'Test submitted successfully'});
+      } else {
+        res.status(400).json({success:false, message: 'Test not submitted'});
+      }
     }
   } catch (error) {
     console.log(error);

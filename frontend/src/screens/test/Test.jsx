@@ -208,8 +208,25 @@ const Test = () => {
 
   const handleSubmitTest = async () => {
     try {
-      timeTaken.current = initialTime - timeLeft;
-      setTimeLeft(0);
+      let cid = localStorage.getItem("cid");
+      const res = await axios.post(`${BASE_URL}/api/check-if-cam2-enabled`, {
+        cid: cid
+      });
+      console.log(res.data.success);
+      if (!res.data) {
+        toast.error("Please check your network connectivity");
+      }
+      else {
+        console.log(res.data.cam2status);
+        if (res.data.cam2status && res.data.cam2status == 1) {
+          toast.warning("Please submit the video from the second carmera first, and then try to end the test again");
+        } else if(res.data.cam2status == 2 || res.data.cam2status == 0) {
+          timeTaken.current = initialTime - timeLeft;
+          setTimeLeft(0);
+        } else {
+          toast.error("Issue with camera 2 connectivity");
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -285,7 +302,7 @@ const Test = () => {
         <div className=" logo">AiPlanet</div>
         <div className="webcam">
           {loader.current === "true" ? null : (
-            <Webcam audio={false} ref={webcamRef} width={50} height={44} />
+            <Webcam audio={false} ref={webcamRef} width={100} height={44} />
           )}
         </div>
         <div className="timer">
