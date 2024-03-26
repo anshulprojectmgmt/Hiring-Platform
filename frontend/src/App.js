@@ -9,6 +9,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Instruction from "./screens/instructions/Instruction";
 import Camera2 from "./screens/camera2/Camera2";
+import Camera3 from "./screens/camera3/Camera3";
 import Login from "./screens/login/Login";
 import Dashboard from "./screens/dashboard/Dashboard";
 import TestResult from "./screens/testresults/TestResult";
@@ -28,6 +29,7 @@ function App() {
         <Route path="/testend" element={<EndScreen />} />
         <Route path="/instruction" element={<Instruction />} />
         <Route path="/camera2/:cid" element={<Camera2 />} />
+        <Route path="/camera3/:cid" element={<Camera3 />} />
         <Route path="/login-dashboard" element={<Login />} />
         <Route path="/dashboard/:hrId" element={<Dashboard />} />
         <Route path="/:hrid/:test" element={<TestResult />} />
