@@ -1,22 +1,35 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import "./Camera2.css";
-import Webcam from "react-webcam";
-import { useParams } from "react-router-dom";
-import BASE_URL from "../../Api";
-import axios from "axios";
-
+import React, { useState, useRef, useCallback } from "react";
+import Body from "../../components/body/Body";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import BASE_URL from "../../Api";
+import Webcam from "react-webcam";
+import { useParams } from "react-router-dom";
 import BarLoader from "react-spinners/BarLoader";
+import "./Camera2.css";
 import Modal from "react-bootstrap/Modal";
 
 const Camera2 = () => {
+  const navigate = useNavigate();
+  const time = useSelector((state) => state.testInfo.duration);
+  const initialTime = 1000 * 60;
+  const [timeLeft, setTimeLeft] = useState(initialTime);
+  const [hideCount, setHideCount] = useState(0);
+  let timeTaken = useRef(initialTime);
+  let tabSwitch = useRef(0);
+
+  let videoBlob;
+  const timerRef = useRef(null);
   const webcamRef = useRef(null);
   const videoMediaRecorder = useRef(null);
   const videoChunks = useRef([]);
   const [isRecording, setIsRecording] = useState(false);
   const mediaStream = useRef(null);
+  const loader = useRef("false");
+  const [show, setShow] = useState(false);
 
   const [candidateValidation, setCandidateValidation] = useState(null);
   const [candidateEmail, setCandidateEmail] = useState(null);
@@ -28,7 +41,6 @@ const Camera2 = () => {
         const res = await axios.post(`${BASE_URL}/api/validate-camera2-session`, {
           cid,
       });
-      console.log(res);
       setCandidateValidation(res.data.success);
       setCandidateEmail(res.data.candidateEmail);
       setTestCode(res.data.testCode);
@@ -36,15 +48,6 @@ const Camera2 = () => {
 
     getDashboardInfo();
   }, [cid, setCandidateEmail]);
-
-  const navigate = useNavigate();
-  const check = useSelector((state) => state.savedCode);
-  const loader = useRef("false");
-  const [show, setShow] = useState(false);
-
-  const timerRef = useRef(null);
-
-  let videoBlob;
 
   const startRecording = useCallback(async () => {
     try {
@@ -67,6 +70,7 @@ const Camera2 = () => {
           videoChunks.current.push(event.data);
         }
       };
+
       videoMediaRecorder.current.start();
 
       setIsRecording(true);
@@ -75,7 +79,7 @@ const Camera2 = () => {
       navigate("/testend");
       // console.error("Error accessing media devices:", error);
     }
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     startRecording();
@@ -87,71 +91,116 @@ const Camera2 = () => {
       isRecording
     ) {
       await videoMediaRecorder.current.stop();
-      setIsRecording(false);
+      await setIsRecording(false);
       if (mediaStream.current) {
-        // console.log(mediaStream.current.getTracks());
-        await mediaStream.current
+        await mediaStream.current.stream
           .getTracks()
-          .forEach((track) => {
-            console.log(track);
-            track.stop();
-          });
+          .forEach((track) => track.stop());
       }
     }
   }, [isRecording]);
 
-  const handleEndTest = useCallback(async () => {
+  const downloadRecording = async () => {
+    // const durationInSeconds = initialTime;
+    if (videoChunks.current.length > 0) {
+      videoBlob = await new Blob(videoChunks.current, {
+        type: "video/mp4",
+      });
+    } else {
+      console.error("No video or audio data to download");
+    }
+  };
+
+  /* const handleEndTest = useCallback(async () => {
     try {
-        const res = await axios.post(`${BASE_URL}/api/submit-test`, {
-          testData: check,
-          candidateEmail: candidateEmail,
-          testCode: testCode,
-          cam2: 2
-        });
-        if (!res.data.success) {
-          toast.error(res.data.message);
-        } else {
-          // toast.success(res.data.message);
+      const res = await axios.post(`${BASE_URL}/api/submit-mcqtest`, {
+        testData: mcqData,
+        candidateEmail: candidateEmail,
+        testCode: testCode,
+        timetaken: timeTaken.current,
+        tabswitch: tabSwitch.current,
+      });
+      if (!res.data.success) {
+        toast.error(res.data.message);
+      } else {
+        // toast.success(res.data.message);
+        if (getFullscreenElement()) {
           loader.current = "false";
           toast.success(res.data.message);
-
-          navigate("/testend");
+          document.exitFullscreen();
         }
-      
+        navigate("/testend");
+      }      
     } catch (error) {
       navigate("/testend");
       console.error("Error submitting test:", error);
     }
-  }, [check, candidateEmail, testCode, navigate]);
+  }, [check,mcqData, candidateEmail, testCode, navigate]); */
 
   const uploadVideo = async () => {
     const videoFileName = `${candidateEmail}-video2.mp4`;
-    await axios.post(`${BASE_URL}/api/transcriptions`, {
-      bucketName: testCode,
-    });
     const videoRes = await axios.post(`${BASE_URL}/api/s3upload`, {
       filename: videoFileName,
       contentType: "video/mp4",
       testcode: testCode,
     });
     const videos3url = videoRes.data.url;
-    console.log(videos3url);
     await axios.put(videos3url, videoBlob);
   };
 
   const camera2Submit = async () => {
     try {
-      setShow(true);
-      loader.current = "true";
-      await stopRecording();
-      await uploadVideo();
-      await handleEndTest();
-      clearInterval(timerRef.current);
-      timerRef.current = null;
+      let cid = localStorage.getItem("cid");
+      setTimeLeft(0);
     } catch (error) {
-      console.log("");
+      console.log(error);
     }
   };
+
+  useEffect(() => {
+    let isTimeUp = false;
+    if (!timerRef.current) {
+      timerRef.current = setInterval(async () => {
+        if (timeLeft > 0) {
+          setTimeLeft(timeLeft - 1);
+        } else if (timeLeft === 0 && !isTimeUp) {
+          isTimeUp = true;
+          try {
+            await setShow(true);
+            loader.current = "true";
+            await stopRecording();
+            await downloadRecording();
+            await uploadVideo();
+            // await handleEndTest();
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+            // navigate("/testend");
+
+            const res = await axios.post(`${BASE_URL}/api/submit-test`, {
+              candidateEmail: candidateEmail,
+              testCode: testCode,
+              cam2: 2
+            });
+            if (!res.data.success) {
+              toast.error(res.data.message);
+            } else {
+              // toast.success(res.data.message);
+              loader.current = "false";
+              toast.success(res.data.message);
+    
+              navigate("/testend");
+            }
+          } catch (error) {
+            console.log("");
+          }
+        }
+      }, 1000);
+    }
+    return () => {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    };
+  }, [timeLeft, /* handleEndTest, */ startRecording, stopRecording]);
 
   return (
     <div id="fullscreen">
@@ -169,9 +218,7 @@ const Camera2 = () => {
         </div>
       </div>
       <div className="webcam">
-        {candidateValidation === true ? (
-          <Webcam audio={false} ref={webcamRef} style={{width: "100vw", height: "100vh"}} />
-        ) : null}
+        <Webcam audio={false} ref={webcamRef} style={{width: "100vw", height: "100vh"}} />
       </div>
       <div
         className="modal fade"
