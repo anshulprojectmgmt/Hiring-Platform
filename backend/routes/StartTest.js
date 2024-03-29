@@ -81,11 +81,9 @@ router.post("/check-if-cam2-enabled", async (req,res) => {
   let _id = req.body.cid;
 
   try {
-    // console.log(_id);
     const validCam2 = await Candidate.find({_id: new mongoose.Types.ObjectId(_id), cam2: 1});
-    // console.log(validCam2);
     if(validCam2.length > 0){
-      return res.json({success: true});
+      return res.json({success: true, cam2status: validCam2[0].cam2});
     }
     else{
       return res.json({success: false, error: "Cam2 not started"});
