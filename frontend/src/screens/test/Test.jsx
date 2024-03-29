@@ -212,19 +212,23 @@ const Test = () => {
       const res = await axios.post(`${BASE_URL}/api/check-if-cam2-enabled`, {
         cid: cid
       });
-      console.log(res.data.success);
       if (!res.data) {
         toast.error("Please check your network connectivity");
       }
       else {
-        console.log(res.data.cam2status);
         if (res.data.cam2status && res.data.cam2status == 1) {
           toast.warning("Please submit the video from the second carmera first, and then try to end the test again");
+          if (getFullscreenElement()) {
+            document.exitFullscreen();
+          }
         } else if(res.data.cam2status == 2 || res.data.cam2status == 0) {
           timeTaken.current = initialTime - timeLeft;
           setTimeLeft(0);
         } else {
-          toast.error("Issue with camera 2 connectivity");
+          if (getFullscreenElement()) {
+            document.exitFullscreen();
+          }
+          setTimeLeft(0);
         }
       }
     } catch (error) {
