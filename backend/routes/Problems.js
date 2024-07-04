@@ -9,10 +9,18 @@ router.post("/questions", async (req, res) => {
       if (language === "Python") {
         var problems;
         switch (difficulty) {
+          // logic to attach wrapper
+          // code to each problem need to implement here
           case "easy":
+            console.log('easy case matched===')
             problems = await mongoose.connection
               .collection("pythoneasy")
-              .aggregate([{$sample: {size: questions}}])
+              .aggregate([{$sample: {size: questions} }, {  $lookup: {
+                from: 'wrapper_map',         // The collection to join with
+                localField: 'input_type',    // The field from the questions to match
+                foreignField: 'title',       // The field from wrapper_map to match
+                as: 'wrapper_details'        // The field to add with joined documents
+              }}   ])
               .toArray();
             break;
           case "medium":
@@ -28,6 +36,7 @@ router.post("/questions", async (req, res) => {
               .toArray();
             break;
           default:
+            console.log('easy case matched===')
             problems = await mongoose.connection
               .collection("pythoneasy")
               .aggregate([{$sample: {size: questions}}])
@@ -45,6 +54,8 @@ router.post("/questions", async (req, res) => {
         .limit(questions)
         .toArray();
       res.json({ success: true, que: problems });
+    }else{
+      res.json({ success: false, message: 'no test type matched', testtype });
     }
   } catch (error) {
     console.log(error);

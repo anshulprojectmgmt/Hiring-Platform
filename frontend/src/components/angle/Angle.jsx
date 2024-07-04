@@ -46,14 +46,17 @@ const Angle = () => {
             {/* <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button> */}
           </div>
           <div className="carousel-inner mycarousel">
-            <div className="carousel-item active ">
+            <div className="carousel-item active">
+            <div className="d-flex justify-center items-center gap-1">
               <img src={left}  alt="..."></img>
               <img src={lap}  alt="..."></img>
-              
+              </div>
             </div>
             <div className="carousel-item">
+            <div className="d-flex justify-center items-center gap-1">
             <img src={right}  alt="..."></img>
               <img src={keyboard}  alt="..."></img>
+            </div>
             </div>
           </div>
           <button

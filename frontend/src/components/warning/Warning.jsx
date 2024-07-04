@@ -1,11 +1,43 @@
 import React from "react";
 import "./Warning.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import BASE_URL from '../../Api'
 
 const Warning = () => {
     const dispatch = useDispatch();
-    const handleNext = () => {
-        dispatch({ type: "NEXT" });
+    const navigate  = useNavigate();
+
+    const testInfo = useSelector((state) => state.testInfo);
+   
+
+    const handleNext = async () => {
+     {/* currently dispatch disabled  , cause it cause next page in instruction comp */}
+       dispatch({ type: "NEXT" });
+
+    //   const res = await axios.post(`${BASE_URL}/api/questions`, {
+    //     testtype:  testInfo.testtype,
+    //     language:  testInfo.language,
+    //     difficulty:testInfo.difficulty,
+    //     questions: testInfo.questions,
+    //   });
+    //    dispatch({ type: "SET_QUESTION", payload: res.data.que });
+    //   // enterFullScreen(videoelem);
+    //  try {
+    //   await document.documentElement.requestFullscreen().catch((e) => {
+    //     console.log('full screen error==1' , e)
+    //   });
+    //  } catch (error) {
+    //   console.log('full screen error==2' , error)
+    //  }
+
+
+    //   setTimeout(() => {
+    //     navigate("/test");
+    //   },300);
+      
+
       };
   return (
     <div className="warning">

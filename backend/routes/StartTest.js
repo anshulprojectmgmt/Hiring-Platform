@@ -51,6 +51,8 @@ router.post("/start-test", async (req, res) => {
   }
 });
 
+
+
 router.post("/validate-camera2-session", async (req,res) => {
   let _id = req.body.cid;
 
@@ -80,6 +82,10 @@ router.post("/validate-camera2-session", async (req,res) => {
 router.post("/check-if-cam2-enabled", async (req,res) => {
   let _id = req.body.cid;
 
+{/** update logic to handle case when ,
+    user started cam2 and submited it before moving to next slide of instruction screen
+  */}
+
   try {
     const validCam2 = await Candidate.find({_id: new mongoose.Types.ObjectId(_id), cam2: 1});
     if(validCam2.length > 0){
@@ -94,4 +100,126 @@ router.post("/check-if-cam2-enabled", async (req,res) => {
   }
 })
 
+router.post("/cam2-validation", async (req,res) => {
+  let _id = req.body.cid;
+  let param = req.body.param;
+
+  let field = null
+  if(param == "face") field = "face";
+  else if(param == "hands") field = "hands";
+  else if(param == "keyboard") field = "keyboard";
+  else if(param == "exitfullscreen") field = "exitfullscreen";
+
+  try {
+    const validCandidate = await Candidate.find({_id});
+    if(validCandidate.length > 0 && field !== null){
+      const updated = await Candidate.updateOne({_id: _id},{
+        $set: {
+          [field]: 1
+        },
+      });
+      console.log(updated);
+      if (updated.acknowledged) {
+        return res.json({success: true});
+      } else {
+        return res.json({success: false, error: "Db error"});
+      }
+    }
+    else{
+      return res.json({success: false, error: "invalid candidate"});
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, error: "server error" });
+  }
+})
+
+router.get("/candidate-detail/:cId", async (req,res) => {
+   const {cId} = req.params;
+  // console.log('received id==', cId);
+  try {
+    const existingCandidate = await Candidate.findOne({_id: cId});
+   
+    if(!existingCandidate) {
+     return res.json({success: 'false', message: "no user found"})
+    } else{
+    
+      // console.log('found user==' ,existingCandidate);
+      // console.log('test code===', existingCandidate.testcode)
+     const isValidTest = await HiringManager.findOne(
+       {
+         tests: {
+           $elemMatch: {
+             testcode: existingCandidate.testcode,
+           },
+         },
+       },
+       {
+         _id: 1, 
+         hiring_manager: 1,
+         companyname: 1,
+         email: 1,
+         "tests.$": 1, 
+       }
+     );
+
+     const userDetail = {
+      user: existingCandidate,
+      testInfo : isValidTest.tests[0]
+     }
+     
+    return res.json({success: true, userDetail});
+    }
+    
+  } catch (error) {
+     return res.json({success: false, message: 'server error' , error});
+  }
+   
+
+})
+
 module.exports = router;
+
+
+// router.post("/validate-camera2-session", async (req,res) => {
+//   let _id = req.body.cid;
+//   const {value ,url} = req.body;
+//   // let cam2ImgUrl = req.body.cam2ImgUrl;
+//   let cam1ImgUrl = req.body.cam1ImgUrl;
+//   // console.log('img 1 = ' , cam1ImgUrl);
+//   // console.log('img 2 = ' , cam2ImgUrl.length);
+//   const param = value==1 ? 'cam2Face' : 'cam2SideView';
+//   try {
+//     const validCandidate = await Candidate.find({_id});
+//     if(validCandidate.length > 0){
+//       let updated;
+//       if(cam1ImgUrl){
+//         updated = await Candidate.updateOne({_id: _id},{
+//           $set: {
+//            cam1Img: cam1ImgUrl,
+//           },
+//         });
+//       } 
+//       else{
+//         updated = await Candidate.updateOne({_id: _id},{
+//           $set: {
+//             cam2: 1,
+//             [param]: url,
+//           },
+//         });
+//       }
+      
+//       if (updated.acknowledged) {
+//         return res.json({success: true, candidateEmail: validCandidate[0].email, testCode: validCandidate[0].testcode});
+//       } else {
+//         return res.json({success: false, error: "Unable to start cam2 session"});
+//       }
+//     }
+//     else{
+//       return res.json({success: false, error: "invalid candidate"});
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.json({ success: false, error: "server error" });
+//   }
+// })

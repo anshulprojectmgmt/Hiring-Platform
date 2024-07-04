@@ -18,7 +18,8 @@ router.post("/create-test", async (req, res) => {
   const testCode = randomUUID();
   let eId = await HiringManager.findOne({
     email: email,
-  });
+  })
+  ;
   if (eId === null) {
     try {
       HiringManager.create({
@@ -43,7 +44,7 @@ router.post("/create-test", async (req, res) => {
     }
   } else {
     try {
-      await HiringManager.findOneAndUpdate(
+    const upMangaer =   await HiringManager.findOneAndUpdate(
         { email: email },
         {
           $set: {
@@ -62,7 +63,8 @@ router.post("/create-test", async (req, res) => {
           },
         }
       );
-      await res.status(200).json({ success: true, testcode: testCode });
+     // console.log('updated Manager==' , upMangaer);
+       res.status(200).json({ success: true, testcode: testCode });
     } catch (error) {
       res.send("Server Error", error.message);
     }

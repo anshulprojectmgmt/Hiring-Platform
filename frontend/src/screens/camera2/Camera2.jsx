@@ -11,17 +11,23 @@ import { useParams } from "react-router-dom";
 import BarLoader from "react-spinners/BarLoader";
 import "./Camera2.css";
 import Modal from "react-bootstrap/Modal";
+import {Buffer} from 'buffer';
 
 const Camera2 = () => {
   const navigate = useNavigate();
-  const time = useSelector((state) => state.testInfo.duration);
-  const initialTime = 1000 * 60;
-  const [timeLeft, setTimeLeft] = useState(initialTime);
+  const [time,setTime] = useState(null);
+  
+  const initialTime = time * 60;
+  
+  const [timeLeft, setTimeLeft] = useState(60);
+  
   const [hideCount, setHideCount] = useState(0);
   let timeTaken = useRef(initialTime);
   let tabSwitch = useRef(0);
 
   let videoBlob;
+  let cam2FaceBlob;
+  let cam2SideBlob;
   const timerRef = useRef(null);
   const webcamRef = useRef(null);
   const videoMediaRecorder = useRef(null);
@@ -35,19 +41,123 @@ const Camera2 = () => {
   const [candidateEmail, setCandidateEmail] = useState(null);
   const [testCode, setTestCode] = useState(null);
   const { cid } = useParams();
+  const [capturedImageUrl, setCapturedImageUrl] = useState(null);
+  const hasCapturedImage = useRef(false);
+ const [captured,setCaptured] = useState(false);
+ const canvasRef = useRef(null);
+ const [captureCount, setCaptureCount] = useState(0);
 
-  useEffect(() => {
-    const getDashboardInfo = async () => {
-        const res = await axios.post(`${BASE_URL}/api/validate-camera2-session`, {
-          cid,
-      });
-      setCandidateValidation(res.data.success);
-      setCandidateEmail(res.data.candidateEmail);
-      setTestCode(res.data.testCode);
+// Function to get candidate details
+const getCandidateDetail = async (cid) => {
+  console.log('inside get candidate');
+  try {
+    const resp = await axios.get(`${BASE_URL}/api/candidate-detail/${cid}`);
+    const userDetail = resp.data.userDetail;
+
+    // Check if user already submitted cam2
+    if (userDetail?.user?.cam2 === 2) {
+      toast.error("You have already submitted secondary camera");
+      navigate('/testend', { replace: true });
+      return true; // Indicate that we should stop further execution
     }
 
-    getDashboardInfo();
-  }, [cid, setCandidateEmail]);
+    setTime(userDetail.testInfo.duration);
+    setTimeLeft(userDetail?.testInfo?.duration ? userDetail.testInfo.duration * 60 : 60);
+
+    return false; // Indicate that it's okay to continue
+  } catch (error) {
+    toast.error("something went wrong");
+    console.error("Error fetching candidate details:", error);
+    // Handle error appropriately
+    return true; // Stop further execution in case of an error
+  }
+};
+
+ // Function to get dashboard information
+ const getDashboardInfo = async (cid) => {
+  console.log('during cam2 validate');
+  try {
+    const res = await axios.post(`${BASE_URL}/api/validate-camera2-session`, { cid });
+    setCandidateValidation(res.data.success);
+    setCandidateEmail(res.data.candidateEmail);
+    setTestCode(res.data.testCode);
+  } catch (error) {
+    console.error("Error validating camera2 session:", error);
+    // Handle error appropriately
+  }
+};
+const captureImage = (value) => {
+  if (canvasRef.current && webcamRef.current) {
+    const canvas = canvasRef.current;
+    const video = webcamRef.current;
+
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const imageDataUrl = canvas.toDataURL('image/png');
+    setCapturedImageUrl(imageDataUrl);
+    setCaptureCount(value);
+  }
+};
+const handleRetake = (val) => {
+  setCapturedImageUrl(null);
+  
+  captureImage(val);
+};
+const handleSave = async (val) => {
+  
+  
+  if (capturedImageUrl && captureCount> 0) {
+    try {
+    //  await axios.post('/api/upload', { imageUrl: capturedImageUrl });
+    const res = await axios.post(`${BASE_URL}/api/validate-camera2-session`, { cid , url: capturedImageUrl, value: captureCount});
+  //  localStorage.setItem('capturedImage2', capturedImageUrl);
+      setCapturedImageUrl(null);
+      setCaptured(true);
+    setCandidateValidation(res.data.success);
+    setCandidateEmail(res.data.candidateEmail);
+    setTestCode(res.data.testCode);
+      setCaptureCount(val);
+      if(val!=0) {
+        captureImage(val);
+      }
+      toast.success("Image Successfully Captured !!")
+    } catch (error) {
+      console.error("Error validating camera2 session:", error);
+      toast.error("something went wrong !!")
+    }
+  } else{
+    toast.error("something went wrong !!")
+  }
+};
+
+// Effect to get candidate detail and dashboard info
+useEffect(() => {
+  if (cid) {
+    console.log('before get candidate');
+    const fetchDetails = async () => {
+      const shouldStop = await getCandidateDetail(cid);
+      console.log('after get candidate');
+
+      // Only call getDashboardInfo if getCandidateDetail did not signal to stop
+      if (!shouldStop) {
+        // 1. start camera 
+         await startRecording();
+         await getDashboardInfo(cid);
+         // 2. take images 
+        // if yes get dashboard Info
+       //  await getDashboardInfo(cid);
+        console.log('after cam2 validate');
+      }
+    };
+
+    fetchDetails();
+  }
+}, [cid]);
 
   const startRecording = useCallback(async () => {
     try {
@@ -58,6 +168,15 @@ const Camera2 = () => {
           frameRate: { ideal: 10 },
         },
       });
+
+     // to start webcam video on ui
+    //  if (webcamRef.current) {
+    //   webcamRef.current.srcObject = stream;
+    //   webcamRef.current.onloadedmetadata = () => {
+    //      webcamRef.current.play();
+    //      captureImage(1);
+    //   };
+    // }
 
       mediaStream.current = stream;
 
@@ -71,19 +190,21 @@ const Camera2 = () => {
         }
       };
 
-      videoMediaRecorder.current.start();
+    await  videoMediaRecorder.current.start();
 
+       
+       
       setIsRecording(true);
     } catch (error) {
       toast.warning("Sorry, you declined the media permissions");
       navigate("/testend");
-      // console.error("Error accessing media devices:", error);
+       console.error("Error accessing media devices:", error);
     }
   }, []);
 
-  useEffect(() => {
-    startRecording();
-  }, [startRecording]);
+  // useEffect(() => {
+  //   startRecording();
+  // }, [startRecording]);
 
   const stopRecording = useCallback(async () => {
     if (
@@ -91,7 +212,8 @@ const Camera2 = () => {
       isRecording
     ) {
       await videoMediaRecorder.current.stop();
-      await setIsRecording(false);
+      console.log('video 2222 stoped successfully')
+       setIsRecording(false);
       if (mediaStream.current) {
         await mediaStream.current.stream
           .getTracks()
@@ -111,31 +233,7 @@ const Camera2 = () => {
     }
   };
 
-  /* const handleEndTest = useCallback(async () => {
-    try {
-      const res = await axios.post(`${BASE_URL}/api/submit-mcqtest`, {
-        testData: mcqData,
-        candidateEmail: candidateEmail,
-        testCode: testCode,
-        timetaken: timeTaken.current,
-        tabswitch: tabSwitch.current,
-      });
-      if (!res.data.success) {
-        toast.error(res.data.message);
-      } else {
-        // toast.success(res.data.message);
-        if (getFullscreenElement()) {
-          loader.current = "false";
-          toast.success(res.data.message);
-          document.exitFullscreen();
-        }
-        navigate("/testend");
-      }      
-    } catch (error) {
-      navigate("/testend");
-      console.error("Error submitting test:", error);
-    }
-  }, [check,mcqData, candidateEmail, testCode, navigate]); */
+
 
   const uploadVideo = async () => {
     const videoFileName = `${candidateEmail}-video2.mp4`;
@@ -151,7 +249,106 @@ const Camera2 = () => {
   const camera2Submit = async () => {
     try {
       let cid = localStorage.getItem("cid");
+      timeTaken.current = initialTime - timeLeft;
       setTimeLeft(0);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const camera2Photo = async () => {
+    try {
+  //  captureImage();
+
+          const imageSrc = webcamRef.current.getScreenshot();
+      cam2FaceBlob = Buffer.from(imageSrc.replace("/^data:image\/\w+;base64,/", ""));
+      // console.log(imageSrc);
+    //   setImg(imageSrc);
+      const cam2FaceFileName = `${candidateEmail}-cam2face.jpeg`;
+      const cam2FaceRes = await axios.post(`${BASE_URL}/api/s3upload`, {
+        filename: cam2FaceFileName,
+        contentType: "image/jpeg",
+        testcode: testCode,
+      });
+      const cam2Faceurl = cam2FaceRes.data.url;
+      await axios.put(cam2Faceurl, cam2FaceBlob);
+      // console.log(cam2FaceRes);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const camera2SidePhoto = async () => {
+    try {
+      //  captureImage();
+
+      const imageSideSrc = webcamRef.current.getScreenshot();
+      cam2SideBlob = Buffer.from(imageSideSrc.replace("/^data:image\/\w+;base64,/", ""));
+      // console.log(imageSideSrc);
+     // setImg(imageSideSrc);
+      const cam2SideFileName = `${candidateEmail}-cam2sideprofile.jpeg`;
+      const cam2SideRes = await axios.post(`${BASE_URL}/api/s3upload`, {
+        filename: cam2SideFileName,
+        contentType: "image/jpeg",
+        testcode: testCode,
+      });
+      const cam2Sideurl = cam2SideRes.data.url;
+      await axios.put(cam2Sideurl, cam2SideBlob);
+      // console.log(cam2SideRes);
+
+      const inputString = imageSideSrc.replace("data:image/webp;base64,", "");
+   //  const inputString = capturedImageUrl.replace("data:image/png;base64,", "");
+     
+     const handMatchRes = await axios.post(`http://ai.aiplanet.me/detect_hands`, inputString,
+      {
+        headers: {
+          "Content-Type": "text/plain",
+        }
+      });
+      console.log(handMatchRes.data.hands_detected);
+      if(handMatchRes.data.hands_detected) {
+        console.log("here");
+
+        const res = await axios.post(`${BASE_URL}/api/cam2-validation`, {
+          cid: cid,
+          param: 'hands',
+        });
+        if (!res.data.success) {
+          toast.error(res.data.message);
+        }
+
+        toast.success("Hands successfully detected");
+        // setNextbtn(true);
+      } else {
+        // setCapturebtn(null);
+        toast.warning("Hands on keyboard not detected");
+      }
+
+      const keyboardmatchRes = await axios.post(`http://ai.aiplanet.me/detect_person_and_keyboard`, inputString,
+      {
+        headers: {
+          "Content-Type": "text/plain",
+        }
+      });
+      console.log(keyboardmatchRes.data.person_and_keyboard_detected);
+      if(keyboardmatchRes.data.person_and_keyboard_detected) {
+        console.log("here");
+
+        const res = await axios.post(`${BASE_URL}/api/cam2-validation`, {
+          cid: cid,
+          param: 'keyboard',
+        });
+        if (!res.data.success) {
+          toast.error(res.data.message);
+        }
+
+        toast.success("Candidate with keyboard detected successfully");
+        // setNextbtn(true);
+      } else {
+        // setCapturebtn(null);
+        toast.warning("Candidate with keyboard not detected");
+      }
+
     } catch (error) {
       console.log(error);
     }
@@ -166,7 +363,7 @@ const Camera2 = () => {
         } else if (timeLeft === 0 && !isTimeUp) {
           isTimeUp = true;
           try {
-            await setShow(true);
+             setShow(true);
             loader.current = "true";
             await stopRecording();
             await downloadRecording();
@@ -179,7 +376,8 @@ const Camera2 = () => {
             const res = await axios.post(`${BASE_URL}/api/submit-test`, {
               candidateEmail: candidateEmail,
               testCode: testCode,
-              cam2: 2
+              cam2: 2,
+              cam2Time: timeTaken.current
             });
             if (!res.data.success) {
               toast.error(res.data.message);
@@ -188,7 +386,7 @@ const Camera2 = () => {
               loader.current = "false";
               toast.success(res.data.message);
     
-              navigate("/testend");
+              navigate("/testend",{replace: true});
             }
           } catch (error) {
             console.log("");
@@ -207,6 +405,20 @@ const Camera2 = () => {
       <div className="navbar">
         <div className=" logo">AiPlanet</div>
         <div className="timer">
+        <div
+            type="button"
+            onClick={camera2SidePhoto}
+            className="endtest-btn"
+          >
+            keyboard/hands/face
+          </div>
+          <div
+            type="button"
+            onClick={camera2Photo}
+            className="endtest-btn"
+          >
+            Face photo
+          </div>
           <div
             type="button"
             data-bs-toggle="modal"
@@ -217,9 +429,49 @@ const Camera2 = () => {
           </div>
         </div>
       </div>
-      <div className="webcam">
+      <div className="camera-container">
+     
+      {/* {captureCount== 1 ? (
+        <div className=" flex flex-col align-middle">
+          
+          <h3 className='mb-3 p-2 text-[#1c4b74] text-center underline' >1. Please Capture Face Image!</h3>
+         
+          <img src={capturedImageUrl} alt="Captured" className="captured-image" />
+          <div className="button-container">
+            <button className='rounded-md bg-[#5880F0]' onClick={() => {handleSave(2)}}>Yes</button>
+            <button className='rounded-md bg-[#5880F0]' onClick={() => {handleRetake(captureCount)}}>No</button>
+          </div>
+        </div>
+      ) : (
+        captureCount == 2 ? (
+          <div className=" flex flex-col align-middle">
+            
+            <h3 className='mb-3 p-2 text-[#1c4b74] text-center underline' >2. Capture Image at an angle where hand on keyboard is visible</h3>
+          
+            <img src={capturedImageUrl} alt="Captured" className="captured-image" />
+            <div className="button-container">
+              <button className='rounded-md bg-[#5880F0]' onClick={() => {handleSave(0)}}>Yes</button>
+              <button className='rounded-md bg-[#5880F0]' onClick={() => {handleRetake(captureCount)}}>No</button>
+            </div>
+          </div>
+        ) : 
+        <p style={{color: '#210263'}}>Camera access granted. {captured ? 'Image Captured' : 'Capturing image...' }</p>
+      )} */}
+
+      {/* <div className="video-container">
+      
+      <video className="video" ref={webcamRef}  />
+      </div> */}
+       <div className="webcam">
+         <Webcam audio={false} ref={webcamRef} style={{width: "100vw", height: "100vh"}} />
+       </div>
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+    </div>
+
+      {/* <div className="webcam">
         <Webcam audio={false} ref={webcamRef} style={{width: "100vw", height: "100vh"}} />
-      </div>
+      </div> */}
+
       <div
         className="modal fade"
         id="staticBackdrop"
@@ -288,3 +540,4 @@ const Camera2 = () => {
 };
 
 export default Camera2;
+

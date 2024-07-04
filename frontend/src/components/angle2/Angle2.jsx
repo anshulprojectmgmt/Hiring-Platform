@@ -15,15 +15,17 @@ const Angle = () => {
   const cid = localStorage.getItem('cid');
 
   const handleNext = async () => {
-    const res = await axios.post(`${BASE_URL}/api/check-if-cam2-enabled`, {
-      cid: cid
-    });
-    console.log(res.data.success);
-    if(res.data.success) {
-      dispatch({ type: "NEXT" });
-    } else {
-      toast.warning("You haven't started the second camera yet");
-    }
+    // const res = await axios.post(`${BASE_URL}/api/check-if-cam2-enabled`, {
+    //   cid: cid
+    // });
+    // console.log(res.data.success);
+    // if(res.data.success) {
+    //   dispatch({ type: "NEXT" });
+    // } else {
+    //   toast.warning("You haven't started the second camera yet");
+    // }
+
+    dispatch({ type: "NEXT" });
   };
 
   /* const handleNext = () => {
@@ -38,7 +40,9 @@ const Angle = () => {
       <div className="angle2-head">
         <h3>Face side profile, Keyboard and hands detection</h3>
         <p>
-          Steps: In order to ensure that you are really the one taking the test, please scan the below QR code from your mobile device and setup your mobile device at an angle at which your face, hands and keyboard of the laptop you are attempting the test on can be viewed
+          Steps: In order to ensure that you are really the one taking the test,
+           please scan the below QR code from your mobile device and setup your mobile device at an angle at which your face,
+            hands and keyboard of the laptop you are attempting the test on can be viewed
         </p>
       </div>
       <div className="angle2-images">
@@ -63,16 +67,21 @@ const Angle = () => {
               data-bs-slide-to="1"
               aria-label="Slide 2"
             ></button>
-            {/* <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button> */}
+           
           </div>
           <div className="carousel-inner mycarousel">
             <div className="carousel-item active ">
+              <div className="d-flex justify-center items-center gap-1">
               <img src={keyboard2}  alt="..."></img>
               <QRCode value={window.location.host + "/camera2/" + cid} size={256} />
+              </div>
             </div>
-            <div className="carousel-item">
+
+            <div className="carousel-item ">
+            <div className="d-flex justify-center items-center gap-1">
               <img src={left}  alt="..."></img>
               <img src={lap}  alt="..."></img>
+              </div>
             </div>
           </div>
           <button

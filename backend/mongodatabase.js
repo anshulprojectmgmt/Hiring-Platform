@@ -8,7 +8,7 @@ const mongoDB = async () => {
         await mongoose.connect(mongoURI, {useNewUrlParser : true});
         console.log('connnected to mongodb...')
     } catch (error) {
-        console.log(error)
+        console.log('mongoDb error' , error)
     }
 }
 

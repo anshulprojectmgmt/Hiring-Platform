@@ -40,6 +40,16 @@
     cursor: pointer;
     transition: all 0.3s;
 }
+
+.fullscreen-btn{
+    background-color: rgb(203, 78, 78) ;
+    padding: 0.3rem 0.9rem;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
 .endtest-btn:active{
 	transform: scale(0.7);
 }

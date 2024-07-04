@@ -21,6 +21,16 @@ router.post("/s3upload", async (req, res) => {
       ContentType: contentType,
     });
   }
+  else if (contentType === "image/jpeg") {
+    command = new PutObjectCommand({
+      Bucket: "hm-video-audio-bucket",
+      Key: `${testcode}/Videos/${filename}`,
+      ContentType: contentType,
+      // ContentEncoding: 'base64',
+    });
+  } else{
+    res.status(200).json({ success: false,message:"No format matched" });  
+  }
   const url = await getSignedUrl(s3Client, command);
   res.status(200).json({ success: true, url: url });
 });

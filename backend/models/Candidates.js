@@ -28,10 +28,44 @@ const candidateSchema = new Schema({
       type: Number,
       default: 0,
     },
+    exitfullscreen: {
+      type: Number,
+      default: null,
+    },
     cam2: {
       type: Number,
       default: null,
     },
+    cam2Time: {
+      type: Number,   
+      default: null,  
+  },
+  face: {
+    type: Number,
+    default: null,
+  },
+  hands: {
+    type: Number,
+    default: null,
+  },
+  keyboard: {
+    type: Number,
+    default: null,
+  },
+  cam2Face : {
+    type: String,
+    default: null,
+  },
+  cam2SideView : {
+    type: String,
+    default: null,
+  },
+  
+  cam1Img : {
+    type: String,
+    default: null,
+  },
+
     result: {
       type: [
         {

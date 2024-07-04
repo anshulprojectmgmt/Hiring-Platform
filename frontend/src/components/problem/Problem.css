@@ -21,7 +21,8 @@
 } */
 .back_btn, .next_btn{
     /* background-color: yellow; */
-    background: transparent;
+    background: rgb(202, 198, 198);
+    
     padding: 6px;
     cursor: pointer;
     border: none;
