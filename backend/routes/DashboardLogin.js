@@ -1,12 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const HiringManager = require("../models/HiringManager");
-
+const logger = require('../logger/Logger');
 router.post("/login-dashboard", async (req, res) => {
   // console.log(req.body)
+
+  // console.log('login dashboard request===' ,logger.warn('warning message'));
   let {email,password} = req.body;
+
+
   try {
     let userData = await HiringManager.findOne({ email });
+    
     if (!userData) {
       // console.log('id not')
       return res.json({success:false, error: "This email id is not registered yet" });

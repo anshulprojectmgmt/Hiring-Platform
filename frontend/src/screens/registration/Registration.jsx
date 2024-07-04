@@ -12,6 +12,7 @@ const Home = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const code = location.state;
+  // console.log('location object==' , location);
   // console.log(code);
 
   const initialTestCodeValue = code !== null ? code.testcode : "";

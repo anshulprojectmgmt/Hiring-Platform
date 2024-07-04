@@ -127,10 +127,12 @@ router.post("/submit-test", async (req, res) => {
     const timetaken = req.body.timetaken;
     const tabswitch = req.body.tabswitch;
     const cam2 = req.body.cam2;
+    // console.log('test data===' , Data, "  cam=",  cam2);
     if(cam2 === 2) {
       const candidateCam2 = await Candidate.updateOne({email: candidateEmail, testcode: testCode},{
         $set: {
-          cam2: cam2
+          cam2: cam2,
+          cam2Time:req.body.cam2Time 
         },
       });
       if (candidateCam2.acknowledged) {
@@ -139,7 +141,9 @@ router.post("/submit-test", async (req, res) => {
         res.status(400).json({success:false, message: 'Cam2 not submitted'});
       }
     } else {
+
       const testData = Data.slice(1);
+     
       const filteredTestData = await testData.filter(item => item.score === -1);
       // console.log(filteredTestData);
       const updatedTestData = await Promise.all(filteredTestData.map(makeAPICall));
@@ -161,6 +165,9 @@ router.post("/submit-test", async (req, res) => {
           tabswitch: tabswitch,
         },
       });
+
+      console.log('candidate update==' , candidate);
+
       if (candidate.acknowledged) {
         res.status(200).json({success:true, message: 'Test submitted successfully'});
       } else {
@@ -179,15 +186,18 @@ router.post("/submit-mcqtest", async (req, res) => {
     const testCode = req.body.testCode;
     const timetaken = req.body.timetaken;
     const tabswitch = req.body.tabswitch;
+    console.log('test data===' , data);
     const testData = data.slice(1);
+    console.log('test data after slice===' , testData, );
   try {
     const candidate = await Candidate.updateOne({email: candidateEmail, testcode: testCode},{
-      $set: {
+      $set: {               
         result: testData,
         timetaken: timetaken,
         tabswitch: tabswitch,
       },
     });
+    console.log('candidate update==' , candidate);
     if (candidate.acknowledged) {
       res.status(200).json({success:true, message: 'Test submitted successfully'});
     } else {

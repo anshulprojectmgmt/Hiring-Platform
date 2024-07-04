@@ -81,13 +81,18 @@ const Mcq = () => {
   return (
     <div className="mcq-screen">
       <div className="mcq-head">
+      <div>
+        {currentQuestion!==0 && 
         <button
+          
           disabled={currentQuestion === 0}
           onClick={handlePrev}
           className="prev ctabutton"
         >
           Prev
         </button>
+        }
+        </div>
         <div className="right-btn">
           <button onClick={handleNext} className="next ctabutton">
             Next

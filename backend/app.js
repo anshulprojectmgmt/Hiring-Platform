@@ -1,16 +1,23 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
 const mongoDB = require("./mongodatabase");
 const OpenAI = require("openai");
 const Razorpay = require("razorpay");
-require("dotenv").config();
+const logger = require('./logger/Logger')
+
 const { S3Client } = require("@aws-sdk/client-s3");
 const {SQSClient} = require("@aws-sdk/client-sqs");
 
+
 mongoDB();
 app.use(cors());
-app.use(express.json());
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({limit :'10mb', extended: true}))
+
+app.use(logger);
 
 const port = process.env.PORT || 5000;
 
@@ -31,6 +38,7 @@ const sqsClient = new SQSClient({
     secretAccessKey: process.env.SECRET_ACCESS_KEY,
   },
 });
+
 const s3Client = new S3Client({
   region: "ap-south-1",
   credentials: {
@@ -39,6 +47,7 @@ const s3Client = new S3Client({
   },
   useAccelerateEndpoint: true,
 });
+
 module.exports = { s3Client, sqsClient};
 
 app.use("/api", require("./routes/Queries"));

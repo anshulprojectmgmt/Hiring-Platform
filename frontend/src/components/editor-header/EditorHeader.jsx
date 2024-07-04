@@ -204,6 +204,7 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
         max_file_size: null,
         enable_network: null,
       };
+
       try {
         const response = await axios.post(
           "https://compiler.aiplanet.me/submissions",
@@ -258,6 +259,7 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
         checkSubmissionStatus();
       } catch (error) {
         console.log(error);
+        dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Error});
       }
     }
   };

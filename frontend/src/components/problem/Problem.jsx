@@ -11,6 +11,8 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
   const currentQuestion = useSelector(
     (state) => state.getQuestion.currentQuestion
   );
+  console.log('questions ===' , questions)
+  console.log('curr wrapper===', questions[currentQuestion].wrapper_details[0].wrapper)
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
 
@@ -19,7 +21,7 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
 
   const handlePrev = () => {
     // console.log(currentQuestion)
-    dispatch({ type: "PREV_QUESTION" });
+    
     // console.log(currentQuestion)
     inputRef.current.innerText = "";
     outputRef.current.innerText = "";
@@ -31,13 +33,27 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
     } 
     else if(index === -1){
       dispatch({type: "CHANGE_LANGUAGE", payload: "Python"})
-    editorRef.current.setValue(`def main():
+    // Calculate base indentation
+const baseIndentation = '    '; // assuming the base indentation is 4 spaces
+
+// Indent the inserted code
+const indentedInsertedCode = questions[currentQuestion-1].wrapper_details[0].wrapper
+  .split('\n')
+  .map(line => baseIndentation + line) // add base indentation to each line
+  .join('\n');
+      editorRef.current.setValue(`def main():
+#  pre define --------********
+${indentedInsertedCode}
+# ***** end ************
+
+
     print("Hello World")
     
 main()
 # write a function such that user can give input as well`);
     }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
+    dispatch({ type: "PREV_QUESTION" });
   };
 
   const handleNext = () => {
@@ -45,7 +61,7 @@ main()
       setShow(true);
     }
     else{
-      dispatch({ type: "NEXT_QUESTION" });
+     
     inputRef.current.innerText = "";
     outputRef.current.innerText = "";
     const index = savedCode.findIndex((e) => e.queNumber === currentQuestion+1);
@@ -55,20 +71,36 @@ main()
     }
     else if(index === -1){
       dispatch({type: "CHANGE_LANGUAGE", payload: "Python"})
-    editorRef.current.setValue(`def main():
+    
+   // Calculate base indentation
+const baseIndentation = '    '; // assuming the base indentation is 4 spaces
+
+// Indent the inserted code
+const indentedInsertedCode = questions[currentQuestion+1].wrapper_details[0].wrapper
+  .split('\n')
+  .map(line => baseIndentation + line) // add base indentation to each line
+  .join('\n');
+      editorRef.current.setValue(`def main():
+#  pre define --------********
+${indentedInsertedCode}
+# ***** end ************
+
+
     print("Hello World")
     
 main()
 # write a function such that user can give input as well`);
-    }
+     }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
-    }
+    dispatch({ type: "NEXT_QUESTION" });  
+  }
     
   };
   // console.log(questions)
   return (
     <div className="problem">
       <div className="problem_header">
+        
         <button
           disabled={currentQuestion === 0}
           onClick={handlePrev}
@@ -77,12 +109,19 @@ main()
           <i className="fa-solid fa-arrow-left"></i>
         </button>
         <button
+          // disabled={true}
+          onClick={handleNext}
+           className="next_btn"
+        >
+          <i className="fa-solid fa-arrow-right"></i>
+        </button>
+        {/* <button
           // disabled={currentQuestion === questions.length - 1}
           onClick={handleNext}
           className="next_btn"
         >
-          <i className="fa-solid fa-arrow-right"></i>
-        </button>
+          <i className="fa-solid fa-arrow-left"></i>
+        </button> */}
       </div>
       <Modal
         show={show}

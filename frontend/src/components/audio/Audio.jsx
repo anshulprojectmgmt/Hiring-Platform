@@ -8,25 +8,31 @@ import BASE_URL from '../../Api';
 
 const Audio = () => {
   const dispatch = useDispatch();
-  const testtype = useSelector((state) => state.testInfo.testtype);
-  const language = useSelector((state) => state.testInfo.language);
-  const difficulty = useSelector((state) => state.testInfo.difficulty);
-  const questions = useSelector((state) => state.testInfo.questions);
+  const testInfo = useSelector((state) => state.testInfo);
+ 
   const navigate = useNavigate();
 
   const handleClick = async () => {
-    const res = await axios.post(`${BASE_URL}/api/questions`, {
-      testtype: testtype,
-      language: language,
-      difficulty: difficulty,
-      questions: questions,
-    });
-    await dispatch({ type: "SET_QUESTION", payload: res.data.que });
-    // enterFullScreen(videoelem);
-    await document.documentElement.requestFullscreen().catch((e) => {
-      console.log(e);
-    });
-    navigate("/test");
+        const res = await axios.post(`${BASE_URL}/api/questions`, {
+        testtype:  testInfo.testtype,
+        language:  testInfo.language,
+        difficulty:testInfo.difficulty,
+        questions: testInfo.questions,
+      });
+       dispatch({ type: "SET_QUESTION", payload: res.data.que });
+      // enterFullScreen(videoelem);
+     try {
+      await document.documentElement.requestFullscreen().catch((e) => {
+        console.log('full screen error==1' , e)
+      });
+     } catch (error) {
+      console.log('full screen error==2' , error)
+     }
+
+
+      setTimeout(() => {
+        navigate("/test");
+      },500);
   };
 
   const handleBack = () => {

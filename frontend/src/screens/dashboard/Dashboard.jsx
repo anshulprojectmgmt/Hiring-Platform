@@ -1,6 +1,6 @@
 import React from "react";
 import "./Dashboard.css";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import BASE_URL from "../../Api";
 import axios from "axios";
@@ -15,6 +15,35 @@ const Dashboard = () => {
   const [hrname, sethrname] = useState("");
   const [totaltests, settotaltests] = useState([]);
   const [hrid, sethrid] = useState();
+
+  const navigate = useNavigate();
+  //  const navigate = useNavigate();
+    const location = useLocation();
+  
+  
+  
+    useEffect(() => {
+      console.log('pn dashboard mount');
+      // Add event listener for popstate which is triggered on back button
+      const handlePopState = () => {
+        // Redirect to /home when back button is pressed
+        console.log('Back button pressed!');
+        navigate('/', { replace: true });
+        console.log('after Back button pressed!');
+    
+      };
+  
+      window.addEventListener('popstate', handlePopState);
+  
+    // Cleanup the event listener when the component is unmounted
+      return () => {
+        console.log('on dashboard UNmount');
+        setTimeout(() => {
+          window.removeEventListener('popstate', handlePopState);
+        }, 500)
+        
+      };
+    }, []); 
 
   useEffect(() => {
     const getDashboardInfo = async () => {
@@ -53,7 +82,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody className="my-table" >
-                {totaltests !== [] ? totaltests.map((test, i) => {
+                {totaltests.length> 0 ? totaltests.map((test, i) => {
                   return (
                     <tr  key={i}>
                       <th scope="row">{i + 1}</th>

@@ -12,6 +12,7 @@ import Webcam from "react-webcam";
 import BarLoader from "react-spinners/BarLoader";
 import "./Test.css";
 import Modal from "react-bootstrap/Modal";
+import { debounce } from 'lodash';
 // import webgazer from "webgazer";
 // eslint-disable-next-line
 
@@ -54,9 +55,100 @@ const Test = () => {
   const audiomediaStream = useRef(null);
   const loader = useRef("false");
   const [show, setShow] = useState(false);
+  const [isFullScreen, setIsFullSreen] = useState(true);
+  const [exitScreen, setExitScreen] = useState(0);
 
+const exitScreenRef = useRef(null);
+const isFullScreenRef = useRef(null);
+exitScreenRef.current = exitScreen;
+isFullScreenRef.current = isFullScreen;
+
+  useEffect(() => {
+    let timeId;
+    if(exitScreenRef.current>=1 && !getFullscreenElement()) {
+          timeId = setTimeout(() => {
+            console.log('is full screen ** inside Timeout==' ,isFullScreenRef.current );
+            if(!isFullScreenRef.current) {
+
+              timeTaken.current = initialTime - timeLeft;
+              toast.error("Exam terminated.");
+              setTimeLeft(0);
+            }
+          }, 1000*60*60)
+    }
+
+    return () => {
+      clearInterval(timeId);
+    }
+  }, [exitScreenRef.current])
+
+
+  const setFullScreen = (e) => {
+    
+
+    if(exitScreenRef.current>= 1 && !getFullscreenElement()) {
+      timeTaken.current = initialTime - timeLeft;
+      toast.error("Exam terminated.");
+      setTimeLeft(0);
+         return;
+       }
+       
+       if(!getFullscreenElement()){
+          setExitScreen(prev => prev+1);
+           toast.error("Exam will get Terminate after 1 min, reset to Full-Screen mode", {
+             position: "top-left",
+             autoClose: 1000*60, // Duration in milliseconds (5000ms = 5 seconds)
+             hideProgressBar: false,
+             closeOnClick: true,
+             pauseOnHover: true,
+             draggable: true,
+       
+     });
+           }
+   
+        setIsFullSreen(prev =>  prev? false  : true);
+      
+     } 
+
+  useEffect(() => {
+  
+ document.addEventListener('fullscreenchange',setFullScreen);
+ 
+  return () => {
+  document.removeEventListener('fullscreenchange',setFullScreen) 
+  }
+}, [])
+
+const resetToFullScreen =async () => {
+ 
+  await  document.documentElement.requestFullscreen().catch((e) => {
+         console.log("full screen error==3" , e);
+       });
+}
+ 
+ useEffect(() => {
+    // Add event listener for popstate which is triggered on back button
+    const handlePopState = () => {
+      // Redirect to /home when back button is pressed
+     
+
+       navigate('/', { replace: true });
+       window.removeEventListener('popstate', handlePopState);
+    };
+      
+    window.addEventListener('popstate', handlePopState);
+
+    // Cleanup the event listener when the component is unmounted
+    return () => {
+      setTimeout(() => {
+        window.removeEventListener('popstate', handlePopState);
+      }, 500)
+    };
+  }, []);
+  
   const startRecording = useCallback(async () => {
-    try {
+    
+try {
       const audioStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
@@ -97,13 +189,15 @@ const Test = () => {
         document.exitFullscreen();
       }
       toast.warning("Sorry, you declined the media permissions");
-      navigate("/testend");
+      navigate("/testend",{replace: true});
       // console.error("Error accessing media devices:", error);
     }
   }, []);
 
   useEffect(() => {
-    startRecording();
+    
+
+      startRecording();
   }, [startRecording]);
 
   const stopRecording = useCallback(async () => {
@@ -114,8 +208,9 @@ const Test = () => {
     ) {
       await videoMediaRecorder.current.stop();
       await audioMediaRecorder.current.stop();
-      await setIsRecording(false);
-      if (mediaStream.current) {
+       setIsRecording(false);
+      console.log('video/audio stoped successfully')
+       if (mediaStream.current) {
         await mediaStream.current.stream
           .getTracks()
           .forEach((track) => track.stop());
@@ -136,6 +231,7 @@ const Test = () => {
   };
 
   const handleEndTest = useCallback(async () => {
+    console.log('handle end test get called' , "testtype== " , testtype)
     try {
       if(testtype === "coding"){
         const res = await axios.post(`${BASE_URL}/api/submit-test`, {
@@ -152,7 +248,12 @@ const Test = () => {
           if (getFullscreenElement()) {
             loader.current = "false";
             toast.success(res.data.message);
-            document.exitFullscreen();
+            try {
+              document.exitFullscreen();  
+            } catch (error) {
+              console.log('exit full screen error==' , error);
+            }
+            
           }
           navigate("/testend");
         }
@@ -174,12 +275,12 @@ const Test = () => {
             toast.success(res.data.message);
             document.exitFullscreen();
           }
-          navigate("/testend");
+          navigate("/testend",{replace: true});
         }
       }
       
     } catch (error) {
-      navigate("/testend");
+      navigate("/testend",{replace: true});
       console.error("Error submitting test:", error);
     }
   }, [check,mcqData, candidateEmail, testCode, navigate]);
@@ -195,14 +296,16 @@ const Test = () => {
       contentType: "video/mp4",
       testcode: testCode,
     });
+    console.log('video s3 res==' , videoRes);
     const videos3url = videoRes.data.url;
     await axios.put(videos3url, videoBlob);
-    const res = await axios.post(`${BASE_URL}/api/s3upload`, {
+    const audioRes = await axios.post(`${BASE_URL}/api/s3upload`, {
       filename: audioFileName,
       contentType: "audio/webm",
       testcode: testCode,
     });
-    const audios3url = res.data.url;
+    console.log('audio s3 res==' , audioRes);
+    const audios3url = audioRes.data.url;
     const response = await axios.put(audios3url, audioBlob);
   };
 
@@ -218,39 +321,57 @@ const Test = () => {
       else {
         if (res.data.cam2status && res.data.cam2status == 1) {
           toast.warning("Please submit the video from the second carmera first, and then try to end the test again");
-          if (getFullscreenElement()) {
-            document.exitFullscreen();
-          }
+          // if (getFullscreenElement()) {
+          //   document.exitFullscreen();
+          // }
         } else if(res.data.cam2status == 2 || res.data.cam2status == 0) {
           timeTaken.current = initialTime - timeLeft;
           setTimeLeft(0);
         } else {
-          if (getFullscreenElement()) {
-            document.exitFullscreen();
-          }
+          // if (getFullscreenElement()) {
+          //   document.exitFullscreen();
+          // }
           setTimeLeft(0);
         }
       }
     } catch (error) {
       console.log(error);
     }
+
+   
+    // if (getFullscreenElement()) {
+    //   try {
+    //     document.exitFullscreen();  
+    //   } catch (error) {
+    //     console.log('exit full screen error==' , error);
+    //   }
+      
+    // }
+
+    // timeTaken.current = initialTime - timeLeft;
+    // setTimeLeft(0);
+
   };
 
   useEffect(() => {
     let isTimeUp = false;
     if (!timerRef.current) {
       timerRef.current = setInterval(async () => {
+        
         if (timeLeft > 0) {
           setTimeLeft(timeLeft - 1);
         } else if (timeLeft === 0 && !isTimeUp) {
           isTimeUp = true;
           try {
-            await setShow(true);
+             setShow(true);
             // console.log(mcqData);
             loader.current = "true";
+         
+   
             await stopRecording();
             await downloadRecording();
             await uploadVideo();
+          
             await handleEndTest();
             clearInterval(timerRef.current);
             timerRef.current = null;
@@ -304,12 +425,21 @@ const Test = () => {
     <div id="fullscreen">
       <div className="navbar">
         <div className=" logo">AiPlanet</div>
-        <div className="webcam">
+        <div className="webcam w-24 h-8">
           {loader.current === "true" ? null : (
-            <Webcam audio={false} ref={webcamRef} width={100} height={44} />
+            <Webcam audio={false} ref={webcamRef} width={100} height={40} />
           )}
         </div>
         <div className="timer">
+       {!isFullScreen && 
+        <div
+          onClick={resetToFullScreen}
+            type="button"
+            className="fullscreen-btn"
+          >
+            Full Screen
+          </div>
+           }
           <div
             type="button"
             data-bs-toggle="modal"
@@ -351,7 +481,7 @@ const Test = () => {
               ></button>
             </div>
             <div className="modal-body">
-              Are you sure and want to end the test{" "}
+              Are you sure , you want to end the test{" "}
             </div>
             <div className="modal-footer">
               <button

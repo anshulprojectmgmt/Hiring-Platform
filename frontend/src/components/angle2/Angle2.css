@@ -75,6 +75,50 @@
     padding: 0rem 3rem;
 }
 
+/* start of removing any hover behaviour */
+
+/* Remove blue background on button hover and focus */
+.carousel-control-prev,
+.carousel-control-next {
+  background: none; /* Remove default background */
+  border: none; /* Remove any border */
+  outline: none; /* Remove outline */
+  box-shadow: none; /* Remove shadow */
+}
+
+/* Remove hover state background */
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background: none; /* Ensure no background on hover */
+}
+
+/* Remove focus state background */
+.carousel-control-prev:focus,
+.carousel-control-next:focus {
+  background: none; /* Ensure no background on focus */
+}
+
+/* Styling for the previous and next icons */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: transparent; /* Ensure transparency */
+}
+
+/* Remove outline for span on hover and focus */
+.carousel-control-prev span,
+.carousel-control-next span {
+  outline: none; /* Remove outline for inner spans */
+}
+
+/* Remove outline and default style on hover for spans */
+.carousel-control-prev span:hover,
+.carousel-control-next span:hover,
+.carousel-control-prev span:focus,
+.carousel-control-next span:focus {
+  outline: none; /* Ensure no outline on hover and focus */
+  box-shadow: none; /* No shadow on hover */
+}
+/* end of removing any hover behaviour */
 
 @media screen and (max-width: 760px) {
     .angle2{
