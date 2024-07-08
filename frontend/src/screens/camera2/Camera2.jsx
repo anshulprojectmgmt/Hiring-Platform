@@ -138,20 +138,16 @@ const handleSave = async (val) => {
 // Effect to get candidate detail and dashboard info
 useEffect(() => {
   if (cid) {
-    console.log('before get candidate');
+   
     const fetchDetails = async () => {
       const shouldStop = await getCandidateDetail(cid);
-      console.log('after get candidate');
-
+    
       // Only call getDashboardInfo if getCandidateDetail did not signal to stop
       if (!shouldStop) {
         // 1. start camera 
-       //  await startRecording();
+         await startRecording();
          await getDashboardInfo(cid);
-         // 2. take images 
-        // if yes get dashboard Info
-       //  await getDashboardInfo(cid);
-        console.log('after cam2 validate');
+        
       }
     };
 
@@ -161,14 +157,21 @@ useEffect(() => {
 
   const startRecording = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const constraints = isMobile ? {
+        video: true,
+        audio: true
+      } : {
         video: {
           width: { ideal: 720 },
           height: { ideal: 480 },
-          frameRate: { ideal: 10 },
+          frameRate: { ideal: 10 }
         },
-      });
+        audio: true
+      };
 
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
      // to start webcam video on ui
     //  if (webcamRef.current) {
     //   webcamRef.current.srcObject = stream;
@@ -194,9 +197,15 @@ useEffect(() => {
 
        setIsRecording(true);
     } catch (error) {
-      toast.warning("Sorry, you declined the media permissions");
-      navigate("/testend",{replace: true});
-       console.error("Error accessing media devices:", error);
+      if (error.name === 'NotAllowedError') {
+        toast.warning("You need to allow camera access to record video.");
+      } else if (error.name === 'NotFoundError') {
+        toast.warning("No media devices found.");
+      } else {
+        toast.warning("Sorry, something went wrong.");
+      }
+      navigate("/testend", { replace: true });
+      console.error("Error accessing media devices:", error);
     }
   }, []);
 
