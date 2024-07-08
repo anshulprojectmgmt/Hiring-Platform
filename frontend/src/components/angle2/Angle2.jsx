@@ -15,15 +15,15 @@ const Angle = () => {
   const cid = localStorage.getItem('cid');
 
   const handleNext = async () => {
-    // const res = await axios.post(`${BASE_URL}/api/check-if-cam2-enabled`, {
-    //   cid: cid
-    // });
-    // console.log(res.data.success);
-    // if(res.data.success) {
-    //   dispatch({ type: "NEXT" });
-    // } else {
-    //   toast.warning("You haven't started the second camera yet");
-    // }
+    const res = await axios.post(`${BASE_URL}/api/check-if-cam2-enabled`, {
+      cid: cid
+    });
+   
+    if(res.data.success) {
+      dispatch({ type: "NEXT" });
+    } else {
+      toast.warning("You haven't started the second camera yet");
+    }
 
     dispatch({ type: "NEXT" });
   };
@@ -73,7 +73,10 @@ const Angle = () => {
             <div className="carousel-item active ">
               <div className="d-flex justify-center items-center gap-1">
               <img src={keyboard2}  alt="..."></img>
-              <QRCode value={window.location.host + "/camera2/" + cid} size={256} />
+              {/**https://aiplanet.me/
+               window.location.host
+               */}
+              <QRCode value={'https://aiplanet.me' + "/camera2/" + cid} size={256} />
               </div>
             </div>
 

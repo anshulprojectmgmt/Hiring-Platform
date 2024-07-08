@@ -47,7 +47,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 2rem;
     
     /* background: #f0f4f8; */
     margin-top: 50px;
@@ -55,6 +56,15 @@
     box-sizing: border-box;
     overflow-y: auto;
     
+  }
+  .info{
+    font-size: 1rem;
+    font-weight: 600;
+    color: #210263;
+    padding: 0.5rem;
+    background-color: whitesmoke;
+    border: 2px solid white;
+    border-radius: 10px;
   }
   
   .camera-container p {
@@ -125,5 +135,28 @@
       font-size: 0.9rem;
       padding: 8px 16px;
     }
+    .navbar-resp{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0.5rem;
+      background-color: #5880F0;
+      gap: 0.5rem;
+    }
+    .logo-resp{
+      text-align: center;
+      font-weight: 600;
+     }
+    .timer-resp{
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+     gap: 0.5rem;
+     }
+     .endtest-btn{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+     }
   }
   
