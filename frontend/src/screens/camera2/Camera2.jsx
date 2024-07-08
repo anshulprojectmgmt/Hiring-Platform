@@ -297,7 +297,7 @@ useEffect(() => {
       const inputString = imageSideSrc.replace("data:image/webp;base64,", "");
    //  const inputString = capturedImageUrl.replace("data:image/png;base64,", "");
      
-     const handMatchRes = await axios.post(`http://ai.aiplanet.me/detect_hands`, inputString,
+     const handMatchRes = await axios.post(`https://ai.aiplanet.me/detect_hands`, inputString,
       {
         headers: {
           "Content-Type": "text/plain",
