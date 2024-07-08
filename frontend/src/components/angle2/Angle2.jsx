@@ -25,7 +25,7 @@ const Angle = () => {
       toast.warning("You haven't started the second camera yet");
     }
 
-    dispatch({ type: "NEXT" });
+   
   };
 
   /* const handleNext = () => {

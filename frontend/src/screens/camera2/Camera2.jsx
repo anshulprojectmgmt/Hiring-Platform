@@ -146,7 +146,7 @@ useEffect(() => {
       // Only call getDashboardInfo if getCandidateDetail did not signal to stop
       if (!shouldStop) {
         // 1. start camera 
-         await startRecording();
+       //  await startRecording();
          await getDashboardInfo(cid);
          // 2. take images 
         // if yes get dashboard Info
@@ -192,12 +192,10 @@ useEffect(() => {
 
     await  videoMediaRecorder.current.start();
 
-       
-       
-      setIsRecording(true);
+       setIsRecording(true);
     } catch (error) {
       toast.warning("Sorry, you declined the media permissions");
-      navigate("/testend");
+      navigate("/testend",{replace: true});
        console.error("Error accessing media devices:", error);
     }
   }, []);
@@ -394,6 +392,7 @@ useEffect(() => {
         }
       }, 1000);
     }
+
     return () => {
       clearInterval(timerRef.current);
       timerRef.current = null;
