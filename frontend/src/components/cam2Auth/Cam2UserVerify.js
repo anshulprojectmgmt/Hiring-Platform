@@ -46,7 +46,7 @@ const Cam2UserVerify = () => {
       await axios.put(cam1Faceurl, cam1FaceBlob);
       // console.
       const inputString = imageSrc.replace("data:image/webp;base64,", "") + "," + face2.replace("data:image/webp;base64,", "");
-      const matchRes = await axios.post(`http://ai.aiplanet.me/compare_faces`, inputString,
+      const matchRes = await axios.post(`https://ai.aiplanet.me/compare_faces`, inputString,
       {
         headers: {
           "Content-Type": "text/plain",
