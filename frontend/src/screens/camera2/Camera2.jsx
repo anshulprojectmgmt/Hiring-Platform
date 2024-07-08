@@ -402,9 +402,9 @@ useEffect(() => {
 
   return (
     <div id="fullscreen">
-      <div className="navbar">
-        <div className=" logo">AiPlanet</div>
-        <div className="timer">
+      <div className="navbar-resp">
+        <div className="logo-resp">AiPlanet</div>
+        <div className="timer-resp">
         <div
             type="button"
             onClick={camera2SidePhoto}
@@ -423,7 +423,7 @@ useEffect(() => {
             type="button"
             data-bs-toggle="modal"
             data-bs-target="#staticBackdrop"
-            className="endtest-btn"
+            className="endtest-btn "
           >
             End Test
           </div>
@@ -463,7 +463,14 @@ useEffect(() => {
       <video className="video" ref={webcamRef}  />
       </div> */}
        <div className="webcam">
-         <Webcam audio={false} ref={webcamRef} style={{width: "100vw", height: "100vh"}} />
+         <Webcam audio={false} ref={webcamRef} style={{width: "100vw", height: '100%'}} />
+       </div>
+       <div className="info">
+        <ul>
+          <li>Please capture clear face image , to proceed further.</li>
+          <li>Please capture Image, where your hands on keyboard is visible with face.</li>
+          <li>Submit test from 'cam2' first ,for successfull end test.</li>
+        </ul>
        </div>
       <canvas ref={canvasRef} style={{ display: 'none' }} />
     </div>
