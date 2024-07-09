@@ -471,7 +471,7 @@ useEffect(() => {
       <video className="video" ref={webcamRef}  />
       </div> */}
        <div className="webcam">
-         <Webcam audio={false} ref={webcamRef} style={{width: "100%", height: '100%'}} />
+         <Webcam audio={false} ref={webcamRef} style={{width: '100%', height: '100%' , objectFit: 'cover'}} />
        </div>
        <div className="info">
         <ul>
