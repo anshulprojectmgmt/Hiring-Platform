@@ -20,11 +20,12 @@ const Test = () => {
   const navigate = useNavigate();
   const check = useSelector((state) => state.savedCode);
   const mcqData = useSelector((state) => state.savedMcq);
-  // console.log(mcqData);
+ 
   const candidateEmail = useSelector((state) => state.testInfo.candidateEmail);
   const testCode = useSelector((state) => state.testInfo.testCode);
   const testtype = useSelector((state) => state.testInfo.testtype);
   const time = useSelector((state) => state.testInfo.duration);
+  //const [time,setTime] = useState(null);
   const initialTime = time * 60;
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [hideCount, setHideCount] = useState(0);
@@ -32,6 +33,7 @@ const Test = () => {
   let tabSwitch = useRef(0);
   const videoFileName = `${candidateEmail}-video.mp4`;
   // const [uploadId, setUploadId] = useState("");
+
 
   const getFullscreenElement = () => {
     return (
@@ -41,6 +43,13 @@ const Test = () => {
       document.msFullscreenElement
     );
   };
+
+  // useEffect(() => {
+  //      if(timeRdx) {
+  //       setTime(timeRdx);
+  //       setTimeLeft(timeRdx)
+  //      }
+  // },[timeRdx])
 
   let videoBlob;
   let audioBlob;
@@ -67,7 +76,7 @@ isFullScreenRef.current = isFullScreen;
     let timeId;
     if(exitScreenRef.current>=1 && !getFullscreenElement()) {
           timeId = setTimeout(() => {
-            console.log('is full screen ** inside Timeout==' ,isFullScreenRef.current );
+            
             if(!isFullScreenRef.current) {
 
               timeTaken.current = initialTime - timeLeft;
@@ -82,7 +91,7 @@ isFullScreenRef.current = isFullScreen;
     }
   }, [exitScreenRef.current])
 
-
+     
   const setFullScreen = (e) => {
     
 
@@ -100,8 +109,8 @@ isFullScreenRef.current = isFullScreen;
              autoClose: 1000*60, // Duration in milliseconds (5000ms = 5 seconds)
              hideProgressBar: false,
              closeOnClick: true,
-             pauseOnHover: true,
-             draggable: true,
+             pauseOnHover: false,
+             draggable: false,
        
      });
            }
@@ -124,6 +133,7 @@ const resetToFullScreen =async () => {
   await  document.documentElement.requestFullscreen().catch((e) => {
          console.log("full screen error==3" , e);
        });
+       toast.dismiss();
 }
  
  useEffect(() => {
@@ -209,7 +219,7 @@ try {
       await videoMediaRecorder.current.stop();
       await audioMediaRecorder.current.stop();
        setIsRecording(false);
-      console.log('video/audio stoped successfully')
+    
        if (mediaStream.current) {
         await mediaStream.current.stream
           .getTracks()
@@ -231,7 +241,7 @@ try {
   };
 
   const handleEndTest = useCallback(async () => {
-    console.log('handle end test get called' , "testtype== " , testtype)
+   
     try {
       if(testtype === "coding"){
         const res = await axios.post(`${BASE_URL}/api/submit-test`, {
@@ -296,7 +306,7 @@ try {
       contentType: "video/mp4",
       testcode: testCode,
     });
-    console.log('video s3 res==' , videoRes);
+  
     const videos3url = videoRes.data.url;
     await axios.put(videos3url, videoBlob);
     const audioRes = await axios.post(`${BASE_URL}/api/s3upload`, {
@@ -304,7 +314,7 @@ try {
       contentType: "audio/webm",
       testcode: testCode,
     });
-    console.log('audio s3 res==' , audioRes);
+  
     const audios3url = audioRes.data.url;
     const response = await axios.put(audios3url, audioBlob);
   };
@@ -315,11 +325,13 @@ try {
       const res = await axios.post(`${BASE_URL}/api/check-if-cam2-enabled`, {
         cid: cid
       });
+     
       if (!res.data) {
         toast.error("Please check your network connectivity");
       }
       else {
         if (res.data.cam2status && res.data.cam2status == 1) {
+        
           toast.warning("Please submit the video from the second carmera first, and then try to end the test again");
           // if (getFullscreenElement()) {
           //   document.exitFullscreen();
@@ -327,10 +339,12 @@ try {
         } else if(res.data.cam2status == 2 || res.data.cam2status == 0) {
           timeTaken.current = initialTime - timeLeft;
           setTimeLeft(0);
+        
         } else {
           // if (getFullscreenElement()) {
           //   document.exitFullscreen();
           // }
+          timeTaken.current = initialTime - timeLeft;
           setTimeLeft(0);
         }
       }
@@ -376,7 +390,7 @@ try {
             clearInterval(timerRef.current);
             timerRef.current = null;
           } catch (error) {
-            console.log("");
+           
           }
         }
       }, 1000);
@@ -422,10 +436,11 @@ try {
   }, [hideCount]);
 
   return (
+    <div className="test-cont">
     <div id="fullscreen">
       <div className="navbar">
-        <div className=" logo">AiPlanet</div>
-        <div className="webcam w-24 h-8">
+        <div className="logo">AiPlanet</div>
+        <div className="webcam">
           {loader.current === "true" ? null : (
             <Webcam audio={false} ref={webcamRef} width={100} height={40} />
           )}
@@ -523,6 +538,7 @@ try {
       </Modal>
 
       {testtype === "coding" ? <Body /> : testtype === "mcq" ? <Mcq /> : null}
+    </div>
     </div>
   );
 };

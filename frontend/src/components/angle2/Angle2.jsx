@@ -19,7 +19,7 @@ const Angle = () => {
       cid: cid
     });
    
-    if(res.data.success) {
+    if(res.data.cam2status) {
       dispatch({ type: "NEXT" });
     } else {
       toast.warning("You haven't started the second camera yet");

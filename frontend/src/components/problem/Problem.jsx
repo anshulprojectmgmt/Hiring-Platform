@@ -11,8 +11,8 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
   const currentQuestion = useSelector(
     (state) => state.getQuestion.currentQuestion
   );
-  console.log('questions ===' , questions)
-  console.log('curr wrapper===', questions[currentQuestion].wrapper_details[0].wrapper)
+  
+  
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
 

@@ -52,6 +52,7 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
         "https://compiler.aiplanet.me/submissions/batch",
         { ...requestBody }
       );
+      
       const tokens = response.data.map((e) => e.token);
       const userOutputs = await Promise.all(tokens.map(async (token) => {
         async function checkSubmissionStatus() {
