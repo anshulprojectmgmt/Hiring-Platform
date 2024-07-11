@@ -87,7 +87,7 @@ router.post("/check-if-cam2-enabled", async (req,res) => {
   */}
 
   try {
-    const validCam2 = await Candidate.find({_id: new mongoose.Types.ObjectId(_id), cam2: 1});
+    const validCam2 = await Candidate.find({_id: new mongoose.Types.ObjectId(_id)});
     if(validCam2.length > 0){
       return res.json({success: true, cam2status: validCam2[0].cam2});
     }

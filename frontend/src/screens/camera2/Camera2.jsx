@@ -409,6 +409,7 @@ useEffect(() => {
   }, [timeLeft, /* handleEndTest, */ startRecording, stopRecording]);
 
   return (
+    <div className="camera2-cont">
     <div id="fullscreen">
       <div className="navbar-resp">
         <div className="logo-resp">AiPlanet</div>
@@ -550,6 +551,7 @@ useEffect(() => {
           its takes 3-4 mins to upload.
         </Modal.Body>
       </Modal>
+    </div>
     </div>
   );
 };

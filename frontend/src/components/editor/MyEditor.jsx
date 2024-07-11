@@ -18,7 +18,7 @@ const MyEditor = ({ editorRef, inputRef, outputRef }) => {
   const currentQuestion = useSelector(
     (state) => state.getQuestion.currentQuestion
   );
-  console.log('curr que===' , currentQuestion);
+  
   const savedCode = useSelector((state) => state.savedCode);
   const questions = useSelector((state) => state.getQuestion.questions);
   
