@@ -140,6 +140,13 @@
     .camera2-cont button {
       font-size: 0.9rem;
       padding: 8px 16px;
+      
+      border: none;
+      border-radius: 5px;
+      background-color: #210263;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
     .camera2-cont .navbar-resp{
       display: flex;
@@ -156,13 +163,23 @@
      .camera2-cont .timer-resp{
       display: flex;
       flex-wrap: nowrap;
-      justify-content: flex-start;
+      justify-content: center;
      gap: 0.5rem;
      }
      .camera2-cont .endtest-btn{
       display: flex;
       justify-content: center;
       align-items: center;
+      font-size: 0.8rem;
+      padding: 4px 6px;
+      text-align: center;
+      border: none;
+      
+      border-radius: 5px;
+      background-color: #210263;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
      }
   }
   
