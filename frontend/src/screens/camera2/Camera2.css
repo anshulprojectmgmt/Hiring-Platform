@@ -171,12 +171,12 @@
       justify-content: center;
       align-items: center;
       font-size: 0.8rem;
-      padding: 4px 6px;
+      padding: 5px 10px;
       text-align: center;
       border: none;
       
       border-radius: 5px;
-      background-color: #210263;
+      background-color: #1c4b74;
       color: white;
       cursor: pointer;
       transition: background-color 0.3s ease;

@@ -12,7 +12,7 @@ router.post("/questions", async (req, res) => {
           // logic to attach wrapper
           // code to each problem need to implement here
           case "easy":
-            console.log('easy case matched===')
+           
             problems = await mongoose.connection
               .collection("pythoneasy")
               .aggregate([{$sample: {size: questions} }, {  $lookup: {
