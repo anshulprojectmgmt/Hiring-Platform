@@ -150,8 +150,16 @@ main()
           <strong>
             <em className="problem_body_heading">Example:</em>
           </strong>{" "} <br />
-           Input: <pre>{questions[currentQuestion].testcases[0].input}</pre>
-           Output: <pre>{questions[currentQuestion].testcases[0].output}</pre>
+          
+           Input: <br/>
+
+          {questions[currentQuestion].testcases[0].input.map((inp) => (
+            <div>{inp}</div>
+          ))}
+           Output: <br/> 
+           {questions[currentQuestion].testcases[0].output.map((out) => (
+            <div>{out}</div>
+          ))}
         </p>
       </div>
     </div>

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import  { CodeStatus, languageCode } from "../../compiler/Compiler";
 import axios from "axios";
 import BeatLoader from "react-spinners/BeatLoader";
-
+import BASE_URL from "../../Api";
 
 const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
   const language = useSelector((state) => state.editorTheme.language);
@@ -19,16 +19,87 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
   const dispatch = useDispatch();
   const [isRun, setIsRun] = useState(false);
 
+  function convertArrayString(str) {
+    let result = '';
+    let openBrackets = 0;
+    let segment = '';
+
+    for (let char of str) {
+        if (char === '[') {
+            openBrackets += 1;
+            if (openBrackets === 1) {
+                // Start of a new segment, reset segment
+                segment = '';
+                continue;
+            }
+        }
+        if (char === ']') {
+            openBrackets -= 1;
+            if (openBrackets === 0) {
+                // End of a segment, process the segment
+                result += segment.split(',').map(item => item.trim()).join(' ') + ' ';
+                continue;
+            }
+        }
+        if (openBrackets > 0) {
+            // Inside a segment
+            segment += char;
+        } else {
+            // Outside any segment, copy the character as it is
+            result += char;
+        }
+    }
+
+    // Trim the final result to remove any extra spaces
+    return result.trim();
+}
+
+
+
   const handleSubmit = async () => {
     try {
       dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Running });
 
       setIsRun(true);
-      let inputs = await questions[currentQuestion].testcases.map((e) => e.input);
-      let outputs = await questions[currentQuestion].testcases.map((e) => e.output);
+      let inputs = await questions[currentQuestion].testcases.map((e) => (e? e.input : null));
+      let outputs = await questions[currentQuestion].testcases.map((e) => (e ?e.output: null));
+      // console.log('inputs==' , inputs);
+      // console.log('outputs==' , outputs);
       let totalCases = outputs.length;
       const code = editorRef.current.getValue();
       const languageChoice = languageCode[language];
+      
+   // update input format 
+    inputs = inputs.map((inpArr) => {
+      if(inpArr){
+    // Use reduce to concatenate elements with a newline character
+    let str = inpArr.reduce((acc, ele) => {
+      return acc + ele + '\n';
+    }, "");
+  
+    // Remove the last newline character for each string
+    return str.slice(0, -1);
+  }
+  });
+
+  // update output format
+  outputs = outputs.map((inpArr) => {
+    if(inpArr){
+    // Use reduce to concatenate elements with a newline character
+    let str = inpArr.reduce((acc, ele) => {
+      return acc + ele.toLowerCase() + '\n';
+    }, "");
+  
+    // Remove the last newline character for each string
+    return str.slice(0, -1);
+  }
+  });
+  
+  // console.log('inputs == after' , inputs);
+  // console.log('outputs== after' , outputs);
+
+ 
+
       const requestBody = {
         "submissions": [
           {
@@ -48,17 +119,20 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
           }
         ]
       };
+
       const response = await axios.post(
         "https://compiler.aiplanet.me/submissions/batch",
         { ...requestBody }
       );
       
       const tokens = response.data.map((e) => e.token);
+      // console.log('tokens==' , tokens); 
       const userOutputs = await Promise.all(tokens.map(async (token) => {
         async function checkSubmissionStatus() {
           const statusResponse = await axios.get(
             `https://compiler.aiplanet.me/submissions/${token}`
           );
+          // console.log('status respon===' , statusResponse);
           if (statusResponse.data.status.id === 1 || statusResponse.data.status.id === 2) {
             return new Promise(resolve => setTimeout(resolve, 1000)).then(checkSubmissionStatus);
           } else {
@@ -77,18 +151,22 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
         }
         return checkSubmissionStatus();
       }));
-      // console.log(userOutputs);
-      const finalOutput = userOutputs.map((e) => e.trim());
+      //  console.log('user output for each test case =' , userOutputs);
+      const finalOutput = userOutputs.map((e) => { let str =e.trim().toLowerCase();
+           return convertArrayString(str);
+      });
+      // console.log('final output after trim =' , finalOutput);
       var compilation = false;
       if (finalOutput.every(value => value === "compilation")) {
         compilation = true;
       }
       const testPassed = outputs.reduce((acc, curVal, i) => {
-        if(curVal === finalOutput[i]){
+        if( curVal === finalOutput[i]){
           return acc + 1;
         }
         return acc;
       }, 0);
+
       dispatch({
         type: "CHANGE_CODE_STATUS",
         payload: CodeStatus.Finished,
@@ -139,7 +217,7 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
       outputRef.current.innerText = "";
       const query = editorRef.current.getValue();
       try {
-        const res = await axios.post("http://localhost:5000/api/query", {
+        const res = await axios.post(`${BASE_URL}/api/query`, {
           query,
         });
         // console.log(res.data);
