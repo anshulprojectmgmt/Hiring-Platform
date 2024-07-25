@@ -65,11 +65,12 @@ const TestResult = () => {
                   <th scope="col">TimeTaken</th>
                   <th scope="col">Tab Switch</th>
                   <th scope="col">Que. Solved</th>
+                  <th scope="col">Status</th>
                   <th scope="col">Score</th>
                 </tr>
               </thead>
               <tbody>
-                {candidates !== []
+                {candidates.length > 0
                   ? candidates.map((candidate, i) => {
                       const sum = candidate.result.reduce(
                         (accumulator, curVal) => {
@@ -77,6 +78,7 @@ const TestResult = () => {
                         },
                         0
                       );
+                      const status  = candidate.verdict ? candidate.verdict.status : "Successfull";
                       return (
                         <tr className="detail-result" key={i}>
                           <td>
@@ -93,6 +95,10 @@ const TestResult = () => {
                           <td>{Math.floor(candidate.timetaken/60)}m {candidate.timetaken%60}s</td>
                           <td>{candidate.tabswitch}</td>
                           <td>{candidate.result.length}</td>
+                          <td style={{color: status==="Successfull"? 'green' : 'red'}}
+                               title={candidate.verdict ? candidate.verdict.message : "Test successfully submitted"} >
+                            {status}
+                           </td>
                           <th>{sum}</th>
                         </tr>
                       );

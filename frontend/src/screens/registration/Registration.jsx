@@ -90,7 +90,7 @@ const Home = () => {
             <input
             minLength="10"
             maxLength="10"
-              type="text"
+              type="number"
               placeholder="Phone Number"
               name="phonenumber"
               required

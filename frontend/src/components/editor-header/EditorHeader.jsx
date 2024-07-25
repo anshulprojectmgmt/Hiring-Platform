@@ -20,6 +20,7 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
   const [isRun, setIsRun] = useState(false);
 
   function convertArrayString(str) {
+    if(!str) return '';
     let result = '';
     let openBrackets = 0;
     let segment = '';
@@ -152,7 +153,7 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
         return checkSubmissionStatus();
       }));
       //  console.log('user output for each test case =' , userOutputs);
-      const finalOutput = userOutputs.map((e) => { let str =e.trim().toLowerCase();
+      const finalOutput = userOutputs.map((e) => { let str =e?.trim()?.toLowerCase() || '';
            return convertArrayString(str);
       });
       // console.log('final output after trim =' , finalOutput);
