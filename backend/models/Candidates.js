@@ -65,6 +65,19 @@ const candidateSchema = new Schema({
     type: String,
     default: null,
   },
+  
+  verdict: {
+    type: {
+      status: {
+        type: String
+      },
+      message:{
+        type: String
+      },
+    },
+    default: null
+    
+  },
 
     result: {
       type: [

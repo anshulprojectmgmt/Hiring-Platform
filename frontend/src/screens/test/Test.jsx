@@ -66,6 +66,8 @@ const Test = () => {
   const [show, setShow] = useState(false);
   const [isFullScreen, setIsFullSreen] = useState(true);
   const [exitScreen, setExitScreen] = useState(0);
+  const [verdict,setVerdict] = useState({status: "Successfull" , message: "Test successfully submitted"});
+ 
 
 const exitScreenRef = useRef(null);
 const isFullScreenRef = useRef(null);
@@ -82,6 +84,9 @@ isFullScreenRef.current = isFullScreen;
               timeTaken.current = initialTime - timeLeft;
               toast.error("Exam terminated.");
               setTimeLeft(0);
+             
+              
+              setVerdict({status: "Terminated" , message: "Test terminated due to Exit Full screen"})
             }
           }, 1000*60*60)
     }
@@ -98,7 +103,11 @@ isFullScreenRef.current = isFullScreen;
     if(exitScreenRef.current>= 1 && !getFullscreenElement()) {
       timeTaken.current = initialTime - timeLeft;
       toast.error("Exam terminated.");
+      setVerdict((prev) => ({status: "Terminated" , message: "Test terminated due to Exit Full screen"}));
+      
       setTimeLeft(0);
+    
+      
          return;
        }
        
@@ -240,7 +249,8 @@ try {
     }
   };
 
-  const handleEndTest = useCallback(async () => {
+  const handleEndTest = async () => {
+ 
    
     try {
       if(testtype === "coding"){
@@ -250,6 +260,8 @@ try {
           testCode: testCode,
           timetaken: timeTaken.current,
           tabswitch: tabSwitch.current,
+          verdict : JSON.stringify(verdict),
+
         });
         if (!res.data.success) {
           toast.error(res.data.message);
@@ -275,6 +287,7 @@ try {
           testCode: testCode,
           timetaken: timeTaken.current,
           tabswitch: tabSwitch.current,
+          verdict : JSON.stringify(verdict),
         });
         if (!res.data.success) {
           toast.error(res.data.message);
@@ -293,7 +306,7 @@ try {
       navigate("/testend",{replace: true});
       console.error("Error submitting test:", error);
     }
-  }, [check,mcqData, candidateEmail, testCode, navigate]);
+  };
 
   const uploadVideo = async () => {
     const audioFileName = `${candidateEmail}-audio.webm`;
@@ -370,9 +383,11 @@ try {
   useEffect(() => {
     let isTimeUp = false;
     if (!timerRef.current) {
+     
       timerRef.current = setInterval(async () => {
         
         if (timeLeft > 0) {
+         
           setTimeLeft(timeLeft - 1);
         } else if (timeLeft === 0 && !isTimeUp) {
           isTimeUp = true;
@@ -430,7 +445,9 @@ try {
       tabSwitch.current = 4;
       timeTaken.current = initialTime - timeLeft;
       toast.error("Exam terminated.");
+      setVerdict({status: "Terminated" , message: "Test terminated due to Tab Switched 4 times"})
       setTimeLeft(0);
+      
       // handleEndTest();
     }
   }, [hideCount]);
