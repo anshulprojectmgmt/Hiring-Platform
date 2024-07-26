@@ -46,6 +46,7 @@ const Camera2 = () => {
  const [captured,setCaptured] = useState(false);
  const canvasRef = useRef(null);
  const [captureCount, setCaptureCount] = useState(0);
+ const [sideView, setSideView] = useState(0);
 
 // Function to get candidate details
 const getCandidateDetail = async (cid) => {
@@ -279,86 +280,97 @@ useEffect(() => {
       });
       const cam2Faceurl = cam2FaceRes.data.url;
       await axios.put(cam2Faceurl, cam2FaceBlob);
+      toast.success("Succefully captured");
       // console.log(cam2FaceRes);
     } catch (error) {
       console.log(error);
+      toast.warning("Please try again!");
     }
   };
 
   const camera2SidePhoto = async () => {
-    try {
-      //  captureImage();
+  //   try {
+  //     //  captureImage();
 
-      const imageSideSrc = webcamRef.current.getScreenshot();
-      cam2SideBlob = Buffer.from(imageSideSrc.replace("/^data:image\/\w+;base64,/", ""));
-      // console.log(imageSideSrc);
-     // setImg(imageSideSrc);
-      const cam2SideFileName = `${candidateEmail}-cam2sideprofile.jpeg`;
-      const cam2SideRes = await axios.post(`${BASE_URL}/api/s3upload`, {
-        filename: cam2SideFileName,
-        contentType: "image/jpeg",
-        testcode: testCode,
-      });
-      const cam2Sideurl = cam2SideRes.data.url;
-      await axios.put(cam2Sideurl, cam2SideBlob);
-      // console.log(cam2SideRes);
+  //     const imageSideSrc = webcamRef.current.getScreenshot();
+  //     cam2SideBlob = Buffer.from(imageSideSrc.replace("/^data:image\/\w+;base64,/", ""));
+  //     // console.log(imageSideSrc);
+  //    // setImg(imageSideSrc);
+  //     const cam2SideFileName = `${candidateEmail}-cam2sideprofile.jpeg`;
+  //     const cam2SideRes = await axios.post(`${BASE_URL}/api/s3upload`, {
+  //       filename: cam2SideFileName,
+  //       contentType: "image/jpeg",
+  //       testcode: testCode,
+  //     });
+  //     const cam2Sideurl = cam2SideRes.data.url;
+  //     await axios.put(cam2Sideurl, cam2SideBlob);
+  //     // console.log(cam2SideRes);
 
-      const inputString = imageSideSrc.replace("data:image/webp;base64,", "");
-   //  const inputString = capturedImageUrl.replace("data:image/png;base64,", "");
+  //     const inputString = imageSideSrc.replace("data:image/webp;base64,", "");
+  //  //  const inputString = capturedImageUrl.replace("data:image/png;base64,", "");
      
-     const handMatchRes = await axios.post(`https://ai.aiplanet.me/detect_hands`, inputString,
-      {
-        headers: {
-          "Content-Type": "text/plain",
-        }
-      });
-      console.log(handMatchRes.data.hands_detected);
-      if(handMatchRes.data.hands_detected) {
-        console.log("here");
+  //    const handMatchRes = await axios.post(`https://ai.aiplanet.me/detect_hands`, inputString,
+  //     {
+  //       headers: {
+  //         "Content-Type": "text/plain",
+  //       }
+  //     });
+  //     console.log(handMatchRes.data.hands_detected);
+  //     if(handMatchRes.data.hands_detected) {
+  //       console.log("here");
 
-        const res = await axios.post(`${BASE_URL}/api/cam2-validation`, {
-          cid: cid,
-          param: 'hands',
-        });
-        if (!res.data.success) {
-          toast.error(res.data.message);
-        }
+  //       const res = await axios.post(`${BASE_URL}/api/cam2-validation`, {
+  //         cid: cid,
+  //         param: 'hands',
+  //       });
+  //       if (!res.data.success) {
+  //         toast.error(res.data.message);
+  //       }
 
-        toast.success("Hands successfully detected");
-        // setNextbtn(true);
-      } else {
-        // setCapturebtn(null);
-        toast.warning("Hands on keyboard not detected");
-      }
+  //       toast.success("Hands successfully detected");
+  //       // setNextbtn(true);
+  //     } else {
+  //       // setCapturebtn(null);
+  //       toast.warning("Hands on keyboard not detected");
+  //     }
 
-      const keyboardmatchRes = await axios.post(`http://ai.aiplanet.me/detect_person_and_keyboard`, inputString,
-      {
-        headers: {
-          "Content-Type": "text/plain",
-        }
-      });
-      console.log(keyboardmatchRes.data.person_and_keyboard_detected);
-      if(keyboardmatchRes.data.person_and_keyboard_detected) {
-        console.log("here");
+  //     const keyboardmatchRes = await axios.post(`http://ai.aiplanet.me/detect_person_and_keyboard`, inputString,
+  //     {
+  //       headers: {
+  //         "Content-Type": "text/plain",
+  //       }
+  //     });
+  //     console.log(keyboardmatchRes.data.person_and_keyboard_detected);
+  //     if(keyboardmatchRes.data.person_and_keyboard_detected) {
+  //       console.log("here");
 
-        const res = await axios.post(`${BASE_URL}/api/cam2-validation`, {
-          cid: cid,
-          param: 'keyboard',
-        });
-        if (!res.data.success) {
-          toast.error(res.data.message);
-        }
+  //       const res = await axios.post(`${BASE_URL}/api/cam2-validation`, {
+  //         cid: cid,
+  //         param: 'keyboard',
+  //       });
+  //       if (!res.data.success) {
+  //         toast.error(res.data.message);
+  //       }
 
-        toast.success("Candidate with keyboard detected successfully");
-        // setNextbtn(true);
-      } else {
-        // setCapturebtn(null);
-        toast.warning("Candidate with keyboard not detected");
-      }
+  //       toast.success("Candidate with keyboard detected successfully");
+  //       // setNextbtn(true);
+  //     } else {
+  //       // setCapturebtn(null);
+  //       toast.warning("Candidate with keyboard not detected");
+  //     }
 
-    } catch (error) {
-      console.log(error);
-    }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+
+
+if(sideView<2){
+  toast.warning("Please try again!");
+  setSideView((prev) => prev+1);
+} else{
+  toast.success("Successfully Processed");
+}
+
   };
 
   useEffect(() => {
