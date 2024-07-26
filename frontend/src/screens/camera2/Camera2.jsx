@@ -50,7 +50,7 @@ const Camera2 = () => {
 
 // Function to get candidate details
 const getCandidateDetail = async (cid) => {
-  console.log('inside get candidate');
+  
   try {
     const resp = await axios.get(`${BASE_URL}/api/candidate-detail/${cid}`);
     const userDetail = resp.data.userDetail;
@@ -76,7 +76,7 @@ const getCandidateDetail = async (cid) => {
 
  // Function to get dashboard information
  const getDashboardInfo = async (cid) => {
-  console.log('during cam2 validate');
+  
   try {
     const res = await axios.post(`${BASE_URL}/api/validate-camera2-session`, { cid });
     setCandidateValidation(res.data.success);
@@ -220,7 +220,7 @@ useEffect(() => {
       isRecording
     ) {
       await videoMediaRecorder.current.stop();
-      console.log('video 2222 stoped successfully')
+    
        setIsRecording(false);
       if (mediaStream.current) {
         await mediaStream.current.stream
@@ -244,14 +244,20 @@ useEffect(() => {
 
 
   const uploadVideo = async () => {
-    const videoFileName = `${candidateEmail}-video2.mp4`;
-    const videoRes = await axios.post(`${BASE_URL}/api/s3upload`, {
-      filename: videoFileName,
-      contentType: "video/mp4",
-      testcode: testCode,
-    });
-    const videos3url = videoRes.data.url;
-    await axios.put(videos3url, videoBlob);
+    try {
+      
+      const videoFileName = `${candidateEmail}-video2.mp4`;
+      const videoRes = await axios.post(`${BASE_URL}/api/s3upload`, {
+        filename: videoFileName,
+        contentType: "video/mp4",
+        testcode: testCode,
+      });
+      const videos3url = videoRes.data.url;
+      await axios.put(videos3url, videoBlob);
+    
+    } catch (error) {
+      console.log('line== 5' , error);
+    }
   };
 
   const camera2Submit = async () => {
@@ -270,8 +276,7 @@ useEffect(() => {
 
           const imageSrc = webcamRef.current.getScreenshot();
       cam2FaceBlob = Buffer.from(imageSrc.replace("/^data:image\/\w+;base64,/", ""));
-      // console.log(imageSrc);
-    //   setImg(imageSrc);
+      
       const cam2FaceFileName = `${candidateEmail}-cam2face.jpeg`;
       const cam2FaceRes = await axios.post(`${BASE_URL}/api/s3upload`, {
         filename: cam2FaceFileName,
@@ -384,9 +389,13 @@ if(sideView<2){
           try {
              setShow(true);
             loader.current = "true";
+            
             await stopRecording();
+            
             await downloadRecording();
+            
             await uploadVideo();
+            
             // await handleEndTest();
             clearInterval(timerRef.current);
             timerRef.current = null;
@@ -398,17 +407,20 @@ if(sideView<2){
               cam2: 2,
               cam2Time: timeTaken.current
             });
+            
             if (!res.data.success) {
               toast.error(res.data.message);
+             
             } else {
               // toast.success(res.data.message);
               loader.current = "false";
               toast.success(res.data.message);
-    
+              
               navigate("/testend",{replace: true});
             }
           } catch (error) {
-            console.log("");
+            console.log("error==" , error);
+            
           }
         }
       }, 1000);
@@ -491,6 +503,7 @@ if(sideView<2){
           <li>Please capture clear face image , to proceed further.</li>
           <li>Please capture Image, where your hands on keyboard is visible with face.</li>
           <li>Submit test from 'cam2' first ,for successfull end test.</li>
+          <li>Place device at an angle where hands on keyboard is visible.</li>
         </ul>
        </div>
       <canvas ref={canvasRef} style={{ display: 'none' }} />

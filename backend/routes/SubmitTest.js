@@ -54,7 +54,7 @@ router.post("/submit-test", async (req, res) => {
     const timetaken = req.body.timetaken;
     const tabswitch = req.body.tabswitch;
     const cam2 = req.body.cam2;
-    const verdict = JSON.parse(req.body.verdict);
+    const verdict = req.body?.verdict ? JSON.parse(req.body?.verdict) : {};
 
      
     if(cam2 === 2) {
