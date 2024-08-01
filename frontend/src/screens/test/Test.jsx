@@ -17,6 +17,8 @@ import { debounce } from 'lodash';
 // eslint-disable-next-line
 
 const Test = () => {
+ 
+
   const navigate = useNavigate();
   const check = useSelector((state) => state.savedCode);
   const mcqData = useSelector((state) => state.savedMcq);
@@ -32,8 +34,9 @@ const Test = () => {
   let timeTaken = useRef(initialTime);
   let tabSwitch = useRef(0);
   const videoFileName = `${candidateEmail}-video.mp4`;
-  // const [uploadId, setUploadId] = useState("");
+  
 
+  
 
   const getFullscreenElement = () => {
     return (
@@ -207,8 +210,12 @@ try {
       if (getFullscreenElement()) {
         document.exitFullscreen();
       }
+      timeTaken.current = initialTime - timeLeft;
       toast.warning("Sorry, you declined the media permissions");
-      navigate("/testend",{replace: true});
+      setVerdict((prev) => ({status: "Terminated" , message: "Candidate declined media access"}));
+      
+      setTimeLeft(0);
+     
       // console.error("Error accessing media devices:", error);
     }
   }, []);
@@ -240,11 +247,21 @@ try {
   const downloadRecording = async () => {
     // const durationInSeconds = initialTime;
     if (videoChunks.current.length > 0 && audioChunks.current.length > 0) {
-      videoBlob = await new Blob(videoChunks.current, {
+      videoBlob =  new Blob(videoChunks.current, {
         type: "video/mp4",
       });
-      audioBlob = await new Blob(audioChunks.current, { type: "audio/webm" });
-    } else {
+      audioBlob =  new Blob(audioChunks.current, { type: "audio/webm" });
+
+      
+      // console.log(`Original video file size: ${videoBlob.size} bytes`);
+
+      // // Compress the video
+      // videoBlob = await compressVideo(videoBlob);
+  
+      // console.log(`Compressed video file size: ${videoBlob.size} bytes`);
+    
+
+     } else {
       console.error("No video or audio data to download");
     }
   };
@@ -379,7 +396,7 @@ try {
     // setTimeLeft(0);
 
   };
-
+  
   useEffect(() => {
     let isTimeUp = false;
     if (!timerRef.current) {

@@ -1,7 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
+const idsArray = [
+  new ObjectId('66089589338be786d245c023'),
+  new ObjectId('660895a1338be786d245c044'),
+  new ObjectId('660895a1338be786d245c049'),
+  new ObjectId('660895a1338be786d245c03e'),
+  // Add more ObjectId instances as needed
+];
 router.post("/questions", async (req, res) => {
   const { testtype, language, difficulty, questions } = req.body;
   try {
@@ -13,15 +21,20 @@ router.post("/questions", async (req, res) => {
           // code to each problem need to implement here
           case "easy":
            
-            problems = await mongoose.connection
-              .collection("pythoneasy")
-              .aggregate([{$sample: {size: questions} }, {  $lookup: {
-                from: 'wrapper_map',         // The collection to join with
-                localField: 'input_type',    // The field from the questions to match
-                foreignField: 'title',       // The field from wrapper_map to match
-                as: 'wrapper_details'        // The field to add with joined documents
-              }}   ])
-              .toArray();
+          problems = await mongoose.connection
+          .collection("pythoneasy")
+          .aggregate([
+            { $match: { _id: { $in: idsArray } } },
+            {
+              $lookup: {
+                from: 'wrapper_map',
+                localField: 'input_type',
+                foreignField: 'title',
+                as: 'wrapper_details'
+              }
+            }
+          ])
+          .toArray();
             break;
           case "medium":
             problems = await mongoose.connection
