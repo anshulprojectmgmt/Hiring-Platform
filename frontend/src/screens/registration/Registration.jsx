@@ -57,11 +57,16 @@ const Home = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await axios.post(`${BASE_URL}/api/start-test`, {
-      ...userData,
-    });
-    // console.log(response.data);
-    Notification(response.data);
+    try {
+      const response = await axios.post(`${BASE_URL}/api/start-test`, {
+        ...userData,
+      });
+      // console.log(response.data);
+      Notification(response.data);      
+    } catch (error) {
+      console.log(error);
+    }
+
   };
 
   return (

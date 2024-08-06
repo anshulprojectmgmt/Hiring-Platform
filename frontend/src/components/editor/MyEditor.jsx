@@ -95,8 +95,9 @@ ${indentedInsertedCode}
     print("Hello World")
     
 main()
-# write a function such that user can give input as well
+# define your function at the top & call inside print of main fun. 
 `;
+
 return newCode;
   }
 }
@@ -105,7 +106,7 @@ return newCode;
       switch (language) {
         case "Python":
           const index = savedCode.findIndex(
-            (e) => e.question === currentQuestion
+            (e) => e.queNumber === currentQuestion
           );
           if (index !== -1) {
             console.log('python')
@@ -168,7 +169,7 @@ return newCode;
         theme={theme}
         height="100%"
         language={language.toLowerCase()}
-        value={`${quesBoilerCode("Python")}`}
+        value={`${editorRef?.current?.getValue() ? editorRef.current.getValue() : quesBoilerCode("Python")}`}
         options={{
           saveViewState: false,
           keepCurrentModel: true,
