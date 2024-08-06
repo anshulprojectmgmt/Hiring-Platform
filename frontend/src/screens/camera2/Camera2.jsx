@@ -162,6 +162,7 @@ useEffect(() => {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const constraints = isMobile ? {
         video: {  frameRate: { ideal: 1 }},
+        audio: true,
         
       } : {
         video: {
