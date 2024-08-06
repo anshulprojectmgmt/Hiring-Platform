@@ -15,7 +15,9 @@ import Modal from "react-bootstrap/Modal";
 import { debounce } from 'lodash';
 // import webgazer from "webgazer";
 // eslint-disable-next-line
-
+import compressVideo from "../../utility/compress";
+import { persistStore } from 'redux-persist';
+import store from '../../store'
 const Test = () => {
  
 
@@ -176,9 +178,9 @@ try {
       });
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: { ideal: 720 },
-          height: { ideal: 480 },
-          frameRate: { ideal: 10 },
+          width: {  ideal: 640 },
+          height: { ideal: 360 },
+          frameRate: { ideal: 5 },
         },
       });
 
@@ -267,7 +269,7 @@ try {
   };
 
   const handleEndTest = async () => {
- 
+    persistStore(store).purge();
    
     try {
       if(testtype === "coding"){
