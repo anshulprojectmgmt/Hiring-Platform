@@ -161,8 +161,8 @@ useEffect(() => {
     try {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const constraints = isMobile ? {
-        video: true,
-        audio: true
+        video: {  frameRate: { ideal: 1 }},
+        
       } : {
         video: {
           width: { ideal: 720 },

@@ -31,7 +31,7 @@ const Audio = () => {
 
 
       setTimeout(() => {
-        navigate("/test");
+        navigate("/test", {replace: true});
       },500);
   };
 

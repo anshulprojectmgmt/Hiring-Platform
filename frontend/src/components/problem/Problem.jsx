@@ -21,15 +21,17 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
 
   const handlePrev = () => {
     // console.log(currentQuestion)
-    
+
     // console.log(currentQuestion)
     inputRef.current.innerText = "";
     outputRef.current.innerText = "";
     const index = savedCode.findIndex((e) => e.queNumber === currentQuestion-1);
+
     // console.log(index);
     if (index !== -1) {
-      dispatch({ type: "CHANGE_LANGUAGE", payload: savedCode[index].lang });
       editorRef.current.setValue(savedCode[index].code );
+      dispatch({ type: "CHANGE_LANGUAGE", payload: savedCode[index].lang });
+
     } 
     else if(index === -1){
       dispatch({type: "CHANGE_LANGUAGE", payload: "Python"})
@@ -50,13 +52,15 @@ ${indentedInsertedCode}
     print("Hello World")
     
 main()
-# write a function such that user can give input as well`);
+# define your function at the top & call inside print of main fun.
+`);
     }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
     dispatch({ type: "PREV_QUESTION" });
   };
 
   const handleNext = () => {
+    
     if(currentQuestion === questions.length - 1){
       setShow(true);
     }
@@ -66,8 +70,9 @@ main()
     outputRef.current.innerText = "";
     const index = savedCode.findIndex((e) => e.queNumber === currentQuestion+1);
     if (index !== -1) {
-      dispatch({ type: "CHANGE_LANGUAGE", payload: savedCode[index].lang });
       editorRef.current.setValue(savedCode[index].code);
+      dispatch({ type: "CHANGE_LANGUAGE", payload: savedCode[index].lang });
+    
     }
     else if(index === -1){
       dispatch({type: "CHANGE_LANGUAGE", payload: "Python"})
@@ -89,7 +94,8 @@ ${indentedInsertedCode}
     print("Hello World")
     
 main()
-# write a function such that user can give input as well`);
+# define your function at the top & call inside print of main fun.
+`);
      }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
     dispatch({ type: "NEXT_QUESTION" });  
