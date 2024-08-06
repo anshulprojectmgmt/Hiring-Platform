@@ -161,13 +161,16 @@ useEffect(() => {
     try {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const constraints = isMobile ? {
-        video: {  frameRate: { ideal: 1 }},
-        audio: true,
+        video: {
+          width: {  ideal: 640 },
+          height: { ideal: 360 }
+        },
+        audio: true
         
       } : {
         video: {
-          width: { ideal: 720 },
-          height: { ideal: 480 },
+          width: {  ideal: 640 },
+          height: { ideal: 360 },
           frameRate: { ideal: 10 }
         },
         audio: true
@@ -242,7 +245,7 @@ useEffect(() => {
       console.log(`Original video file size: ${videoBlob.size} bytes`);
 
       // Compress the video
-   //   videoBlob = await compressVideo(videoBlob);
+      videoBlob = await compressVideo(videoBlob);
   
       console.log(`Compressed video file size: ${videoBlob.size} bytes`);
     

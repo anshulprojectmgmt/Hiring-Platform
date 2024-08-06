@@ -25,7 +25,7 @@ const compressVideo = async (videoBlob) => {
    await ffmpeg.writeFile('video.mp4', await fetchFile(videoFile));
    
    // Compress the video
-   await ffmpeg.exec(['-i', 'video.mp4', '-vcodec', 'libx264', '-crf', '30', '-preset', 'ultrafast', 'compressed_video.mp4']);
+   await ffmpeg.exec(['-i', 'video.mp4', '-vcodec', 'libx264', '-preset', 'ultrafast', 'compressed_video.mp4']);
    
    // Read the compressed video file
    const compressedVideoData = await ffmpeg.readFile('compressed_video.mp4');
