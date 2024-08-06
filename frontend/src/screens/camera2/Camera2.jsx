@@ -241,7 +241,7 @@ useEffect(() => {
       console.log(`Original video file size: ${videoBlob.size} bytes`);
 
       // Compress the video
-      videoBlob = await compressVideo(videoBlob);
+   //   videoBlob = await compressVideo(videoBlob);
   
       console.log(`Compressed video file size: ${videoBlob.size} bytes`);
     
