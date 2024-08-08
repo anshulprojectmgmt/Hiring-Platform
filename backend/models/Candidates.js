@@ -65,6 +65,10 @@ const candidateSchema = new Schema({
     type: String,
     default: null,
   },
+  screenshots: {
+    type: [String],  // Array of strings
+    default: [],     // Default value is an empty array
+  },
   
   verdict: {
     type: {

@@ -72,7 +72,8 @@ const Test = () => {
   const [isFullScreen, setIsFullSreen] = useState(true);
   const [exitScreen, setExitScreen] = useState(0);
   const [verdict,setVerdict] = useState({status: "Successfull" , message: "Test successfully submitted"});
- 
+  
+  
 
 const exitScreenRef = useRef(null);
 const isFullScreenRef = useRef(null);
@@ -170,6 +171,8 @@ const resetToFullScreen =async () => {
     };
   }, []);
   
+
+
   const startRecording = useCallback(async () => {
     
 try {
@@ -208,6 +211,9 @@ try {
       videoMediaRecorder.current.start();
 
       setIsRecording(true);
+
+
+
     } catch (error) {
       if (getFullscreenElement()) {
         document.exitFullscreen();
@@ -238,16 +244,24 @@ try {
       await audioMediaRecorder.current.stop();
        setIsRecording(false);
     
+       
        if (mediaStream.current) {
         await mediaStream.current.stream
           .getTracks()
           .forEach((track) => track.stop());
       }
-    }
+}
+
+
+ 
+
   }, [isRecording]);
+
+
 
   const downloadRecording = async () => {
     // const durationInSeconds = initialTime;
+
     if (videoChunks.current.length > 0 && audioChunks.current.length > 0) {
       videoBlob =  new Blob(videoChunks.current, {
         type: "video/mp4",
@@ -328,19 +342,24 @@ try {
   };
 
   const uploadVideo = async () => {
+    
+
     const audioFileName = `${candidateEmail}-audio.webm`;
     const videoFileName = `${candidateEmail}-video.mp4`;
+   
     const ans = await axios.post(`${BASE_URL}/api/transcriptions`, {
       bucketName: testCode,
     });
+   
     const videoRes = await axios.post(`${BASE_URL}/api/s3upload`, {
-      filename: videoFileName,
+      filename: videoFileName,   
       contentType: "video/mp4",
       testcode: testCode,
     });
   
     const videos3url = videoRes.data.url;
     await axios.put(videos3url, videoBlob);
+   
     const audioRes = await axios.post(`${BASE_URL}/api/s3upload`, {
       filename: audioFileName,
       contentType: "audio/webm",
@@ -349,6 +368,39 @@ try {
   
     const audios3url = audioRes.data.url;
     const response = await axios.put(audios3url, audioBlob);
+  
+ //   await handleStop(videoBlob,videoFileName , "video/mp4", testCode);
+  
+  };
+
+   // Function to handle stopping the recording and uploading the file
+   const handleStop = async (videoBlob, filename, contentType,testcode) => {
+    console.log('handle STOP rec' , videoBlob, filename, contentType,testcode);
+    
+    const file = new File([videoBlob], filename || "recording.mp4", { type: contentType });
+  console.log('file==', file);
+    // Create a FormData object and append the file and additional data
+    const formData = new FormData();
+   
+    formData.append('testcode', testcode);
+    formData.append('filename', filename || "recording.mp4");
+    formData.append('contentType', contentType);
+    formData.append('file', file);
+   // Iterate and log FormData entries
+for (let [key, value] of formData.entries()) {
+  console.log(`${key}: ${value}`);
+}
+    try {
+      // Send a POST request to the backend to upload the file
+      const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('File uploaded successfully', response.data);
+    } catch (error) {
+      console.error('Error uploading file', error);
+    }
   };
 
   const handleSubmitTest = async () => {
@@ -414,7 +466,7 @@ try {
              setShow(true);
             // console.log(mcqData);
             loader.current = "true";
-         
+          
    
             await stopRecording();
             await downloadRecording();
@@ -572,7 +624,7 @@ try {
           its takes 3-4 mins to upload.
         </Modal.Body>
       </Modal>
-
+    
       {testtype === "coding" ? <Body /> : testtype === "mcq" ? <Mcq /> : null}
     </div>
     </div>
