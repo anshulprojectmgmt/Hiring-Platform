@@ -49,6 +49,7 @@ const Camera2 = () => {
  const [captureCount, setCaptureCount] = useState(0);
  const [sideView, setSideView] = useState(0);
  const screenshots = useRef([]);
+ const [btnStyle, setBtnStyle] = useState("false");
 
 // Function to get candidate details
 const getCandidateDetail = async (cid) => {
@@ -339,6 +340,7 @@ const takeScreenshot = useCallback(() => {
   };
 
   const camera2Photo = async () => {
+      setBtnStyle("face");
     try {
   //  captureImage();
 
@@ -354,14 +356,17 @@ const takeScreenshot = useCallback(() => {
       const cam2Faceurl = cam2FaceRes.data.url;
       await axios.put(cam2Faceurl, cam2FaceBlob);
       toast.success("Succefully captured");
+      setBtnStyle("false");
       // console.log(cam2FaceRes);
     } catch (error) {
       console.log(error);
       toast.warning("Please try again!");
+      setBtnStyle("false");
     }
   };
 
   const camera2SidePhoto = async () => {
+    setBtnStyle("side");
   //   try {
   //     //  captureImage();
 
@@ -440,8 +445,10 @@ const takeScreenshot = useCallback(() => {
 if(sideView<2){
   toast.warning("Please try again!");
   setSideView((prev) => prev+1);
+  setBtnStyle("false");
 } else{
   toast.success("Successfully Processed");
+  setBtnStyle("false");
 }
 
   };
@@ -510,6 +517,7 @@ if(sideView<2){
             type="button"
             onClick={camera2SidePhoto}
             className="endtest-btn"
+            style={btnStyle==="side" ? { backgroundColor: 'white', color: 'black' } : {}}
           >
             keyboard/hands/face
           </div>
@@ -517,6 +525,7 @@ if(sideView<2){
             type="button"
             onClick={camera2Photo}
             className="endtest-btn"
+            style={btnStyle==="face" ? { backgroundColor: 'white', color: 'black' } : {}}
           >
             Face photo
           </div>
@@ -525,6 +534,7 @@ if(sideView<2){
             data-bs-toggle="modal"
             data-bs-target="#staticBackdrop"
             className="endtest-btn "
+            style={btnStyle==="end" ? { backgroundColor: 'white', color: 'black' } : {}}
           >
             End Test
           </div>
