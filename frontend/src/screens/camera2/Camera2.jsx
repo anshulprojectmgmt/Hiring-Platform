@@ -188,7 +188,7 @@ const takeScreenshot = useCallback(() => {
           width: {  ideal: 640 },
           height: { ideal: 360 },
         },
-        audio: true
+        audio: false
         
       } : {
         video: {
@@ -196,7 +196,7 @@ const takeScreenshot = useCallback(() => {
           height: { ideal: 360 },
           frameRate: { ideal: 10 }
         },
-        audio: true
+        audio: false
       };
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
