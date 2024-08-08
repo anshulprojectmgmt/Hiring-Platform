@@ -48,6 +48,7 @@ const Camera2 = () => {
  const canvasRef = useRef(null);
  const [captureCount, setCaptureCount] = useState(0);
  const [sideView, setSideView] = useState(0);
+ const screenshots = useRef([]);
 
 // Function to get candidate details
 const getCandidateDetail = async (cid) => {
@@ -157,13 +158,35 @@ useEffect(() => {
   }
 }, [cid]);
 
+
+const takeScreenshot = useCallback(() => {
+  if (mediaStream.current) {
+    const video = document.createElement('video');
+    video.srcObject = mediaStream.current;
+    video.onloadedmetadata = () => {
+      video.play();
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        console.log('get url' , url);
+        screenshots.current.push(url);
+        
+      });
+    };
+  }
+}, []);
+
   const startRecording = useCallback(async () => {
     try {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const constraints = isMobile ? {
         video: {
           width: {  ideal: 640 },
-          height: { ideal: 360 }
+          height: { ideal: 360 },
         },
         audio: true
         
@@ -202,6 +225,17 @@ useEffect(() => {
     await  videoMediaRecorder.current.start();
 
        setIsRecording(true);
+
+                // Take a screenshot every minute
+      const screenshotInterval = setInterval(() => {
+        
+        // if (isRecording) {
+          takeScreenshot();
+        // } else {
+        //   clearInterval(screenshotInterval);
+        // }
+      }, 60000);
+
     } catch (error) {
       if (error.name === 'NotAllowedError') {
         toast.warning("You need to allow camera access to record video.");
@@ -233,7 +267,27 @@ useEffect(() => {
           .forEach((track) => track.stop());
       }
     }
+    await uploadScreenShots();
+
   }, [isRecording]);
+
+  const uploadScreenShots =async () => {
+    if(screenshots.current){
+      
+      try {
+        // Send the array of URLs directly in the request body
+        const response = await axios.post(`${BASE_URL}/api/upload-screenshots`, {
+          email: candidateEmail,
+          code: testCode,
+          screenshots: screenshots.current,
+        });
+    
+        console.log("Screenshots uploaded successfully:", response.data);
+      } catch (error) {
+        console.error("Error uploading screenshots:", error);
+      }
+    }
+  }
 
   const downloadRecording = async () => {
     // const durationInSeconds = initialTime;
@@ -406,9 +460,9 @@ if(sideView<2){
             
             await stopRecording();
             
-            await downloadRecording();
+         //   await downloadRecording();
             
-            await uploadVideo();
+          //  await uploadVideo();
             
             // await handleEndTest();
             clearInterval(timerRef.current);

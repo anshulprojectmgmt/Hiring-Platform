@@ -1,9 +1,102 @@
 const express = require("express");
 const router = express.Router();
+const AWS = require('aws-sdk');
+const ffmpeg = require('fluent-ffmpeg');
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
 const { GetObjectCommand, PutObjectCommand, CreateMultipartUploadCommand, UploadPartCommand,CompleteMultipartUploadCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { s3Client } = require("../app");
 require("dotenv").config();
+const Candidate = require('../models/Candidates');
+
+// Set up Multer storage
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     // Specify the upload directory (where files will be saved)
+//     cb(null, 'uploads/');
+//   },
+//   filename: (req, file, cb) => {
+//     // Customize the filename (e.g., timestamp + original name)
+//     cb(null, Date.now() + '-' + file.originalname);
+//   },
+// });
+
+// // Create a Multer instance
+// const upload = multer({ storage });
+
+// AWS.config.update({
+//   accessKeyId: process.env.ACCESS_KEY_ID,
+//   secretAccessKey: process.env.SECRET_ACCESS_KEY,
+//   region: 'ap-south-1',
+// });
+
+// const s3 = new AWS.S3();
+
+
+// const compressVideo = (inputPath, outputPath) => {
+//   return new Promise((resolve, reject) => {
+//     ffmpeg(inputPath)
+//       .output(outputPath)
+//       .videoCodec('libx264')
+//       .size('640x?')
+//       .on('end', () => resolve())
+//       .on('error', (err) => reject(err))
+//       .run();
+//   });
+// };
+
+// router.post('/upload', upload.single('file') , async (req, res) => {
+//   console.log('req body==' , req.body);
+//   console.log('req file==' , req.file);
+//   const file = req.file;
+//   const { testcode, filename, contentType } = req.body;
+ 
+
+//   const outputPath = path.join(__dirname, 'uploads', `${Date.now()}_compressed.mp4`);
+
+//   try {
+//     await compressVideo(file.path, outputPath);
+//     const compressedFile = fs.readFileSync(outputPath);
+
+//     const params = {
+//       Bucket: "hm-video-audio-bucket",
+//       Key: `${testcode}/Videos/${filename}`,
+//       Body: compressedFile,
+//       ContentType: contentType,
+//     };
+
+//     s3.upload(params, (err, data) => {
+//       if (err) {
+//         return res.status(500).send(err);
+//       }
+//       res.status(200).send(data);
+//     });
+//   } catch (error) {
+//     res.status(500).send(error);
+//   } finally {
+//     fs.unlinkSync(file.path);
+//     fs.unlinkSync(outputPath);
+//   }
+// });
+
+router.post("/upload-screenshots" , async (req,res) => {
+  const {email, code , screenshots} = req.body;
+  try {
+    const updateResult = await Candidate.updateOne({email: email, testcode: code},{
+      $set: {
+        screenshots: screenshots
+      },
+    });
+    
+    res.status(200).json({ success: true,message:"uploaded" }); 
+  } catch (error) {
+    console.log('screenshot upl err' ,error);
+    res.status(500).json({ success: false,message:"failed to upload" }); 
+  }
+
+})
 
 router.post("/s3upload", async (req, res) => {
   const { filename, contentType, testcode } = req.body;
@@ -24,7 +117,7 @@ router.post("/s3upload", async (req, res) => {
   else if (contentType === "image/jpeg") {
     command = new PutObjectCommand({
       Bucket: "hm-video-audio-bucket",
-      Key: `${testcode}/Videos/${filename}`,
+      Key: `${testcode}/images/${filename}`,
       ContentType: contentType,
       // ContentEncoding: 'base64',
     });
