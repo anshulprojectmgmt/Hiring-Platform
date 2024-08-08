@@ -81,7 +81,7 @@ const Cam2UserVerify = () => {
 
   useEffect(() => {
     const getFace2Img =async () => {
-      const face2 = await fetch(`https://hm-video-audio-bucket.s3.ap-south-1.amazonaws.com/${testCode}/Videos/${candidateEmail}-cam2face.jpeg`).then((res) => {
+      const face2 = await fetch(`https://hm-video-audio-bucket.s3.ap-south-1.amazonaws.com/${testCode}/Images/${candidateEmail}-cam2face.jpeg`).then((res) => {
         return res.text(); });
         console.log('face222222222====', face2);
         setFace2(face2);
