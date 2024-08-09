@@ -54,6 +54,10 @@
 	transform: scale(0.7);
 }
 
+#video {
+    transform: scaleX(-1); /* Flip horizontally */
+}
+
 @media screen and (max-width: 760px) {
     .navbar{
         padding: 0px 10px !important;
