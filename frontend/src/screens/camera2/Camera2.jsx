@@ -442,7 +442,7 @@ const takeScreenshot = useCallback(() => {
   //   }
 
 
-if(sideView<2){
+if(sideView<1){
   toast.warning("Please try again!");
   setSideView((prev) => prev+1);
   setBtnStyle("false");
@@ -574,7 +574,7 @@ if(sideView<2){
       <video className="video" ref={webcamRef}  />
       </div> */}
        <div className="webcam">
-         <Webcam audio={false} ref={webcamRef} style={{width: '100%', height: '100%' , objectFit: 'cover'}} />
+         <Webcam id="video" audio={false} ref={webcamRef} style={{width: '100%', height: '100%' , objectFit: 'cover'}} />
        </div>
        <div className="info">
         <ul>

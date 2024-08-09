@@ -183,7 +183,7 @@ try {
         video: {
           width: {  ideal: 640 },
           height: { ideal: 360 },
-          frameRate: { ideal: 5 },
+          frameRate: { ideal: 3 },
         },
       });
 
@@ -530,7 +530,7 @@ for (let [key, value] of formData.entries()) {
         <div className="logo">AiPlanet</div>
         <div className="webcam">
           {loader.current === "true" ? null : (
-            <Webcam audio={false} ref={webcamRef} width={100} height={40} />
+            <Webcam id="video" audio={false} ref={webcamRef} width={100} height={40} />
           )}
         </div>
         <div className="timer">

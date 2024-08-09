@@ -130,6 +130,10 @@
     background-color: #cccccc;
     cursor: not-allowed;
   }
+
+  #video{
+    transform: scaleX(-1); /* Flip horizontally */
+  }
   
   /* Responsive design */
   @media (max-width: 768px) {
