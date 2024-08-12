@@ -185,10 +185,7 @@ const takeScreenshot = useCallback(() => {
     try {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const constraints = isMobile ? {
-        video: {
-          width: {  ideal: 640 },
-          height: { ideal: 360 },
-        },
+        video: true,
         audio: false
         
       } : {
