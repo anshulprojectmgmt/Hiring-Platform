@@ -64,7 +64,7 @@ const getCandidateDetail = async (cid) => {
       navigate('/testend', { replace: true });
       return true; // Indicate that we should stop further execution
     }
-
+    timeTaken.current = userDetail.testInfo.duration; 
     setTime(userDetail.testInfo.duration);
     setTimeLeft(userDetail?.testInfo?.duration ? userDetail.testInfo.duration * 60 : 60);
 
