@@ -202,7 +202,7 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
             question: questions[currentQuestion].question,
             language: language,
             code: code,
-            score: -1,
+            score: 0,  // set to [-1] ,when OPEN CHAT API KEY available
           });
         }
       }
