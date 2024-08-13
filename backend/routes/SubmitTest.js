@@ -42,12 +42,13 @@ const makeAPICall = async (object) => {
     return object;
   } catch (error) {
     console.error("API call error:", error);
-    throw error;
+    // throw error;
   }
 };
 
 router.post("/submit-test", async (req, res) => {
   try {
+    
     const Data = req.body.testData;
     const candidateEmail = req.body.candidateEmail;
     const testCode = req.body.testCode;
@@ -73,20 +74,40 @@ router.post("/submit-test", async (req, res) => {
 
       const testData = Data.slice(1);
      
-      const filteredTestData = await testData.filter(item => item.score === -1);
+      // ***** use below filteredTestData & updatedTestData  ,when OPEN API UPDATED
+      // const filteredTestData = await testData.filter(item => item.score === -1);
        
-      const updatedTestData = await Promise.all(filteredTestData.map(makeAPICall));
-      const combinedData = testData.map(originalItem => {
-        const updatedItem = updatedTestData.find(updatedItem => updatedItem.queNumber === originalItem.queNumber);
-        if (updatedItem) {
-          return {
-            ...originalItem,
-            score: updatedItem.score,
-          };
-        } else {
-          return originalItem;
-        }
-      });
+      // // if this line fails 
+      // const updatedTestData = await Promise.all(filteredTestData?.map(makeAPICall)) || [];
+    // *** undo when OPENAPI key AVAILABLE
+      
+    // emtpy  updatedTestData used until OPENAPI not AVAILABLE
+    const updatedTestData = [];
+      
+     let combinedData;
+      if(updatedTestData && updatedTestData.length> 0) {
+         combinedData = testData.map(originalItem => {
+          const updatedItem = updatedTestData.find(updatedItem => updatedItem.queNumber === originalItem.queNumber);
+          if (updatedItem) {
+            return {
+              ...originalItem,
+              score: updatedItem.score,
+            };
+          } else {
+            return originalItem;
+          }
+        });
+      } else {
+        combinedData = testData.map((org) => {
+          if(org.score=== -1) {
+            return {...org, score: 0};
+          } else {
+            return org;
+          }
+        })
+      }
+      
+
       const candidate = await Candidate.updateOne({email: candidateEmail, testcode: testCode},{
         $set: {
           result: combinedData,
@@ -96,7 +117,7 @@ router.post("/submit-test", async (req, res) => {
         },
       });
 
-      console.log('candidate update==' , candidate);
+      
 
       if (candidate.acknowledged) {
         res.status(200).json({success:true, message: 'Test submitted successfully'});
@@ -105,7 +126,7 @@ router.post("/submit-test", async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(error);
+    console.log('submit test error' , error);
     res.status(400).json({ success: false });
   }
 });
