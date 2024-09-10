@@ -50,6 +50,7 @@ a{
 }
 .detail-result{
     cursor: pointer;
+    white-space: nowrap;
 }
 @media screen and (max-width: 768px) {
     .candidate-items{

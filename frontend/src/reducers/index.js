@@ -6,6 +6,7 @@ import { combineReducers } from "redux";
 import dashBoardInfo from "./dashboardInfo";
 import savedMcq from "./savedMcq";
 import instructionState from "./instructionState";
+import savedSubjective from "./savedSubjective";
 
 const reducer = combineReducers({
   editorTheme,
@@ -15,6 +16,7 @@ const reducer = combineReducers({
   dashBoardInfo,
   savedMcq,
   instructionState,
+  savedSubjective,
 });
 
 export default reducer;

@@ -138,9 +138,9 @@ router.post("/submit-mcqtest", async (req, res) => {
     const timetaken = req.body.timetaken;
     const tabswitch = req.body.tabswitch;
     const verdict = JSON.parse(req.body.verdict);
-    console.log('test data===' , data);
+    
     const testData = data.slice(1);
-    console.log('test data after slice===' , testData, );
+   
   try {
     const candidate = await Candidate.updateOne({email: candidateEmail, testcode: testCode},{
       $set: {               
@@ -150,7 +150,7 @@ router.post("/submit-mcqtest", async (req, res) => {
         verdict,
       },
     });
-    console.log('candidate update==' , candidate);
+    
     if (candidate.acknowledged) {
       res.status(200).json({success:true, message: 'Test submitted successfully'});
     } else {
@@ -158,8 +158,37 @@ router.post("/submit-mcqtest", async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(400).json({ success: false });
+    res.status(500).json({ success: false, message: error });
   }
+})
+
+router.post("/submit-subjectivetest" , async (req ,res) => {
+let {testData,candidateEmail,testCode,timetaken,tabswitch,verdict} = req.body;
+const data = testData.slice(1);
+
+verdict = JSON.parse(req.body.verdict);
+try {
+  const candidate = await Candidate.updateOne({email:candidateEmail , testcode: testCode}, {
+    $set: {               
+      result: data,
+      timetaken: timetaken,
+      tabswitch: tabswitch,
+      verdict,
+    },
+  })
+
+  
+  console.log('acknow==' ,  candidate.acknowledged)
+    if (candidate.acknowledged) {
+      res.status(200).json({success:true, message: 'Test submitted successfully'});
+    } else {
+      res.status(400).json({success:false, message: 'Test not submitted'});
+    }  
+} catch (error) {
+  console.log(error);
+  res.status(500).json({ success: false, message: error });
+}  
+
 })
 
 module.exports = router;

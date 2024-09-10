@@ -632,6 +632,14 @@ input:placeholder {
   color: white;
   text-decoration: underline !important;
 }
+.logos{
+  width: 40px;
+  height: auto;
+  margin-right: 7px;
+  border-radius: 100%;
+  border: 2px solid #1c4b74;
+  
+}
 
 @media screen and (max-width: 760px) {
   .sub-text {

@@ -172,14 +172,19 @@ const takeScreenshot = useCallback(() => {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        console.log('get url' , url);
-        screenshots.current.push(url);
-        
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result;
+          
+          // Store base64String for later use
+          screenshots.current.push(base64String);
+        };
+        reader.readAsDataURL(blob);
       });
     };
   }
 }, []);
+
 
   const startRecording = useCallback(async () => {
     try {

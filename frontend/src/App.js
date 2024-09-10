@@ -18,6 +18,9 @@ import "bootstrap/dist/js/bootstrap.min.js";
 
 import DetailedResult from "./screens/detailedResult/DetailedResult";
 import CameraCapture from "../src/components/camera-capture/camera-capture";
+import Recording from "./components/recordings/Recording";
+import QuestionForm from "./screens/questionform/QuestionForm";
+import Subjective from "./components/subjective/Subjective";
 
 function App() {
   return (
@@ -36,6 +39,9 @@ function App() {
         <Route path="/:hrid/:test" element={<TestResult />} />
         <Route path="/:candidateNo" element={<DetailedResult />} />
         <Route path="/capture" element={<CameraCapture />}  />
+        <Route path="/recording" element={<Recording />} />
+        <Route path="/add-question" element={<QuestionForm />} />
+        <Route path="/subjective" element={<Subjective />} />
       </Routes>
       <ToastContainer position="top-right" autoClose={2000} />
     </>

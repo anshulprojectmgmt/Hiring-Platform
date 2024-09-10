@@ -18,12 +18,14 @@ import { debounce } from 'lodash';
 import compressVideo from "../../utility/compress";
 import { persistStore } from 'redux-persist';
 import store from '../../store'
+import Subjective from "../../components/subjective/Subjective";
 const Test = () => {
  
 
   const navigate = useNavigate();
   const check = useSelector((state) => state.savedCode);
   const mcqData = useSelector((state) => state.savedMcq);
+  const subjData = useSelector((state) => state.savedSubjective);
  
   const candidateEmail = useSelector((state) => state.testInfo.candidateEmail);
   const testCode = useSelector((state) => state.testInfo.testCode);
@@ -334,6 +336,28 @@ try {
           navigate("/testend",{replace: true});
         }
       }
+      else if(testtype==="subjective") {
+       console.log('subj data array==' , subjData);
+        const res = await axios.post(`${BASE_URL}/api/submit-subjectivetest`, {
+          testData: subjData,
+          candidateEmail: candidateEmail,
+          testCode: testCode,
+          timetaken: timeTaken.current,
+          tabswitch: tabSwitch.current,
+          verdict : JSON.stringify(verdict),
+        });
+        if (!res.data.success) {
+          toast.error(res.data.message);
+        } else {
+          // toast.success(res.data.message);
+          if (getFullscreenElement()) {
+            loader.current = "false";
+            toast.success(res.data.message);
+            document.exitFullscreen();
+          }
+          navigate("/testend",{replace: true});
+        }
+      }
       
     } catch (error) {
       navigate("/testend",{replace: true});
@@ -343,6 +367,8 @@ try {
 
   const uploadVideo = async () => {
     
+try {
+  
 
     const audioFileName = `${candidateEmail}-audio.webm`;
     const videoFileName = `${candidateEmail}-video.mp4`;
@@ -370,7 +396,9 @@ try {
     const response = await axios.put(audios3url, audioBlob);
   
  //   await handleStop(videoBlob,videoFileName , "video/mp4", testCode);
-  
+} catch (error) {
+  console.log('error: ', error)
+}
   };
 
    // Function to handle stopping the recording and uploading the file
@@ -469,8 +497,11 @@ for (let [key, value] of formData.entries()) {
           
    
             await stopRecording();
-            await downloadRecording();
-            await uploadVideo();
+            if(testtype!=="subjective") {
+               await downloadRecording();
+               await uploadVideo();
+            }
+
           
             await handleEndTest();
             clearInterval(timerRef.current);
@@ -528,11 +559,13 @@ for (let [key, value] of formData.entries()) {
     <div id="fullscreen">
       <div className="navbar">
         <div className="logo">AiPlanet</div>
+        {testtype!=="subjective" && 
         <div className="webcam">
           {loader.current === "true" ? null : (
             <Webcam id="video" audio={false} ref={webcamRef} width={100} height={40} />
           )}
         </div>
+        }
         <div className="timer">
        {!isFullScreen && 
         <div
@@ -625,7 +658,11 @@ for (let [key, value] of formData.entries()) {
         </Modal.Body>
       </Modal>
     
-      {testtype === "coding" ? <Body /> : testtype === "mcq" ? <Mcq /> : null}
+      {testtype === "coding" ? <Body /> 
+        : testtype === "mcq" ? <Mcq /> 
+        : testtype=== "subjective" ? <Subjective />
+        : <h1>Test type didn't matched</h1>
+        }
     </div>
     </div>
   );

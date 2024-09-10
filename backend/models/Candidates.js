@@ -106,6 +106,9 @@ const candidateSchema = new Schema({
           },
           optionSelected:{
             type: String,
+          },
+          subjVideoUrl:{
+            type: String,
           }
         },
       ],

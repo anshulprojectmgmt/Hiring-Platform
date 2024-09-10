@@ -1,0 +1,65 @@
+.form {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    margin-bottom: 1rem;
+  }
+  
+  .formGroup {
+    margin-bottom: 15px;
+  }
+  
+  .textarea,
+  .select,
+  .input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .testcase {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f1f1f1;
+  }
+  
+  .inputGroup,
+  .outputGroup {
+    margin-bottom: 10px;
+  }
+  
+  .addInputBtn,
+  .addOutputBtn,
+  .addTestcaseBtn,
+  .submitBtn {
+    padding: 4px 8px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    /* margin-top: 10px; */
+    font-size: 0.8rem;
+  }
+  
+  .addInputBtn:hover,
+  .addOutputBtn:hover,
+  .addTestcaseBtn:hover {
+    background-color: #10e01b;
+   }
+  .submitBtn:hover {
+   background-color: #1c4b74; 
+    }
+    .submitBtn {
+      background-color: #5880F0;
+    }
+
+  
