@@ -96,12 +96,14 @@ const CreateTest = () => {
               name="type"
               value={testData.Type}
               onChange={handleChange}
+              
             >
               <option value="" disabled selected>
                 Select Test Type
               </option>
               <option value="coding">Coding</option>
               <option value="mcq">MCQ</option>
+              <option value="subjective">Subjective</option>
             </select>
             <select
               required

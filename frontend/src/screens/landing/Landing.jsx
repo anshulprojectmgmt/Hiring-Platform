@@ -17,7 +17,9 @@ const Landing = () => {
     <>
       {/* NAVBAR */}
       <div className="navbar landing-page-navbar">
-        <div className=" logo">AiPlanet</div>
+        <div className=" logo">
+          <img className="logos" src="./Aiplanet_logo.jpeg" />
+          AiPlanet</div>
         <div>
           <Link className="dashboard-login" to="/login-dashboard">
             Dashboard

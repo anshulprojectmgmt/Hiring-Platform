@@ -68,7 +68,22 @@ router.post("/questions", async (req, res) => {
         .limit(questions)
         .toArray();
       res.json({ success: true, que: problems });
-    }else{
+    }
+    else if (testtype === "subjective") {
+     {/**
+      create new collection 
+      add few subject question 
+      fetch those question based on query
+      */}
+     
+      var problems = await mongoose.connection
+        .collection("subjective_question")
+        .find({})
+        .limit(questions)
+        .toArray();
+      res.json({ success: true, que: problems });
+    }
+    else{
       res.json({ success: false, message: 'no test type matched', testtype });
     }
   } catch (error) {
@@ -76,5 +91,43 @@ router.post("/questions", async (req, res) => {
     res.json({ success: false });
   }
 });
+
+
+router.get("/wrapper-type" , async (req,res) => {
+    try {
+      const collection = mongoose.connection.collection('wrapper_map');
+
+      const titles = await collection.find({}, { projection: { _id: 1, title: 1 } }).toArray();
+
+
+      res.json({success: true, titles}); // Send titles to the client-side app
+    } catch (error) {
+      console.error('Error fetching titles:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
+  router.post("/add-coding-question" , async (req , res) => {
+  const { question,difficulty,input_type,wrapper_id,testcases,testtype } = req.body;
+  console.log('diff==' , difficulty);
+  try {
+   const collection = mongoose.connection.collection(`python${difficulty}`);
+  
+    const newDocument = await collection.insertOne({
+      question,
+      difficulty,
+      input_type,
+      wrapper_id,
+      testcases,
+     });
+
+  
+     console.log('newDocument==' , newDocument);
+     res.status(201).json({ success: true});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to create document' });
+  }
+})
 
 module.exports = router;

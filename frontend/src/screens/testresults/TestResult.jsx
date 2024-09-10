@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./TestResult.css";
 import BASE_URL from "../../Api";
+import rightUp from "../../assests/right-up.png"
 
 const TestResult = () => {
   const location = useLocation();
@@ -89,7 +90,12 @@ const TestResult = () => {
                               <i className="fa-solid fa-eye"></i>
                             </Link>
                           </td>
-                          <td>{candidate.name}</td>
+                          <td>{candidate.name} 
+                            <Link to="/recording"
+                            state={{candidateInfo: candidate , sum: sum , testtype: type}}>
+                            <img src={rightUp} width={"20px"}  />
+                            </Link>
+                          </td>
                           <td>{candidate.email}</td>
                           <td>{candidate.phonenumber}</td>
                           <td>{Math.floor(candidate.timetaken/60)}m {candidate.timetaken%60}s</td>
