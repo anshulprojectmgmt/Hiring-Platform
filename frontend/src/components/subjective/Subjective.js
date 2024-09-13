@@ -257,7 +257,7 @@ const Subjective = () => {
          <Webcam  className={styles.video} audio={false}  style={{  objectFit: 'cover'}} />
       
         : 
-         <video className={styles.video} src={mediaBlobUrl} controls autoPlay loop />
+         <video className={styles.video} src={mediaBlobUrl} controls autoPlay loop muted />
      
      }
      </div> 
