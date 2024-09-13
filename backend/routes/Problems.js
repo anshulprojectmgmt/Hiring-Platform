@@ -6,13 +6,15 @@ const ObjectId = mongoose.Types.ObjectId;
 const idsArray = [
   new ObjectId('660895a1338be786d245c032'),
   new ObjectId('66089589338be786d245c01a'),
-  new ObjectId('660895a1338be786d245c033'),
-  
-  // Add more ObjectId instances as needed
-  
-];
+  // new ObjectId('660895a1338be786d245c033'),
+  ];
+  const subjIds = [
+    new ObjectId('66e1482b7c62462198bcd2b0'),
+    new ObjectId('66e2912142fefec820956b5b'),
+   
+    ];
 router.post("/questions", async (req, res) => {
-  const { testtype, language, difficulty, questions } = req.body;
+  const { testtype, language, difficulty, questions, codQue , subjQue, mcqQue } = req.body;
   try {
     if (testtype === "coding") {
       if (language === "Python") {
@@ -50,7 +52,7 @@ router.post("/questions", async (req, res) => {
               .toArray();
             break;
           default:
-            console.log('easy case matched===')
+           
             problems = await mongoose.connection
               .collection("pythoneasy")
               .aggregate([{$sample: {size: questions}}])
@@ -59,7 +61,7 @@ router.post("/questions", async (req, res) => {
         }
         res.json({ success: true, que: problems });
       } else {
-        res.json({ que: "no sql questions" });
+        res.json({ que: "no language matched " });
       }
     } else if (testtype === "mcq") {
       var problems = await mongoose.connection
@@ -70,19 +72,85 @@ router.post("/questions", async (req, res) => {
       res.json({ success: true, que: problems });
     }
     else if (testtype === "subjective") {
-     {/**
-      create new collection 
-      add few subject question 
-      fetch those question based on query
-      */}
+    
      
       var problems = await mongoose.connection
         .collection("subjective_question")
-        .find({})
-        .limit(questions)
+        .aggregate([
+          { $match: { _id: { $in: subjIds } } },
+          ])
         .toArray();
       res.json({ success: true, que: problems });
     }
+    else if(testtype === "coding+subjective") {
+      let  problems=[];
+      let codProblems = [];
+      let subjProblems = [];
+      try {
+
+        // coding Problems
+        if (language === "Python") {
+        
+          switch (difficulty) {
+            // logic to attach wrapper
+            // code to each problem need to implement here
+            case "easy":
+             
+            codProblems = await mongoose.connection
+            .collection("pythoneasy")
+            .aggregate([
+              { $match: { _id: { $in: idsArray } } },
+              {
+                $lookup: {
+                  from: 'wrapper_map',
+                  localField: 'input_type',
+                  foreignField: 'title',
+                  as: 'wrapper_details'
+                }
+              }
+            ])
+            .toArray();
+              break;
+            case "medium":
+              codProblems = await mongoose.connection
+                .collection("pythonmedium")
+                .aggregate([{$sample: {size: questions}}])
+                .toArray();
+              break;
+            case "hard":
+              codProblems = await mongoose.connection
+                .collection("pythonhard")
+                .aggregate([{$sample: {size: questions}}])
+                .toArray();
+              break;
+            default:
+             
+              codProblems = await mongoose.connection
+                .collection("pythoneasy")
+                .aggregate([{$sample: {size: questions}}])
+                .toArray();
+              break;
+          }
+          
+        } else {
+          res.status(400).json({ que: "no language matched " });
+        } 
+        
+        // subjective Problems
+         subjProblems = await mongoose.connection
+        .collection("subjective_question")
+        .aggregate([
+          { $match: { _id: { $in: subjIds } } },
+          ])
+        .toArray();
+
+          problems = [...subjProblems , ...codProblems];
+          res.json({ success: true, que: problems });
+      } catch (error) {
+        console.log('failed to receive questions=' , error);
+      }
+      
+   }
     else{
       res.json({ success: false, message: 'no test type matched', testtype });
     }

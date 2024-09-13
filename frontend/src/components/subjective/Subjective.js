@@ -9,18 +9,20 @@ import axios from "axios";
 import BASE_URL from "../../Api";
 import { toast } from "react-toastify";
 import ClipLoader from "react-spinners/ClipLoader";
-const questions = [
-{question: "Explain about your most interesting project."},
-  {question: "What challenges did you face in your last project?"},
-  {question: "How do you keep yourself updated with new technologies?"}
-];
+import HashLoader from "react-spinners/HashLoader"
+// const questions = [
+// {question: "Explain about your most interesting project."},
+//   {question: "What challenges did you face in your last project?"},
+//   {question: "How do you keep yourself updated with new technologies?"}
+// ];
 
 
 
 const Subjective = () => {
-  const { status, startRecording, stopRecording, mediaBlobUrl } =
-    useReactMediaRecorder({ video: true , audio: true});
-    // const questions = useSelector((state) => state.getQuestion.questions);
+    
+    const { status, startRecording, stopRecording, mediaBlobUrl } =
+         useReactMediaRecorder({ video: true , audio: true});
+     const questions = useSelector((state) => state.getQuestion.questions);
     const currentQuestion = useSelector((state) => state.getQuestion.currentQuestion);
     const [recordedVideos, setRecordedVideos] = useState([]);
     const [show , setShow] = useState(false);
@@ -32,6 +34,8 @@ const Subjective = () => {
   const testCode = useSelector((state) => state.testInfo.testCode);
   const testtype = useSelector((state) => state.testInfo.testtype);
    
+  const present = recordedVideos.find((rec) =>rec.question === questions[currentQuestion].question );
+
    const handleClose = () => setShow(false);
    const uploadVideo = async (videoBlob, id) => {
     
@@ -71,8 +75,8 @@ const Subjective = () => {
          if(!blob) {
           throw new Error();
          }
-          const s3VideoUrl = await uploadVideo(blob, currentQuestion + 1);
-     //   const s3VideoUrl = "dumy";
+           const s3VideoUrl = await uploadVideo(blob, currentQuestion + 1);
+      //  const s3VideoUrl = "dumy";
        
           setIsLoading(false);
         
@@ -105,7 +109,8 @@ const Subjective = () => {
       dispatch({type: "PREV_QUESTION"})
     }
     const handleNext = () => {
-      if(currentQuestion===questions.length-1) {
+    
+      if(currentQuestion===(questions.length-1)) {
         setShow(true);
       } else {
         setUpd("idle");
@@ -114,21 +119,91 @@ const Subjective = () => {
     }
     
   useEffect(() => {
-    console.log('status==' , status)
-  setUpd(status);
+    
+    let timeId;
+    if(status === "recording") {
+      toast.warning(<div>recording will automatically <strong style={{fontWeight:"bolder"}}>STOP</strong> after <strong style={{fontWeight:"bolder"}}>2 MIN</strong>. </div>, {
+       
+        position: "top-center",
+        autoClose: 1000*60*2, // Duration in milliseconds (5000ms = 5 seconds)
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+  
+  })
+    console.log('record will stop  in 30sec.');
+     timeId = setTimeout(() => {
+    stopRecording();
+    
+    }, 1000*60*2)
+  }
+    setUpd(status);
+  return () => clearTimeout(timeId);
   },[status])
 
-//  useEffect(() => {
-//   toast.warning("recording will automatically start after 1 min. ")
-//   const timeId = setTimeout(() => {
-//     console.log('recoridng start==');
-//     startRecording();
-//   },1000*30)
-//   // return clearTimeout(timeId);
-//  }, [])
+  // useEffect(() => {
+  //   console.log('original status:' , status)
+  //   setUpd(status);
+  // }, [status])
+
+ useEffect(() => {
+  console.log('record start in 30sec.');
+  let timeId;
+   if(!present) {
+    toast.warning(<div>
+      recording will automatically <strong style={{fontWeight:"bolder"}}>START</strong> after <strong style={{fontWeight:"bolder"}}>1 MIN</strong>. </div>, {
+      position: "top-center",
+      autoClose: 1000*60, // Duration in milliseconds (5000ms = 5 seconds)
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+
+})
+   timeId = setTimeout(() => {
+    console.log('upd status after 1min of mounting' , upd);
+    // if(upd==="idle") {
+      console.log('recoridng start==');
+      startRecording();
+    
+    // }        
+  },1000*60)
+  
+}
+  
+   return () => clearTimeout(timeId);
+  }, [currentQuestion])
+
+
 
   return (
     <div className={styles.mcqScreen}>   
+   {isLoading && (
+  <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      display: "flex",
+      flexDirection:"column",
+      justifyContent: "center",
+      alignItems: "center",
+       backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+      zIndex: 1000, // Ensure it appears above other content
+    }}>
+    <HashLoader
+      color={"#1c4b74"}
+      loading={isLoading}
+      size={120}
+      aria-label="Loading Spinner"
+      data-testid="loader"
+    />
+    <p style={{padding: "10px" ,color:"white", fontWeight:"bolder" ,fontSize:"16px"}}>please wait, it will take 2-3 min to upload your video</p>
+  </div>
+)}
+
       <div className={styles.mcqHead}>
       <div>
         {currentQuestion!==0 && 
@@ -162,7 +237,7 @@ const Subjective = () => {
               <li>Give breif intro about project</li>
               <li>Mention all the tech you have used</li>
               <li>Mention few of the features of your project</li>
-              <li>Why did you choose these tech-stack</li>
+              
             </ul>
           </p>
           <hr/>
@@ -170,7 +245,7 @@ const Subjective = () => {
             Note: 
           </h4>
           <p className={styles.para}>
-            Record a video of yourself , not excedding 3 minumte.
+            Record a video of yourself , <span style={{fontSize: '16px' , "fontWeight": "bold", color:"black"}}>Max 2 minumte</span>.
             <br/> consider all the above key points while recording your answer.
           </p>
         </div>
@@ -179,14 +254,16 @@ const Subjective = () => {
       
     <div className={styles.webcam}>
       {upd!=="stopped" ? 
-         <Webcam className={styles.video} audio={false}  style={{  objectFit: 'cover'}} />
-         : 
+         <Webcam  className={styles.video} audio={false}  style={{  objectFit: 'cover'}} />
+      
+        : 
          <video className={styles.video} src={mediaBlobUrl} controls autoPlay loop />
+     
      }
      </div> 
       <div className={styles.btnContainer}>
-      <button disabled={isLoading} className={`${styles.ctaButton}`} style={{backgroundColor: upd==="recording"? "red": ''}} onClick={upd === "recording" ? stopRecording : startRecording} >
-        {upd === "recording" ? "Stop Recording" : "Start Recording"}
+      <button disabled={isLoading || present || true} className={`${styles.ctaButton}`} style={{backgroundColor: upd==="recording"? "red": ''}} onClick={upd === "recording" ? stopRecording : startRecording} >
+        {upd === "recording" ? "Recording" : "Start Recording"}
       </button>
       {upd === "stopped" && (
         <button style={{display:"flex", gap:"2px", justifyContent:"center" ,alignItems:"center"}} disabled={isLoading} className={isLoading? styles.ctaBtnDisable : styles.ctaButton} onClick={() => saveVideo(mediaBlobUrl)}>Save

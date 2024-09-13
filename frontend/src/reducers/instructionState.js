@@ -1,5 +1,5 @@
 const initialState = {
-    currentpage: 1,
+    currentpage: 7,
 };
 
 const instructionState = (state = initialState, action) => {

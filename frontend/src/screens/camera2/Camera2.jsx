@@ -12,7 +12,7 @@ import BarLoader from "react-spinners/BarLoader";
 import "./Camera2.css";
 import Modal from "react-bootstrap/Modal";
 import {Buffer} from 'buffer';
-import compressVideo from "../../utility/compress";
+
 
 const Camera2 = () => {
   const navigate = useNavigate();
@@ -292,25 +292,26 @@ const takeScreenshot = useCallback(() => {
     }
   }
 
-  const downloadRecording = async () => {
-    // const durationInSeconds = initialTime;
-    if (videoChunks.current.length > 0) {
-      videoBlob =  new Blob(videoChunks.current, {
-        type: "video/mp4",
-      });
-      
-      console.log(`Original video file size: ${videoBlob.size} bytes`);
-
-      // Compress the video
-      videoBlob = await compressVideo(videoBlob);
   
-      console.log(`Compressed video file size: ${videoBlob.size} bytes`);
+  // const downloadRecording = async () => {
+  //   // const durationInSeconds = initialTime;
+  //   if (videoChunks.current.length > 0) {
+  //     videoBlob =  new Blob(videoChunks.current, {
+  //       type: "video/mp4",
+  //     });
+      
+  //     console.log(`Original video file size: ${videoBlob.size} bytes`);
+
+  //     // Compress the video
+  //    //  videoBlob = await compressVideo(videoBlob);
+  
+  //     console.log(`Compressed video file size: ${videoBlob.size} bytes`);
     
 
-    } else {
-      console.error("No video or audio data to download");
-    }
-  };
+  //   } else {
+  //     console.error("No video or audio data to download");
+  //   }
+  // };
 
 
 

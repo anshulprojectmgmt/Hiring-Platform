@@ -57,6 +57,20 @@ const hiringManagerSchema = new Schema({
         type: String,
         default: "No",
       },
+      codQue : {
+        type: Number,
+        default: 0,
+      },
+      mcqQue : {
+        type: Number,
+        default: 0,
+      },
+      subjQue : {
+        type: Number,
+        default: 0,
+      },
+
+
     },
   ],
 });
