@@ -23,6 +23,9 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
     // console.log(currentQuestion)
 
     // console.log(currentQuestion)
+    if(questions[currentQuestion-1].type === "coding") {
+
+    
     inputRef.current.innerText = "";
     outputRef.current.innerText = "";
     const index = savedCode.findIndex((e) => e.queNumber === currentQuestion-1);
@@ -56,6 +59,8 @@ main()
 `);
     }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
+  }
+
     dispatch({ type: "PREV_QUESTION" });
   };
 
@@ -65,6 +70,8 @@ main()
       setShow(true);
     }
     else{
+     if(questions[currentQuestion+1].type === "coding") {
+
      
     inputRef.current.innerText = "";
     outputRef.current.innerText = "";
@@ -98,6 +105,8 @@ main()
 `);
      }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
+    }
+    
     dispatch({ type: "NEXT_QUESTION" });  
   }
     

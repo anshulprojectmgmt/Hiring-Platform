@@ -12,13 +12,14 @@ import Webcam from "react-webcam";
 import BarLoader from "react-spinners/BarLoader";
 import "./Test.css";
 import Modal from "react-bootstrap/Modal";
-import { debounce } from 'lodash';
+// import { debounce } from 'lodash';
 // import webgazer from "webgazer";
 // eslint-disable-next-line
-import compressVideo from "../../utility/compress";
+
 import { persistStore } from 'redux-persist';
 import store from '../../store'
 import Subjective from "../../components/subjective/Subjective";
+import TestTypeWrapper from "../../components/test-type-wrapper/TestTypeWrapper";
 const Test = () => {
  
 
@@ -337,7 +338,7 @@ try {
         }
       }
       else if(testtype==="subjective") {
-       console.log('subj data array==' , subjData);
+     
         const res = await axios.post(`${BASE_URL}/api/submit-subjectivetest`, {
           testData: subjData,
           candidateEmail: candidateEmail,
@@ -357,6 +358,11 @@ try {
           }
           navigate("/testend",{replace: true});
         }
+      }
+      else if(testtype==="coding+subjective"){
+        navigate("/testend",{replace: true});
+      }else{
+        navigate("/testend",{replace: true});
       }
       
     } catch (error) {
@@ -563,7 +569,8 @@ for (let [key, value] of formData.entries()) {
         <div className="webcam">
           {loader.current === "true" ? null : (
             <Webcam id="video" audio={false} ref={webcamRef} width={100} height={40} />
-          )}
+         
+         )}
         </div>
         }
         <div className="timer">
@@ -661,6 +668,7 @@ for (let [key, value] of formData.entries()) {
       {testtype === "coding" ? <Body /> 
         : testtype === "mcq" ? <Mcq /> 
         : testtype=== "subjective" ? <Subjective />
+        : testtype === "coding+subjective" ? <TestTypeWrapper /> 
         : <h1>Test type didn't matched</h1>
         }
     </div>

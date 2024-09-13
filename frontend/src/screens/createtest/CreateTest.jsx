@@ -18,6 +18,9 @@ const CreateTest = () => {
     difficulty: "",
     questions: "",
     duration: "",
+    codQue: 0,
+    mcqQue: 0,
+    subjQue: 0,
   });
   const [testCode, setTestCode] = useState("");
   const [copyStatus, setCopyStatus] = useState("Copy");
@@ -36,6 +39,9 @@ const CreateTest = () => {
         difficulty: "",
         questions: "",
         duration: "",
+        codQue: 0,
+        mcqQue: 0,
+        subjQue: 0,
       });
     }
   };
@@ -94,7 +100,7 @@ const CreateTest = () => {
             <select
               required
               name="type"
-              value={testData.Type}
+              value={testData.type}
               onChange={handleChange}
               
             >
@@ -104,6 +110,7 @@ const CreateTest = () => {
               <option value="coding">Coding</option>
               <option value="mcq">MCQ</option>
               <option value="subjective">Subjective</option>
+              <option value="coding+subjective">Coding+Subjective</option>
             </select>
             <select
               required
