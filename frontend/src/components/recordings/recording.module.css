@@ -13,9 +13,12 @@
   .recording {
    display: flex;
    flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   width: 100%;
+   margin: 1rem 1rem;
    
    
-   margin: 2rem;
    padding: 1rem;
   }
  .titlecont {
@@ -32,38 +35,115 @@
 }
  .videocont{
     display: flex;
-    
-    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    gap: 1.3rem;
     flex-wrap: wrap;
+    
     margin-top: 2rem;
+   width: 100%;
+   
+   
  }
  .videoItem{
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  width: 45%;
+  justify-content: space-between;
+  align-items: center;
+  
+  
+  max-width: 450px;
+  height: 420px;
+  margin-bottom: 1rem;
+  
+}
+.capvideo {
+ max-width: 450px;
+ max-height: 400px;
+  
+} 
+.ques{
+  /* color: "gray" ,fontWeight: "bolder", fontSize:"16px", textAlign:"center" */
+  color: gray;
+  font-weight: bolder;
+  font-size: 1rem;
+  display: flex;
+  text-align: center;
 }
  
  @media (max-width: 600px) {
-    .capimg {
-      width: 100%; /* Full width */
-      height: auto; /* Maintain aspect ratio */
+    /* .capimg {
+      width: 100%; 
+      height: auto; 
+    } */
+    .videocont {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+       align-items: center;
+      gap: 1rem;
+     
+      width: 100%;
+    
+     
     }
+    .videoItem{
+      max-width: 100%;
+      height: auto;
+      
+      justify-content: center;
+       align-items: center;
+    }
+    .capvideo {
+      max-width: 100%;
+      max-height: auto;
+       
+     }
+     .ques{
+      color: red;
+      font-size: 0.7rem;
+      font-weight: 800;
+     }
   }
   
   /* Styles for medium screens (tablets) */
   @media (min-width: 601px) and (max-width: 1024px) {
-    .capimg {
-      width: 45%; /* Half width */
+    /* .capimg {
+      width: 45%; 
       height: auto;
+    } */
+
+    .videocont {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 10px;
+      
     }
+    .videoItem{
+      
+      max-width: 90%;
+      margin: 0 auto;
+      height: 500px;
+    }
+    .capvideo {
+      max-width: 100%;
+      max-height: 80%;
+       
+     }
+    .ques{
+      font-size: 0.8rem;
+    } 
   }
   
   /* Styles for large screens (desktop) */
   @media (min-width: 1025px) {
-    .capimg {
-      width: 30%; /* Smaller portion */
+    /* .capimg {
+      width: 30%; 
       height: auto;
-    }
+    } */
+    
   }
