@@ -9,10 +9,10 @@ const Recording = () => {
     const {candidateInfo,score , testtype} = location.state;
     
     const [camType,setCamType] = useState(1);
-console.log('cand info' , candidateInfo);
+
   return (
     <div className={rec.recording}>
-        <h1 className={rec.titleheading}>{candidateInfo.name} -{50}</h1>
+        <h1 className={rec.titleheading}>{candidateInfo.name}</h1>
         
     <div className={rec.titlecont}>
     <div
@@ -33,17 +33,20 @@ console.log('cand info' , candidateInfo);
         camType===1 ?
       <div  className={rec.videocont}>
         {(candidateInfo.result && candidateInfo.result.length > 0) ? 
-        candidateInfo.result.map((shot) => (
+        candidateInfo.result.map((shot,ind) => (
            
               // <img className={rec.capimg} src={shot} alt='screenshot' />
-            <div className={rec.videoItem}>
-            <video src={shot.subjVideoUrl} className={rec.capimg}  controls />
-            <p style={{color: "gray" ,fontWeight: "lighter", fontSize:"12px"}}>{shot.question}</p>
+            <div className={rec.videoItem} key={ind}>
+            <video src={shot.subjVideoUrl} className={rec.capvideo}  controls />
+            <p className={rec.ques} >{shot.question}</p>
             </div>
         ))
         : 
       <div style={{display:"flex", justifyContent:"center" ,alignItems:"center", fontSize:"20px" , fontWeight: "bold", width:"100%" ,minHeight:"300px"}} className={rec.videocont}>No Recording present</div>
       }
+
+
+
     </div>
       :
       <div  className={rec.videocont}>
@@ -54,6 +57,7 @@ console.log('cand info' , candidateInfo);
         : 
       <div style={{display:"flex", justifyContent:"center" ,alignItems:"center", fontSize:"20px" , fontWeight: "bold", width:"100%" ,minHeight:"300px"}} className={rec.videocont}>No screenshot present for secondary camera</div>
       }
+
     </div>
         
         
