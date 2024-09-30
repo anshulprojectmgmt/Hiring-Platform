@@ -89,19 +89,22 @@ newCode = `
 def main():
 #  pre define --------********
 ${indentedInsertedCode}        
+
 # ***** end ************
 
-
-    print("Hello World")
+# write your code here and print the output.
     
 main()
-# define your function at the top & call inside print of main fun. 
+ 
 `;
 
 return newCode;
   }
 }
+
+
   useEffect(() => {
+    
     try {
       switch (language) {
         case "Python":
@@ -160,11 +163,7 @@ return newCode;
 
   return (
     <div className="editor-container">
-      <EditorHeader
-        inputRef={inputRef}
-        outputRef={outputRef}
-        editorRef={editorRef}
-      />
+      
      <Editor className="editor"
         theme={theme}
         height="100%"
@@ -208,6 +207,11 @@ return newCode;
           scrollBeyondLastLine: false, // Prevent scrolling beyond last line
         }}
         onMount={handleMount}
+      />
+      <EditorHeader
+        inputRef={inputRef}
+        outputRef={outputRef}
+        editorRef={editorRef}
       />
     </div>
   );
