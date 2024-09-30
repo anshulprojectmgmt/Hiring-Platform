@@ -49,13 +49,14 @@ const indentedInsertedCode = questions[currentQuestion-1].wrapper_details[0].wra
       editorRef.current.setValue(`def main():
 #  pre define --------********
 ${indentedInsertedCode}
+
 # ***** end ************
 
 
-    print("Hello World")
+# Write your code here and print the output. 
     
 main()
-# define your function at the top & call inside print of main fun.
+
 `);
     }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
@@ -95,13 +96,14 @@ const indentedInsertedCode = questions[currentQuestion+1].wrapper_details[0].wra
       editorRef.current.setValue(`def main():
 #  pre define --------********
 ${indentedInsertedCode}
+
 # ***** end ************
 
 
-    print("Hello World")
+# Write your code here and print the output.
     
 main()
-# define your function at the top & call inside print of main fun.
+
 `);
      }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });

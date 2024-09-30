@@ -7,7 +7,7 @@
    /* border-right: 1px solid var(--color-heading); */
 }
 .problem_header{
-    height: 3rem;
+    height: 4rem;
     width: 100%;
     /* background-color: aquamarine; */
     display: flex;
@@ -22,10 +22,12 @@
 .back_btn, .next_btn{
     /* background-color: yellow; */
     background: rgb(202, 198, 198);
-    
+    height: 48px;
+    width: 56px;
     padding: 6px;
     cursor: pointer;
     border: none;
+    margin-top: 0.5rem;
 }
 
 .problem_body{
