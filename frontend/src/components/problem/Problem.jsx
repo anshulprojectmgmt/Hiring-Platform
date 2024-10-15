@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { CodeStatus } from "../../compiler/Compiler";
 import Modal from "react-bootstrap/Modal";
 import Button from 'react-bootstrap/Button';
+import { userHelperFun, createHelperFun } from "../../utility/wrapper-helper";
 
 const Problem = ({ editorRef, inputRef, outputRef }) => {
   const dispatch = useDispatch();
@@ -17,7 +18,6 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
   const handleClose = () => setShow(false);
 
   const savedCode = useSelector((state) => state.savedCode);
-  // console.log(savedCode)
 
   const handlePrev = () => {
     // console.log(currentQuestion)
@@ -38,6 +38,7 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
     } 
     else if(index === -1){
       dispatch({type: "CHANGE_LANGUAGE", payload: "Python"})
+      const wrapTitle=    questions[currentQuestion-1]?.wrapper_details[0]?.title
     // Calculate base indentation
 const baseIndentation = '    '; // assuming the base indentation is 4 spaces
 
@@ -46,18 +47,26 @@ const indentedInsertedCode = questions[currentQuestion-1].wrapper_details[0].wra
   .split('\n')
   .map(line => baseIndentation + line) // add base indentation to each line
   .join('\n');
-      editorRef.current.setValue(`def main():
+
+  let  newCode = `
+${userHelperFun(wrapTitle)}:
+# write your code here
+
+
+# <fold>
+def main():
 #  pre define --------********
-${indentedInsertedCode}
+${indentedInsertedCode}        
 
 # ***** end ************
 
-
-# Write your code here and print the output. 
-    
+    print(${createHelperFun(wrapTitle)})    
 main()
 
-`);
+# </fold>
+`;
+
+      editorRef.current.setValue(newCode);
     }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
   }
@@ -84,7 +93,7 @@ main()
     }
     else if(index === -1){
       dispatch({type: "CHANGE_LANGUAGE", payload: "Python"})
-    
+      const wrapTitle=    questions[currentQuestion+1]?.wrapper_details[0]?.title
    // Calculate base indentation
 const baseIndentation = '    '; // assuming the base indentation is 4 spaces
 
@@ -93,18 +102,26 @@ const indentedInsertedCode = questions[currentQuestion+1].wrapper_details[0].wra
   .split('\n')
   .map(line => baseIndentation + line) // add base indentation to each line
   .join('\n');
-      editorRef.current.setValue(`def main():
+      
+let  newCode = `
+${userHelperFun(wrapTitle)}:
+# write your code here
+
+
+# <fold>
+def main():
 #  pre define --------********
-${indentedInsertedCode}
+${indentedInsertedCode}        
 
 # ***** end ************
 
-
-# Write your code here and print the output.
-    
+    print(${createHelperFun(wrapTitle)})    
 main()
 
-`);
+# </fold>
+`;
+
+  editorRef.current.setValue(newCode);
      }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
     }

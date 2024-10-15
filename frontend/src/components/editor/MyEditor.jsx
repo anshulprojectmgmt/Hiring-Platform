@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Editor.css";
 import Editor from "@monaco-editor/react";
 import EditorHeader from "../editor-header/EditorHeader";
@@ -8,10 +8,15 @@ import {
   javascriptCode,
   cppCode,
 } from "../../assests/BoilerPlates";
+import { userHelperFun, createHelperFun } from "../../utility/wrapper-helper";
 import { debounce } from "lodash";
 import { ErrorBoundary } from 'react-error-boundary';
 
 const MyEditor = ({ editorRef, inputRef, outputRef }) => {
+  const [monacoInstance, setMonacoInstance] = useState(null);
+  const [editorInstance, setEditorInstance] = useState(null); 
+  const [loading,setLoading] = useState(null);
+  console.log('loading:', loading);
   const language = useSelector((state) => state.editorTheme.language);
   const theme = useSelector((state) => state.editorTheme.theme);
   const font = useSelector((state) => state.editorTheme.fontSize);
@@ -71,13 +76,87 @@ const MyEditor = ({ editorRef, inputRef, outputRef }) => {
   const handleMount = (editor, monaco) => {
     editorRef.current = editor;
   };
+
+
+  
+
+  
+  const foldMainFunction = (editor, monaco) => {
+    
+    const model = editor.getModel();
+    const lineCount = model.getLineCount();
+  
+    for (let i = 1; i <= lineCount; i++) {
+      const lineContent = model.getLineContent(i);
+      
+      if (lineContent.includes('# <fold>')) {
+        const startLineNumber = i + 1;
+        editor.setSelection(new monaco.Selection(startLineNumber, 1, startLineNumber, 1));
+        editor.trigger('', 'editor.fold', {});
+        break;
+      }
+    }
+  };
+ 
+  // Called when the editor is mounted
+const onMount = (editor, monaco) => {
+    setMonacoInstance(monaco); // Save the monaco instance for later use
+    setEditorInstance(editor);
+    setLoading(true);
+    console.log('editor on mount:', editor);
+    // Add custom folding provider
+    monaco.languages.registerFoldingRangeProvider('python', {
+      provideFoldingRanges: (model, context, token) => {
+        const ranges = [];
+        const lines = model.getLinesContent();
+
+        lines.forEach((line, i) => {
+          if (line.includes('# <fold>')) {
+            const start = i + 1;
+            for (let j = start; j < lines.length; j++) {
+              if (lines[j].includes('# </fold>')) {
+                ranges.push({
+                  start: start,
+                  end: j + 1,
+                  kind: monaco.languages.FoldingRangeKind.Comment,
+                });
+                break;
+              }
+            }
+          }
+        });
+
+        return ranges;
+      },
+    });
+
+    // Initially fold the main function
+    foldMainFunction(editor, monaco);
+    setLoading(false);
+    // Call additional mount handler if necessary
+    handleMount && handleMount(editor, monaco);
+  };
+
+  // Called when editor content changes
+  const monacoEditorChange = (newValue, event) => {
+    setLoading(true);
+    console.log('editor on change:', editorInstance);
+    if (editorInstance && monacoInstance) {
+      // Use the saved editor and monaco instances to fold the main function
+      foldMainFunction(editorInstance, monacoInstance);
+    }
+    setLoading(false);
+  };
+ 
+  
   
 const quesBoilerCode = (lang) => {
   let newCode =''
   if(lang=="Python"){
-    //   ${questions[currentQuestion].wrapper_details[0].wrapper}
+    const wrapTitle=    questions[currentQuestion]?.wrapper_details[0]?.title
      // Calculate base indentation
 const baseIndentation = '    '; // assuming the base indentation is 4 spaces
+
 
 // Indent the inserted code
 const indentedInsertedCode = questions[currentQuestion].wrapper_details[0].wrapper
@@ -86,21 +165,27 @@ const indentedInsertedCode = questions[currentQuestion].wrapper_details[0].wrapp
   .join('\n');
       
 newCode = `
+${userHelperFun(wrapTitle)}:
+# write your code here
+
+
+# <fold>
 def main():
 #  pre define --------********
 ${indentedInsertedCode}        
 
 # ***** end ************
 
-# write your code here and print the output.
-    
+    print(${createHelperFun(wrapTitle)})    
 main()
- 
+
+# </fold> 
 `;
 
 return newCode;
   }
 }
+ 
 
 
   useEffect(() => {
@@ -160,7 +245,6 @@ return newCode;
     }
    
   }, [language, editorRef]);
-
   return (
     <div className="editor-container">
       
@@ -168,13 +252,16 @@ return newCode;
         theme={theme}
         height="100%"
         language={language.toLowerCase()}
-        value={`${editorRef?.current?.getValue() ? editorRef.current.getValue() : quesBoilerCode("Python")}`}
+        value={`${editorRef?.current?.getValue() ? editorRef.current.getValue() : quesBoilerCode("Python")}`}        
+        
         options={{
           saveViewState: false,
           keepCurrentModel: true,
           wordWrap: "on",
           showUnused: false,
-          folding: false,
+          folding: true,
+          // foldingStrategy: 'indentation',
+          automaticLayout: true,
           lineNumbersMinChars: 3,
           minimap: {
             enabled: false,
@@ -206,7 +293,8 @@ return newCode;
           fixedOverflowWidgets: true,
           scrollBeyondLastLine: false, // Prevent scrolling beyond last line
         }}
-        onMount={handleMount}
+        onMount={onMount}
+        onChange={monacoEditorChange}
       />
       <EditorHeader
         inputRef={inputRef}

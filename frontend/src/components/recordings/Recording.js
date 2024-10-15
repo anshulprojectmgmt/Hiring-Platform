@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import rec from "./recording.module.css"
 import rightUp from "../../assests/right-up.png"
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 const Recording = () => {
     const location = useLocation();
@@ -9,6 +10,12 @@ const Recording = () => {
     const {candidateInfo,score , testtype} = location.state;
     
     const [camType,setCamType] = useState(1);
+   const navigate = useNavigate();
+    const dispatch = useDispatch();
+  const handleSpeechView = (info, ind) => {
+    dispatch({type: "SET_VIDEO_INDX", candidateResult: info, index: ind});
+    navigate('/speech-ace')
+  }
 
   return (
     <div className={rec.recording}>
@@ -38,7 +45,10 @@ const Recording = () => {
               // <img className={rec.capimg} src={shot} alt='screenshot' />
             <div className={rec.videoItem} key={ind}>
             <video src={shot.subjVideoUrl} className={rec.capvideo}  controls />
-            <p className={rec.ques} >{shot.question}</p>
+            <p style={{minHeight: '30px'}} className={rec.ques} >{shot.question}</p>
+            <div onClick={()=>{handleSpeechView(candidateInfo,ind)}} className="ctabutton">
+              View Speech Analysis
+            </div>
             </div>
         ))
         : 
