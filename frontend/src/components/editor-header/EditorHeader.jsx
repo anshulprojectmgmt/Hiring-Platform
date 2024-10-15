@@ -120,7 +120,8 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
           }
         ]
       };
-
+// 65.1.56.8:2358
+// "https://compiler.aiplanet.me/submissions/batch"
       const response = await axios.post(
         "https://compiler.aiplanet.me/submissions/batch",
         { ...requestBody }
@@ -208,6 +209,7 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
       }
     } catch (error) {
       setIsRun(false);
+      dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Error });
       console.log('compiler timeout', error);
     }
   };

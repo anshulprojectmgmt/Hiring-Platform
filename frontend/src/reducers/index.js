@@ -7,6 +7,7 @@ import dashBoardInfo from "./dashboardInfo";
 import savedMcq from "./savedMcq";
 import instructionState from "./instructionState";
 import savedSubjective from "./savedSubjective";
+import candidateResult from "./candidateResult";
 
 const reducer = combineReducers({
   editorTheme,
@@ -17,6 +18,7 @@ const reducer = combineReducers({
   savedMcq,
   instructionState,
   savedSubjective,
+  candidateResult,
 });
 
 export default reducer;

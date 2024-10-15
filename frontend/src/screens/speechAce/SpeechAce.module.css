@@ -1,0 +1,32 @@
+.scores[data-v-b8ce3cb6] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    flex: 1;
+    padding: 0.8rem;
+}
+
+.scoreItem[data-v-b8ce3cb6] {
+    width: 338px;
+    height: 132px;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+    border: 4px solid lightblue;
+}
+.scoreItem .scoreLabel[data-v-b8ce3cb6] {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+}
+
+.part1 .scores .scoreItem:first-child .score[data-v-b8ce3cb6] {
+    color: #08a250;
+}
+
+.part1 .scores .scoreItem .score[data-v-b8ce3cb6] {
+    padding-top: 10px;
+    font-size: 40px;
+    font-weight: 700;
+}

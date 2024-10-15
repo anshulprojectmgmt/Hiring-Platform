@@ -22,7 +22,7 @@ const Subjective = () => {
     
     const { status, startRecording, stopRecording, mediaBlobUrl } =
          useReactMediaRecorder({ video: true , audio: true});
-     const questions = useSelector((state) => state.getQuestion.questions);
+      const questions = useSelector((state) => state.getQuestion.questions);
     const currentQuestion = useSelector((state) => state.getQuestion.currentQuestion);
     const [recordedVideos, setRecordedVideos] = useState([]);
     const [show , setShow] = useState(false);
@@ -33,9 +33,17 @@ const Subjective = () => {
   const candidateEmail = useSelector((state) => state.testInfo.candidateEmail);
   const testCode = useSelector((state) => state.testInfo.testCode);
   const testtype = useSelector((state) => state.testInfo.testtype);
-   
+   let toastId;
   const present = recordedVideos.find((rec) =>rec.question === questions[currentQuestion].question );
 
+
+  const toggleRecording = (stat) => {
+    
+    if(stat==='recording'){
+      stopRecording();
+      toast.dismiss(toastId);
+    }
+  }
    const handleClose = () => setShow(false);
    const uploadVideo = async (videoBlob, id) => {
     
@@ -107,14 +115,36 @@ const Subjective = () => {
     const handlePrev = () => {
       setUpd("idle");
       dispatch({type: "PREV_QUESTION"})
+      toast.dismiss(toastId);
     }
     const handleNext = () => {
-    
+      let tstNxtId;
+    if(!present) {
+      if(tstNxtId){
+        toast.dismiss(tstNxtId);
+      }
+      
+     tstNxtId= toast.info(
+      "Please Save video first", {
+       
+        position: "top-center",
+        autoClose: 1000*5, // Duration in milliseconds (5000ms = 5 seconds)
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+  
+  })
+  return;
+    }
       if(currentQuestion===(questions.length-1)) {
+        toast.dismiss(tstNxtId);
         setShow(true);
       } else {
         setUpd("idle");
         dispatch({type:"NEXT_QUESTION"});
+        toast.dismiss(tstNxtId);
+        toast.dismiss(toastId);
       }
     }
     
@@ -122,7 +152,8 @@ const Subjective = () => {
     
     let timeId;
     if(status === "recording") {
-      toast.warning(<div>recording will automatically <strong style={{fontWeight:"bolder"}}>STOP</strong> after <strong style={{fontWeight:"bolder"}}>2 MIN</strong>. </div>, {
+      toast.dismiss(toastId);
+      toastId=toast.info(<div>recording will automatically <strong style={{fontWeight:"bolder"}}>STOP</strong> after <strong style={{fontWeight:"bolder"}}>2 MIN</strong>. </div>, {
        
         position: "top-center",
         autoClose: 1000*60*2, // Duration in milliseconds (5000ms = 5 seconds)
@@ -132,8 +163,9 @@ const Subjective = () => {
         draggable: true,
   
   })
-    console.log('record will stop  in 30sec.');
+    
      timeId = setTimeout(() => {
+      
     stopRecording();
     
     }, 1000*60*2)
@@ -142,16 +174,13 @@ const Subjective = () => {
   return () => clearTimeout(timeId);
   },[status])
 
-  // useEffect(() => {
-  //   console.log('original status:' , status)
-  //   setUpd(status);
-  // }, [status])
+
 
  useEffect(() => {
   console.log('record start in 30sec.');
   let timeId;
    if(!present) {
-    toast.warning(<div>
+    toastId=toast.info(<div>
       recording will automatically <strong style={{fontWeight:"bolder"}}>START</strong> after <strong style={{fontWeight:"bolder"}}>1 MIN</strong>. </div>, {
       position: "top-center",
       autoClose: 1000*60, // Duration in milliseconds (5000ms = 5 seconds)
@@ -162,12 +191,9 @@ const Subjective = () => {
 
 })
    timeId = setTimeout(() => {
-    console.log('upd status after 1min of mounting' , upd);
-    // if(upd==="idle") {
-      console.log('recoridng start==');
-      startRecording();
+    startRecording();
     
-    // }        
+            
   },1000*60)
   
 }
@@ -241,13 +267,20 @@ const Subjective = () => {
             </ul>
           </p>
           <hr/>
+          <p className={styles.para}>
           <h4 className="problem_body_heading">
             Note: 
           </h4>
-          <p className={styles.para}>
-            Record a video of yourself , <span style={{fontSize: '16px' , "fontWeight": "bold", color:"black"}}>Max 2 minumte</span>.
-            <br/> consider all the above key points while recording your answer.
+            <ol>
+              <li>You have to wait (<span style={{fontSize: '16px' , "fontWeight": "bold", color:"black"}}>1 min</span>) till recording starts.</li>
+              <li>You can <span style={{fontSize: '16px' , "fontWeight": "bold", color:"black"}}>STOP</span> the recording when you are finished. 
+               <span style={{fontSize: '16px' , "fontWeight": "bold", color:"black"}}> Max limit is 2 Mins </span>
+                 after which it will automatically stop.</li>
+              <li>consider all the above key points while recording your answer.</li>
+              
+            </ol>
           </p>
+
         </div>
         
     <div className={styles.videoContainer}>
@@ -262,11 +295,19 @@ const Subjective = () => {
      }
      </div> 
       <div className={styles.btnContainer}>
-      <button disabled={isLoading || present || true} className={`${styles.ctaButton}`} style={{backgroundColor: upd==="recording"? "red": ''}} onClick={upd === "recording" ? stopRecording : startRecording} >
-        {upd === "recording" ? "Recording" : "Start Recording"}
+      <button disabled={isLoading || present || upd!=='recording'}
+       className={`${styles.ctaButton}`}
+        style={{backgroundColor: upd==="recording"? "red": ''}}
+         onClick={()=> toggleRecording(upd)} >
+        {upd === "recording" ? "Stop Recording..." : "Start Recording"}
       </button>
       {upd === "stopped" && (
-        <button style={{display:"flex", gap:"2px", justifyContent:"center" ,alignItems:"center"}} disabled={isLoading} className={isLoading? styles.ctaBtnDisable : styles.ctaButton} onClick={() => saveVideo(mediaBlobUrl)}>Save
+        <button 
+        style={{display:"flex", gap:"2px", justifyContent:"center" ,alignItems:"center"}}
+        disabled={isLoading} className={isLoading? styles.ctaBtnDisable : styles.ctaButton}
+        onClick={() => saveVideo(mediaBlobUrl)}
+        >
+          Save
         <ClipLoader
         color={"#1c4b74"}
         loading={isLoading}
