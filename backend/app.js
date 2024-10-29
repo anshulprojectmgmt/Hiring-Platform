@@ -72,7 +72,7 @@ app.use("/api", require("./routes/Payment"));
 app.use("/api", require("./routes/S3VideoUpload"));
 app.use("/api", require("./routes/MediaProcess"));
 app.use("/api", require("./routes/SQShandler"));
-app.use("/api", require('./routes/speech-to-text'));
+// app.use("/api", require('./routes/speech-to-text'));
 app.use("/api", require('./routes/speech-result'));
 
 app.listen(port, () => {
