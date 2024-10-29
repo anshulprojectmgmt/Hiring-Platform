@@ -16,7 +16,7 @@ const MyEditor = ({ editorRef, inputRef, outputRef }) => {
   const [monacoInstance, setMonacoInstance] = useState(null);
   const [editorInstance, setEditorInstance] = useState(null); 
   const [loading,setLoading] = useState(null);
-  console.log('loading:', loading);
+  
   const language = useSelector((state) => state.editorTheme.language);
   const theme = useSelector((state) => state.editorTheme.theme);
   const font = useSelector((state) => state.editorTheme.fontSize);
@@ -79,12 +79,12 @@ const MyEditor = ({ editorRef, inputRef, outputRef }) => {
 
 
   
-
-  
-  const foldMainFunction = (editor, monaco) => {
+  function foldMainFunction(editor, monaco) {
+    console.log('Folding operation triggered');
     
     const model = editor.getModel();
     const lineCount = model.getLineCount();
+  
   
     for (let i = 1; i <= lineCount; i++) {
       const lineContent = model.getLineContent(i);
@@ -92,18 +92,24 @@ const MyEditor = ({ editorRef, inputRef, outputRef }) => {
       if (lineContent.includes('# <fold>')) {
         const startLineNumber = i + 1;
         editor.setSelection(new monaco.Selection(startLineNumber, 1, startLineNumber, 1));
+  
+        // Trigger folding
         editor.trigger('', 'editor.fold', {});
+  
+        // Break after folding the desired section
         break;
       }
     }
-  };
+  
+  }
+  
  
   // Called when the editor is mounted
-const onMount = (editor, monaco) => {
+  const onMount = (editor, monaco) => {
     setMonacoInstance(monaco); // Save the monaco instance for later use
     setEditorInstance(editor);
-    setLoading(true);
-    console.log('editor on mount:', editor);
+    
+    console.log('editor on mount:', );
     // Add custom folding provider
     monaco.languages.registerFoldingRangeProvider('python', {
       provideFoldingRanges: (model, context, token) => {
@@ -131,22 +137,30 @@ const onMount = (editor, monaco) => {
     });
 
     // Initially fold the main function
-    foldMainFunction(editor, monaco);
-    setLoading(false);
+    // foldMainFunction(editor, monaco);
+    
     // Call additional mount handler if necessary
     handleMount && handleMount(editor, monaco);
   };
 
   // Called when editor content changes
-  const monacoEditorChange = (newValue, event) => {
-    setLoading(true);
-    console.log('editor on change:', editorInstance);
+   //const monacoEditorChange = (newValue, event) => {
+    // setLoading(true);
+    // console.log('editor on change:', editorInstance);
+    // if (editorInstance && monacoInstance) {
+    //   // Use the saved editor and monaco instances to fold the main function
+    //   foldMainFunction(editorInstance, monacoInstance);
+    // }
+    // setLoading(false);
+   //};
+
+   useEffect(() => {
     if (editorInstance && monacoInstance) {
       // Use the saved editor and monaco instances to fold the main function
+   console.log('effect for fold get called')
       foldMainFunction(editorInstance, monacoInstance);
     }
-    setLoading(false);
-  };
+   },[currentQuestion, editorInstance])
  
   
   
@@ -166,7 +180,9 @@ const indentedInsertedCode = questions[currentQuestion].wrapper_details[0].wrapp
       
 newCode = `
 ${userHelperFun(wrapTitle)}:
-# write your code here
+# write your code here and return output
+
+
 
 
 # <fold>
@@ -245,6 +261,7 @@ return newCode;
     }
    
   }, [language, editorRef]);
+
   return (
     <div className="editor-container">
       
@@ -260,14 +277,14 @@ return newCode;
           wordWrap: "on",
           showUnused: false,
           folding: true,
-          // foldingStrategy: 'indentation',
-          automaticLayout: true,
+          //foldingStrategy: 'indentation',
+          
           lineNumbersMinChars: 3,
           minimap: {
             enabled: false,
           },
           fontSize: font,
-          scrollBeyondLastLine: true,
+          scrollBeyondLastLine: false,
           automaticLayout: true,
           bracketPairColorization: {
             enabled: true,
@@ -276,8 +293,8 @@ return newCode;
           wordBasedSuggestionsOnlySameLanguage: true,
           // New properties for improved handling
           scrollbar: {
-            vertical: 'auto',
-            horizontal: 'auto',
+            vertical: 'visible',
+            horizontal: 'visible',
             alwaysConsumeMouseWheel: false,
             verticalScrollbarSize: 10,
             horizontalScrollbarSize: 10
@@ -294,7 +311,7 @@ return newCode;
           scrollBeyondLastLine: false, // Prevent scrolling beyond last line
         }}
         onMount={onMount}
-        onChange={monacoEditorChange}
+        
       />
       <EditorHeader
         inputRef={inputRef}
@@ -305,14 +322,6 @@ return newCode;
   );
 };
 
-// Fallback component for error boundary
-// const FallbackComponent = () => {
-//   return <div style={{color: 'black'}}>Something went wrong with the editor.</div>;
-// };
-// const WrappedMyEditor = (props) => (
-//   <ErrorBoundary FallbackComponent={FallbackComponent} >
-//     <MyEditor {...props} />
-//   </ErrorBoundary>
-// );
+
 
 export default MyEditor;

@@ -1,5 +1,5 @@
 import { useReactMediaRecorder } from "react-media-recorder";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "react-bootstrap/Modal";
@@ -25,6 +25,7 @@ const Subjective = () => {
       const questions = useSelector((state) => state.getQuestion.questions);
     const currentQuestion = useSelector((state) => state.getQuestion.currentQuestion);
     const [recordedVideos, setRecordedVideos] = useState([]);
+    const [speechResult,setSpeechResult] = useState(null);
     const [show , setShow] = useState(false);
     const dispatch = useDispatch();
    const [upd, setUpd] = useState(null);
@@ -33,14 +34,57 @@ const Subjective = () => {
   const candidateEmail = useSelector((state) => state.testInfo.candidateEmail);
   const testCode = useSelector((state) => state.testInfo.testCode);
   const testtype = useSelector((state) => state.testInfo.testtype);
+  const [audioBlobUrl, setAudioBlobUrl] = useState(null);
+  const audioRecorderRef = useRef(null);
+  const audioBlobRef = useRef(null);
    let toastId;
   const present = recordedVideos.find((rec) =>rec.question === questions[currentQuestion].question );
 
+  const handleSubmit = async (blobUrl, audioBlob) => {
+    try {
+      setIsLoading(true);
+      // Trigger both async functions in parallel using Promise.all
+      const [s3VideoUrl, speechScore] = await Promise.all([
+        saveVideo(blobUrl),    // Save video to S3
+        getSpeechResult(audioBlob)  // Get speech result
+      ]);
+  
+      setIsLoading(false);
+      // Once both functions are done, call storeTestResult with their results
+      storeTestResult({ s3VideoUrl, speechScore });
+  
+    } catch (error) {
+      // Handle any error from either of the functions
+      console.error('Error occurred:', error);
+      toast.warning("Please try again!!");
+      setIsLoading(false);
+    }
+  };
+
+  // Function to store the final test result
+function storeTestResult({ s3VideoUrl, speechScore }) {
+ 
+   toast.success("video uploaded successfully");
+  
+    setRecordedVideos([
+      ...recordedVideos,
+      { question: questions[currentQuestion].question, videoUrl: s3VideoUrl,speechResult: speechScore },
+    ]);
+
+    dispatch({
+      type: "UPLOAD_SUBJECTIVE",
+      question: questions[currentQuestion].question,
+      blobUrl: s3VideoUrl,
+      speechResult: speechScore,
+    });
+  
+}
 
   const toggleRecording = (stat) => {
     
     if(stat==='recording'){
       stopRecording();
+      stopAudioRec();
       toast.dismiss(toastId);
     }
   }
@@ -77,7 +121,7 @@ const Subjective = () => {
       };
 
       const saveVideo = async (blobUrl) => {
-        setIsLoading(true);
+        
         try {
           const blob = await getMediaBlob(blobUrl);
          if(!blob) {
@@ -86,27 +130,10 @@ const Subjective = () => {
            const s3VideoUrl = await uploadVideo(blob, currentQuestion + 1);
       //  const s3VideoUrl = "dumy";
        
-          setIsLoading(false);
-        
-        
-         toast.success("video uploaded successfully");
-          if (s3VideoUrl) {
-            setRecordedVideos([
-              ...recordedVideos,
-              { question: questions[currentQuestion].question, videoUrl: s3VideoUrl },
-            ]);
-        
-            dispatch({
-              type: "UPLOAD_SUBJECTIVE",
-              question: questions[currentQuestion].question,
-              blobUrl: s3VideoUrl,
-            });
-          } else {
-            console.log('Failed to upload video to S3.');
-          }
-        } catch (error) {
-          setIsLoading(false);
-          toast.warning("Please try again!!");
+          return s3VideoUrl
+      } catch (error) {
+          console.error('s3 upload failed:', error)
+          throw error
         }
       
       };
@@ -167,6 +194,7 @@ const Subjective = () => {
      timeId = setTimeout(() => {
       
     stopRecording();
+    stopAudioRec()
     
     }, 1000*60*2)
   }
@@ -174,7 +202,66 @@ const Subjective = () => {
   return () => clearTimeout(timeId);
   },[status])
 
+const getSpeechResult =async (audioBlob)=> {
+  try {
 
+const formData = new FormData();
+formData.append('relevance_context', questions[currentQuestion].question);
+
+if (audioBlob) {
+  formData.append("audio", audioBlob, "audio.wav"); // Add the audio file to the formData
+} else {
+  throw new Error('Please upload an audio file.')
+  }
+
+
+  const resp = await axios.post(`${BASE_URL}/api/speech-result`,formData,{
+   headers: {
+     'Content-Type': 'multipart/form-data',}
+  })
+
+
+const speechRes = resp.data.speech.speech_score;
+return speechRes
+} catch (error) {
+ console.error('speech error:', error) 
+  throw error;
+}
+
+}
+
+  // Stop audio recording
+  function stopAudioRec() {
+    if (audioRecorderRef.current) {
+      audioRecorderRef.current.stop();
+    }
+  };
+
+
+// Start audio recording separately
+const startAudioRec = async () => {
+  try {
+    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const clonedAudioStream = audioStream.clone();  // Clone the audio stream
+
+    audioRecorderRef.current = new MediaRecorder(clonedAudioStream);
+    let audioChunks = [];
+
+    audioRecorderRef.current.ondataavailable = (event) => {
+      audioChunks.push(event.data);
+    };
+
+    audioRecorderRef.current.onstop = () => {
+       audioBlobRef.current = new Blob(audioChunks, { type: "audio/wav" });
+      setAudioBlobUrl(URL.createObjectURL(audioBlobRef.current));
+    };
+
+    // Start recording audio
+    audioRecorderRef.current.start();
+  } catch (error) {
+    console.error("Error capturing audio:", error);
+  }
+};
 
  useEffect(() => {
   console.log('record start in 30sec.');
@@ -192,7 +279,7 @@ const Subjective = () => {
 })
    timeId = setTimeout(() => {
     startRecording();
-    
+    startAudioRec();
             
   },1000*60)
   
@@ -290,8 +377,10 @@ const Subjective = () => {
          <Webcam  className={styles.video} audio={false}  style={{  objectFit: 'cover'}} />
       
         : 
+        <>
          <video className={styles.video} src={mediaBlobUrl} controls autoPlay loop muted />
-     
+         <audio src={audioBlobUrl} controls  />
+         </>
      }
      </div> 
       <div className={styles.btnContainer}>
@@ -305,7 +394,7 @@ const Subjective = () => {
         <button 
         style={{display:"flex", gap:"2px", justifyContent:"center" ,alignItems:"center"}}
         disabled={isLoading} className={isLoading? styles.ctaBtnDisable : styles.ctaButton}
-        onClick={() => saveVideo(mediaBlobUrl)}
+        onClick={() => {handleSubmit(mediaBlobUrl, audioBlobRef.current)}}
         >
           Save
         <ClipLoader

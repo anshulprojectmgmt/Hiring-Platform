@@ -23,6 +23,7 @@ import QuestionForm from "./screens/questionform/QuestionForm";
 import Subjective from "./components/subjective/Subjective";
 import SpeechSuper from "./screens/super-speech/super-speech";
 import SpeechAce from "./screens/speechAce/SpeechAce";
+import ScreenRecorder from "./screens/super-speech/Screen-Recorder";
 
 function App() {
   return (
@@ -44,7 +45,7 @@ function App() {
         <Route path="/recording" element={<Recording />} />
         <Route path="/add-question" element={<QuestionForm />} />
         <Route path="/subjective" element={<Subjective />} />
-        <Route path="/speech-super" element={<SpeechSuper /> } />
+        <Route path="/speech-super" element={<ScreenRecorder /> } />
         <Route path="/speech-ace" element={<SpeechAce /> } />
       </Routes>
       <ToastContainer position="top-right" autoClose={2000} />

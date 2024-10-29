@@ -11,17 +11,17 @@ import { useParams } from "react-router-dom";
 import BarLoader from "react-spinners/BarLoader";
 import "./Camera2.css";
 import Modal from "react-bootstrap/Modal";
-import {Buffer} from 'buffer';
-
+import { Buffer } from "buffer";
+import HashLoader from "react-spinners/HashLoader";
 
 const Camera2 = () => {
   const navigate = useNavigate();
-  const [time,setTime] = useState(null);
-  
+  const [time, setTime] = useState(null);
+
   const initialTime = time * 60;
-  
+
   const [timeLeft, setTimeLeft] = useState(60);
-  
+
   const [hideCount, setHideCount] = useState(0);
   let timeTaken = useRef(initialTime);
   let tabSwitch = useRef(0);
@@ -33,6 +33,7 @@ const Camera2 = () => {
   const webcamRef = useRef(null);
   const videoMediaRecorder = useRef(null);
   const videoChunks = useRef([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const mediaStream = useRef(null);
   const loader = useRef("false");
@@ -44,174 +45,180 @@ const Camera2 = () => {
   const { cid } = useParams();
   const [capturedImageUrl, setCapturedImageUrl] = useState(null);
   const hasCapturedImage = useRef(false);
- const [captured,setCaptured] = useState(false);
- const canvasRef = useRef(null);
- const [captureCount, setCaptureCount] = useState(0);
- const [sideView, setSideView] = useState(0);
- const screenshots = useRef([]);
- const [btnStyle, setBtnStyle] = useState("false");
+  const [captured, setCaptured] = useState(false);
+  const canvasRef = useRef(null);
+  const [captureCount, setCaptureCount] = useState(0);
+  const [sideView, setSideView] = useState(0);
+  const screenshots = useRef([]);
+  const [btnStyle, setBtnStyle] = useState("false");
 
-// Function to get candidate details
-const getCandidateDetail = async (cid) => {
-  
-  try {
-    const resp = await axios.get(`${BASE_URL}/api/candidate-detail/${cid}`);
-    const userDetail = resp.data.userDetail;
-
-    // Check if user already submitted cam2
-    if (userDetail?.user?.cam2 === 2) {
-      toast.error("You have already submitted secondary camera");
-      navigate('/testend', { replace: true });
-      return true; // Indicate that we should stop further execution
-    }
-    timeTaken.current = userDetail.testInfo.duration * 60; 
-    setTime(userDetail.testInfo.duration);
-    setTimeLeft(userDetail?.testInfo?.duration ? userDetail.testInfo.duration * 60 : 60);
-
-    return false; // Indicate that it's okay to continue
-  } catch (error) {
-    toast.error("something went wrong");
-    console.error("Error fetching candidate details:", error);
-    // Handle error appropriately
-    return true; // Stop further execution in case of an error
-  }
-};
-
- // Function to get dashboard information
- const getDashboardInfo = async (cid) => {
-  
-  try {
-    const res = await axios.post(`${BASE_URL}/api/validate-camera2-session`, { cid });
-    setCandidateValidation(res.data.success);
-    setCandidateEmail(res.data.candidateEmail);
-    setTestCode(res.data.testCode);
-  } catch (error) {
-    console.error("Error validating camera2 session:", error);
-    // Handle error appropriately
-  }
-};
-const captureImage = (value) => {
-  if (canvasRef.current && webcamRef.current) {
-    const canvas = canvasRef.current;
-    const video = webcamRef.current;
-
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    const imageDataUrl = canvas.toDataURL('image/png');
-    setCapturedImageUrl(imageDataUrl);
-    setCaptureCount(value);
-  }
-};
-const handleRetake = (val) => {
-  setCapturedImageUrl(null);
-  
-  captureImage(val);
-};
-const handleSave = async (val) => {
-  
-  
-  if (capturedImageUrl && captureCount> 0) {
+  // Function to get candidate details
+  const getCandidateDetail = async (cid) => {
     try {
-    //  await axios.post('/api/upload', { imageUrl: capturedImageUrl });
-    const res = await axios.post(`${BASE_URL}/api/validate-camera2-session`, { cid , url: capturedImageUrl, value: captureCount});
-  //  localStorage.setItem('capturedImage2', capturedImageUrl);
-      setCapturedImageUrl(null);
-      setCaptured(true);
-    setCandidateValidation(res.data.success);
-    setCandidateEmail(res.data.candidateEmail);
-    setTestCode(res.data.testCode);
-      setCaptureCount(val);
-      if(val!=0) {
-        captureImage(val);
+      const resp = await axios.get(`${BASE_URL}/api/candidate-detail/${cid}`);
+      const userDetail = resp.data.userDetail;
+
+      // Check if user already submitted cam2
+      if (userDetail?.user?.cam2 === 2) {
+        toast.error("You have already submitted secondary camera");
+        navigate("/testend", { replace: true });
+        return true; // Indicate that we should stop further execution
       }
-      toast.success("Image Successfully Captured !!")
+      timeTaken.current = userDetail.testInfo.duration * 60;
+      setTime(userDetail.testInfo.duration);
+      setTimeLeft(
+        userDetail?.testInfo?.duration ? userDetail.testInfo.duration * 60 : 60
+      );
+
+      return false; // Indicate that it's okay to continue
+    } catch (error) {
+      toast.error("something went wrong");
+      console.error("Error fetching candidate details:", error);
+      // Handle error appropriately
+      return true; // Stop further execution in case of an error
+    }
+  };
+
+  // Function to get dashboard information
+  const getDashboardInfo = async (cid,face=null) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/api/validate-camera2-session`, {
+        cid,
+        cam2Face: face
+      });
+
+      if(!face) {
+        
+      setCandidateValidation(res.data.success);
+      setCandidateEmail(res.data.candidateEmail);
+      setTestCode(res.data.testCode);
+      }
     } catch (error) {
       console.error("Error validating camera2 session:", error);
-      toast.error("something went wrong !!")
+      // Handle error appropriately
     }
-  } else{
-    toast.error("something went wrong !!")
-  }
-};
+  };
+  const captureImage = (value) => {
+    if (canvasRef.current && webcamRef.current) {
+      const canvas = canvasRef.current;
+      const video = webcamRef.current;
 
-// Effect to get candidate detail and dashboard info
-useEffect(() => {
-  if (cid) {
-   
-    const fetchDetails = async () => {
-      const shouldStop = await getCandidateDetail(cid);
-    
-      // Only call getDashboardInfo if getCandidateDetail did not signal to stop
-      if (!shouldStop) {
-        // 1. start camera 
-         await startRecording();
-         await getDashboardInfo(cid);
-        
-      }
-    };
-
-    fetchDetails();
-  }
-}, [cid]);
-
-
-const takeScreenshot = useCallback(() => {
-  if (mediaStream.current) {
-    const video = document.createElement('video');
-    video.srcObject = mediaStream.current;
-    video.onloadedmetadata = () => {
-      video.play();
-      const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob((blob) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64String = reader.result;
-          
-          // Store base64String for later use
-          screenshots.current.push(base64String);
-        };
-        reader.readAsDataURL(blob);
-      });
-    };
-  }
-}, []);
 
+      const context = canvas.getContext("2d");
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const imageDataUrl = canvas.toDataURL("image/png");
+      setCapturedImageUrl(imageDataUrl);
+      setCaptureCount(value);
+    }
+  };
+  const handleRetake = (val) => {
+    setCapturedImageUrl(null);
+
+    captureImage(val);
+  };
+  const handleSave = async (val) => {
+    if (capturedImageUrl && captureCount > 0) {
+      try {
+        //  await axios.post('/api/upload', { imageUrl: capturedImageUrl });
+        const res = await axios.post(
+          `${BASE_URL}/api/validate-camera2-session`,
+          { cid, url: capturedImageUrl, value: captureCount }
+        );
+        //  localStorage.setItem('capturedImage2', capturedImageUrl);
+        setCapturedImageUrl(null);
+        setCaptured(true);
+        setCandidateValidation(res.data.success);
+        setCandidateEmail(res.data.candidateEmail);
+        setTestCode(res.data.testCode);
+        setCaptureCount(val);
+        if (val != 0) {
+          captureImage(val);
+        }
+        toast.success("Image Successfully Captured !!");
+      } catch (error) {
+        console.error("Error validating camera2 session:", error);
+        toast.error("something went wrong !!");
+      }
+    } else {
+      toast.error("something went wrong !!");
+    }
+  };
+
+  // Effect to get candidate detail and dashboard info
+  useEffect(() => {
+    if (cid) {
+      const fetchDetails = async () => {
+        const shouldStop = await getCandidateDetail(cid);
+
+        // Only call getDashboardInfo if getCandidateDetail did not signal to stop
+        if (!shouldStop) {
+          // 1. start camera
+          await startRecording();
+          await getDashboardInfo(cid);
+        }
+      };
+
+      fetchDetails();
+    }
+  }, [cid]);
+
+  const takeScreenshot = useCallback(() => {
+    if (mediaStream.current) {
+      const video = document.createElement("video");
+      video.srcObject = mediaStream.current;
+      video.onloadedmetadata = () => {
+        video.play();
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64String = reader.result;
+
+            // Store base64String for later use
+            screenshots.current.push(base64String);
+          };
+          reader.readAsDataURL(blob);
+        },
+      "image/jpeg", 0.3
+      );
+      };
+    }
+  }, []);
 
   const startRecording = useCallback(async () => {
     try {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const constraints = isMobile ? {
-        video: true,
-        audio: false
-        
-      } : {
-        video: {
-          width: {  ideal: 640 },
-          height: { ideal: 360 },
-          frameRate: { ideal: 10 }
-        },
-        audio: false
-      };
+      const constraints = isMobile
+        ? {
+            video: true,
+            audio: false,
+          }
+        : {
+            video: {
+              width: { ideal: 640 },
+              height: { ideal: 360 },
+              frameRate: { ideal: 10 },
+            },
+            audio: false,
+          };
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      
-     // to start webcam video on ui
-    //  if (webcamRef.current) {
-    //   webcamRef.current.srcObject = stream;
-    //   webcamRef.current.onloadedmetadata = () => {
-    //      webcamRef.current.play();
-    //      captureImage(1);
-    //   };
-    // }
+
+      // to start webcam video on ui
+      //  if (webcamRef.current) {
+      //   webcamRef.current.srcObject = stream;
+      //   webcamRef.current.onloadedmetadata = () => {
+      //      webcamRef.current.play();
+      //      captureImage(1);
+      //   };
+      // }
 
       mediaStream.current = stream;
 
@@ -225,24 +232,23 @@ const takeScreenshot = useCallback(() => {
         }
       };
 
-    await  videoMediaRecorder.current.start();
+      await videoMediaRecorder.current.start();
 
-       setIsRecording(true);
+      setIsRecording(true);
 
-                // Take a screenshot every minute
+      // Take a screenshot every minute
       const screenshotInterval = setInterval(() => {
-        
         // if (isRecording) {
-          takeScreenshot();
+        takeScreenshot();
         // } else {
         //   clearInterval(screenshotInterval);
         // }
       }, 60000);
-
+      
     } catch (error) {
-      if (error.name === 'NotAllowedError') {
+      if (error.name === "NotAllowedError") {
         toast.warning("You need to allow camera access to record video.");
-      } else if (error.name === 'NotFoundError') {
+      } else if (error.name === "NotFoundError") {
         toast.warning("No media devices found.");
       } else {
         toast.warning("Sorry, something went wrong.");
@@ -257,13 +263,10 @@ const takeScreenshot = useCallback(() => {
   // }, [startRecording]);
 
   const stopRecording = useCallback(async () => {
-    if (
-      videoMediaRecorder.current &&
-      isRecording
-    ) {
+    if (videoMediaRecorder.current && isRecording) {
       await videoMediaRecorder.current.stop();
-    
-       setIsRecording(false);
+
+      setIsRecording(false);
       if (mediaStream.current) {
         await mediaStream.current.stream
           .getTracks()
@@ -271,53 +274,49 @@ const takeScreenshot = useCallback(() => {
       }
     }
     await uploadScreenShots();
-
   }, [isRecording]);
 
-  const uploadScreenShots =async () => {
-    if(screenshots.current){
-      
+  const uploadScreenShots = async () => {
+    if (screenshots.current) {
       try {
         // Send the array of URLs directly in the request body
-        const response = await axios.post(`${BASE_URL}/api/upload-screenshots`, {
-          email: candidateEmail,
-          code: testCode,
-          screenshots: screenshots.current,
-        });
-    
+        const response = await axios.post(
+          `${BASE_URL}/api/upload-screenshots`,
+          {
+            email: candidateEmail,
+            code: testCode,
+            screenshots: screenshots.current,
+          }
+        );
+
         console.log("Screenshots uploaded successfully:", response.data);
       } catch (error) {
         console.error("Error uploading screenshots:", error);
       }
     }
-  }
+  };
 
-  
   // const downloadRecording = async () => {
   //   // const durationInSeconds = initialTime;
   //   if (videoChunks.current.length > 0) {
   //     videoBlob =  new Blob(videoChunks.current, {
   //       type: "video/mp4",
   //     });
-      
+
   //     console.log(`Original video file size: ${videoBlob.size} bytes`);
 
   //     // Compress the video
   //    //  videoBlob = await compressVideo(videoBlob);
-  
+
   //     console.log(`Compressed video file size: ${videoBlob.size} bytes`);
-    
 
   //   } else {
   //     console.error("No video or audio data to download");
   //   }
   // };
 
-
-
   const uploadVideo = async () => {
     try {
-      
       const videoFileName = `${candidateEmail}-video2.mp4`;
       const videoRes = await axios.post(`${BASE_URL}/api/s3upload`, {
         filename: videoFileName,
@@ -326,9 +325,8 @@ const takeScreenshot = useCallback(() => {
       });
       const videos3url = videoRes.data.url;
       await axios.put(videos3url, videoBlob);
-    
     } catch (error) {
-      console.log('line== 5' , error);
+      console.log("line== 5", error);
     }
   };
 
@@ -343,13 +341,16 @@ const takeScreenshot = useCallback(() => {
   };
 
   const camera2Photo = async () => {
-      setBtnStyle("face");
+    setBtnStyle("face");
+    setIsLoading(true);
     try {
-  //  captureImage();
+      //  captureImage();
 
-          const imageSrc = webcamRef.current.getScreenshot();
-      cam2FaceBlob = Buffer.from(imageSrc.replace("/^data:image\/\w+;base64,/", ""));
-      
+      const imageSrc = webcamRef.current.getScreenshot();
+      cam2FaceBlob = Buffer.from(
+        imageSrc.replace("/^data:image/w+;base64,/", "")
+      );
+
       const cam2FaceFileName = `${candidateEmail}-cam2face.jpeg`;
       const cam2FaceRes = await axios.post(`${BASE_URL}/api/s3upload`, {
         filename: cam2FaceFileName,
@@ -358,102 +359,103 @@ const takeScreenshot = useCallback(() => {
       });
       const cam2Faceurl = cam2FaceRes.data.url;
       await axios.put(cam2Faceurl, cam2FaceBlob);
-      toast.success("Succefully captured");
+      toast.success("Succefully captured, now click next on laptop to verify face.");
       setBtnStyle("false");
+      setIsLoading(false);
       // console.log(cam2FaceRes);
+      getDashboardInfo(cid, cam2Faceurl.split('?')[0])
     } catch (error) {
       console.log(error);
       toast.warning("Please try again!");
       setBtnStyle("false");
+      setIsLoading(false);
     }
   };
 
   const camera2SidePhoto = async () => {
     setBtnStyle("side");
-  //   try {
-  //     //  captureImage();
+    //   try {
+    //     //  captureImage();
 
-  //     const imageSideSrc = webcamRef.current.getScreenshot();
-  //     cam2SideBlob = Buffer.from(imageSideSrc.replace("/^data:image\/\w+;base64,/", ""));
-  //     // console.log(imageSideSrc);
-  //    // setImg(imageSideSrc);
-  //     const cam2SideFileName = `${candidateEmail}-cam2sideprofile.jpeg`;
-  //     const cam2SideRes = await axios.post(`${BASE_URL}/api/s3upload`, {
-  //       filename: cam2SideFileName,
-  //       contentType: "image/jpeg",
-  //       testcode: testCode,
-  //     });
-  //     const cam2Sideurl = cam2SideRes.data.url;
-  //     await axios.put(cam2Sideurl, cam2SideBlob);
-  //     // console.log(cam2SideRes);
+    //     const imageSideSrc = webcamRef.current.getScreenshot();
+    //     cam2SideBlob = Buffer.from(imageSideSrc.replace("/^data:image\/\w+;base64,/", ""));
+    //     // console.log(imageSideSrc);
+    //    // setImg(imageSideSrc);
+    //     const cam2SideFileName = `${candidateEmail}-cam2sideprofile.jpeg`;
+    //     const cam2SideRes = await axios.post(`${BASE_URL}/api/s3upload`, {
+    //       filename: cam2SideFileName,
+    //       contentType: "image/jpeg",
+    //       testcode: testCode,
+    //     });
+    //     const cam2Sideurl = cam2SideRes.data.url;
+    //     await axios.put(cam2Sideurl, cam2SideBlob);
+    //     // console.log(cam2SideRes);
 
-  //     const inputString = imageSideSrc.replace("data:image/webp;base64,", "");
-  //  //  const inputString = capturedImageUrl.replace("data:image/png;base64,", "");
-     
-  //    const handMatchRes = await axios.post(`https://ai.aiplanet.me/detect_hands`, inputString,
-  //     {
-  //       headers: {
-  //         "Content-Type": "text/plain",
-  //       }
-  //     });
-  //     console.log(handMatchRes.data.hands_detected);
-  //     if(handMatchRes.data.hands_detected) {
-  //       console.log("here");
+    //     const inputString = imageSideSrc.replace("data:image/webp;base64,", "");
+    //  //  const inputString = capturedImageUrl.replace("data:image/png;base64,", "");
 
-  //       const res = await axios.post(`${BASE_URL}/api/cam2-validation`, {
-  //         cid: cid,
-  //         param: 'hands',
-  //       });
-  //       if (!res.data.success) {
-  //         toast.error(res.data.message);
-  //       }
+    //    const handMatchRes = await axios.post(`https://ai.aiplanet.me/detect_hands`, inputString,
+    //     {
+    //       headers: {
+    //         "Content-Type": "text/plain",
+    //       }
+    //     });
+    //     console.log(handMatchRes.data.hands_detected);
+    //     if(handMatchRes.data.hands_detected) {
+    //       console.log("here");
 
-  //       toast.success("Hands successfully detected");
-  //       // setNextbtn(true);
-  //     } else {
-  //       // setCapturebtn(null);
-  //       toast.warning("Hands on keyboard not detected");
-  //     }
+    //       const res = await axios.post(`${BASE_URL}/api/cam2-validation`, {
+    //         cid: cid,
+    //         param: 'hands',
+    //       });
+    //       if (!res.data.success) {
+    //         toast.error(res.data.message);
+    //       }
 
-  //     const keyboardmatchRes = await axios.post(`http://ai.aiplanet.me/detect_person_and_keyboard`, inputString,
-  //     {
-  //       headers: {
-  //         "Content-Type": "text/plain",
-  //       }
-  //     });
-  //     console.log(keyboardmatchRes.data.person_and_keyboard_detected);
-  //     if(keyboardmatchRes.data.person_and_keyboard_detected) {
-  //       console.log("here");
+    //       toast.success("Hands successfully detected");
+    //       // setNextbtn(true);
+    //     } else {
+    //       // setCapturebtn(null);
+    //       toast.warning("Hands on keyboard not detected");
+    //     }
 
-  //       const res = await axios.post(`${BASE_URL}/api/cam2-validation`, {
-  //         cid: cid,
-  //         param: 'keyboard',
-  //       });
-  //       if (!res.data.success) {
-  //         toast.error(res.data.message);
-  //       }
+    //     const keyboardmatchRes = await axios.post(`http://ai.aiplanet.me/detect_person_and_keyboard`, inputString,
+    //     {
+    //       headers: {
+    //         "Content-Type": "text/plain",
+    //       }
+    //     });
+    //     console.log(keyboardmatchRes.data.person_and_keyboard_detected);
+    //     if(keyboardmatchRes.data.person_and_keyboard_detected) {
+    //       console.log("here");
 
-  //       toast.success("Candidate with keyboard detected successfully");
-  //       // setNextbtn(true);
-  //     } else {
-  //       // setCapturebtn(null);
-  //       toast.warning("Candidate with keyboard not detected");
-  //     }
+    //       const res = await axios.post(`${BASE_URL}/api/cam2-validation`, {
+    //         cid: cid,
+    //         param: 'keyboard',
+    //       });
+    //       if (!res.data.success) {
+    //         toast.error(res.data.message);
+    //       }
 
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
+    //       toast.success("Candidate with keyboard detected successfully");
+    //       // setNextbtn(true);
+    //     } else {
+    //       // setCapturebtn(null);
+    //       toast.warning("Candidate with keyboard not detected");
+    //     }
 
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
 
-if(sideView<1){
-  toast.warning("Please try again!");
-  setSideView((prev) => prev+1);
-  setBtnStyle("false");
-} else{
-  toast.success("Successfully Processed");
-  setBtnStyle("false");
-}
-
+    if (sideView < 1) {
+      toast.warning("Please try again!");
+      setSideView((prev) => prev + 1);
+      setBtnStyle("false");
+    } else {
+      toast.success("Successfully Processed");
+      setBtnStyle("false");
+    }
   };
 
   useEffect(() => {
@@ -465,15 +467,15 @@ if(sideView<1){
         } else if (timeLeft === 0 && !isTimeUp) {
           isTimeUp = true;
           try {
-             setShow(true);
+            setShow(true);
             loader.current = "true";
-            
+
             await stopRecording();
-            
-         //   await downloadRecording();
-            
-          //  await uploadVideo();
-            
+
+            //   await downloadRecording();
+
+            //  await uploadVideo();
+
             // await handleEndTest();
             clearInterval(timerRef.current);
             timerRef.current = null;
@@ -483,22 +485,20 @@ if(sideView<1){
               candidateEmail: candidateEmail,
               testCode: testCode,
               cam2: 2,
-              cam2Time: timeTaken.current
+              cam2Time: timeTaken.current,
             });
-            
+
             if (!res.data.success) {
               toast.error(res.data.message);
-             
             } else {
               // toast.success(res.data.message);
               loader.current = "false";
               toast.success(res.data.message);
-              
-              navigate("/testend",{replace: true});
+
+              navigate("/testend", { replace: true });
             }
           } catch (error) {
-            console.log("error==" , error);
-            
+            console.log("error==", error);
           }
         }
       }, 1000);
@@ -512,40 +512,73 @@ if(sideView<1){
 
   return (
     <div className="camera2-cont">
-    <div id="fullscreen">
-      <div className="navbar-resp">
-        <div className="logo-resp">AiPlanet</div>
-        <div className="timer-resp">
-        <div
-            type="button"
-            onClick={camera2SidePhoto}
-            className="endtest-btn"
-            style={btnStyle==="side" ? { backgroundColor: 'white', color: 'black' } : {}}
-          >
-            keyboard/hands/face
-          </div>
-          <div
-            type="button"
-            onClick={camera2Photo}
-            className="endtest-btn"
-            style={btnStyle==="face" ? { backgroundColor: 'white', color: 'black' } : {}}
-          >
-            Face photo
-          </div>
-          <div
-            type="button"
-            data-bs-toggle="modal"
-            data-bs-target="#staticBackdrop"
-            className="endtest-btn "
-            style={btnStyle==="end" ? { backgroundColor: 'white', color: 'black' } : {}}
-          >
-            End Test
+      <div id="fullscreen">
+        <div className="navbar-resp">
+          <div className="logo-resp">AiPlanet</div>
+          {isLoading && <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      display: "flex",
+      flexDirection:"column",
+      justifyContent: "center",
+      alignItems: "center",
+       backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+      zIndex: 1000, // Ensure it appears above other content
+    }}>
+    <HashLoader
+      color={"#1c4b74"}
+      loading={isLoading}
+      size={50}
+      aria-label="Loading Spinner"
+      data-testid="loader"
+    />
+  
+          </div>}
+          <div className="timer-resp">
+            {/* <div
+              type="button"
+              onClick={camera2SidePhoto}
+              className="endtest-btn"
+              style={
+                btnStyle === "side"
+                  ? { backgroundColor: "white", color: "black" }
+                  : {}
+              }
+            >
+              keyboard/hands/face
+            </div> */}
+            <div
+              type="button"
+              onClick={camera2Photo}
+              className="endtest-btn"
+              style={
+                btnStyle === "face"
+                  ? { backgroundColor: "white", color: "black" }
+                  : {}
+              }
+            >
+              Face photo
+            </div>
+            <div
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#staticBackdrop"
+              className="endtest-btn "
+              style={
+                btnStyle === "end"
+                  ? { backgroundColor: "white", color: "black" }
+                  : {}
+              }
+            >
+              End Test
+            </div>
           </div>
         </div>
-      </div>
-      <div className="camera-container">
-     
-      {/* {captureCount== 1 ? (
+        <div className="camera-container">
+          {/* {captureCount== 1 ? (
         <div className=" flex flex-col align-middle">
           
           <h3 className='mb-3 p-2 text-[#1c4b74] text-center underline' >1. Please Capture Face Image!</h3>
@@ -572,95 +605,108 @@ if(sideView<1){
         <p style={{color: '#210263'}}>Camera access granted. {captured ? 'Image Captured' : 'Capturing image...' }</p>
       )} */}
 
-      {/* <div className="video-container">
+          {/* <div className="video-container">
       
       <video className="video" ref={webcamRef}  />
       </div> */}
-       <div className="webcam">
-         <Webcam id="video" audio={false} ref={webcamRef} style={{width: '100%', height: '100%' , objectFit: 'cover'}} />
-       </div>
-       <div className="info">
-        <ul>
-          <li>Please capture clear face image , to proceed further.</li>
-          <li>Please capture Image, where your hands on keyboard is visible with face.</li>
-          <li>Submit test from 'cam2' first ,for successfull end test.</li>
-          <li>Place device at an angle where hands on keyboard is visible.</li>
-        </ul>
-       </div>
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
-    </div>
+          <div className="webcam">
+            <Webcam
+              id="video"
+              audio={false}
+              ref={webcamRef}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
+          {/* 
+          <li>
+                Please capture Image, where your hands on keyboard is visible
+                with face.
+              </li>
+           */}
+          <div className="info">
+            <ul>
+              <li>Please capture clear face image , to proceed further.</li>
+              <li>
+              After clicking on the face image, please position your device at an angle where
+              your hands on the keyboard are visible. Note that we are also recording you with a smartphone.
+              </li>
+              <li>Submit test from 'cam2' first ,for successfull end test.</li>
+              
+            </ul>
+          </div>
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+        </div>
 
-      {/* <div className="webcam">
+        {/* <div className="webcam">
         <Webcam audio={false} ref={webcamRef} style={{width: "100vw", height: "100vh"}} />
       </div> */}
 
-      <div
-        className="modal fade"
-        id="staticBackdrop"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        tabIndex="-1"
-        aria-labelledby="staticBackdropLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="staticBackdropLabel">
-                Alert!
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              Are you sure and want to end the test{" "}
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-              <button
-                data-bs-dismiss="modal"
-                onClick={camera2Submit}
-                type="button"
-                className="btn btn-primary"
-              >
-                Yes, Proceed
-              </button>
+        <div
+          className="modal fade"
+          id="staticBackdrop"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
+          tabIndex="-1"
+          aria-labelledby="staticBackdropLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="staticBackdropLabel">
+                  Alert!
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                Are you sure and want to end the test{" "}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  data-bs-dismiss="modal"
+                  onClick={camera2Submit}
+                  type="button"
+                  className="btn btn-primary"
+                >
+                  Yes, Proceed
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <Modal
-        show={show}
-        // onHide={handleClose}
-        backdrop="static"
-        keyboard={false}
-        centered
-      >
-        <Modal.Header>
-          <Modal.Title>
-            <BarLoader color="#5880F0" width={450} />
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Please wait, your test and video is being uploaded to server. Sometime
-          its takes 3-4 mins to upload.
-        </Modal.Body>
-      </Modal>
-    </div>
+        <Modal
+          show={show}
+          // onHide={handleClose}
+          backdrop="static"
+          keyboard={false}
+          centered
+        >
+          <Modal.Header>
+            <Modal.Title>
+              <BarLoader color="#5880F0" width={450} />
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Please wait, your test and video is being uploaded to server.
+            Sometime its takes 3-4 mins to upload.
+          </Modal.Body>
+        </Modal>
+      </div>
     </div>
   );
 };
 
 export default Camera2;
-

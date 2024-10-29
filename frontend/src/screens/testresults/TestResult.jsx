@@ -38,6 +38,25 @@ const TestResult = () => {
     
     setIsProctor(true);
   };
+  function getScore(type,candidate) {
+    console.log('test-type:', type);
+    if(type==="subjective") {
+      const len = candidate?.result?.length || 1;
+      const sum = candidate.result.reduce((acc, res) => {
+          acc += res?.speechResult?.ielts_score?.overall
+          return acc
+      },0) || 0.0
+      return sum/len;
+    } else {
+      const sum = candidate.result.reduce(
+        (accumulator, curVal) => {
+          return accumulator + curVal.score;
+        },
+        0
+      );
+      return sum;
+    }
+  }
   return (
     <>
       <div className="result-screen">
@@ -73,12 +92,7 @@ const TestResult = () => {
               <tbody>
                 {candidates.length > 0
                   ? candidates.map((candidate, i) => {
-                      const sum = candidate.result.reduce(
-                        (accumulator, curVal) => {
-                          return accumulator + curVal.score;
-                        },
-                        0
-                      );
+                      const sum= getScore(testData.type, candidate);
                       const status  = candidate.verdict ? candidate.verdict.status : "Successfull";
                       return (
                         <tr className="detail-result" key={i}>

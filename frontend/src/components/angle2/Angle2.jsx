@@ -19,18 +19,18 @@ const Angle = () => {
       cid: cid
     });
    
-    if(res.data.cam2status) {
+    if(res.data?.cam2status && res.data?.cam2Face) {
       dispatch({ type: "NEXT" });
     } else {
-      toast.warning("You haven't started the second camera yet");
+      toast.warning("Please Start Cam-2 and capture face image, first.");
     }
 
    
   };
 
-  /* const handleNext = () => {
-    dispatch({ type: "NEXT" });
-  }; */
+  //  const handleNext = () => {
+  //   dispatch({ type: "NEXT" });
+  // }; 
   const handleBack = () => {
     dispatch({ type: "BACK" });
   };
@@ -73,10 +73,10 @@ const Angle = () => {
             <div className="carousel-item active ">
               <div className="d-flex justify-center items-center gap-1">
               <img src={keyboard2}  alt="..."></img>
-              {/**https://aiplanet.me/
+              {/**https://aiplanet.me
                window.location.host
                */}
-              <QRCode value={'https://aiplanet.me' + "/camera2/" + cid} size={256} />
+              <QRCode value={'https://realtyai.in' + "/camera2/" + cid} size={256} />
               </div>
             </div>
 

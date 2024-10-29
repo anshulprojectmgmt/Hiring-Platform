@@ -2,22 +2,33 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
-
-const idsArray = [
-  new ObjectId('660895a1338be786d245c032'),
+{/*
   new ObjectId('66089589338be786d245c01a'),
-  // new ObjectId('660895a1338be786d245c033'),
+  new ObjectId('660895a1338be786d245c045'),
+  */}
+let idsArray = [
+  new ObjectId('660895a1338be786d245c032'), // org
+  
+  new ObjectId('6716500c41f91b12fda1ccec'), // org
+  new ObjectId('67164bd141f91b12fda1ccea'), // org
+  
+  new ObjectId('660895a1338be786d245c033'),// samp
   ];
+
   const subjIds = [
     new ObjectId('66e1482b7c62462198bcd2b0'),
     new ObjectId('66e2912142fefec820956b5b'),
    
     ];
 router.post("/questions", async (req, res) => {
-  const { testtype, language, difficulty, questions, codQue , subjQue, mcqQue } = req.body;
+  const { testtype, language, difficulty, questions, codQue , subjQue, mcqQue, testCode } = req.body;
+  
   try {
     if (testtype === "coding") {
       if (language === "Python") {
+        if(testCode === 'fiu51tZLJsEOATE') {
+          idsArray =  [new ObjectId('660895a1338be786d245c033'),]
+        }
         var problems;
         switch (difficulty) {
           // logic to attach wrapper

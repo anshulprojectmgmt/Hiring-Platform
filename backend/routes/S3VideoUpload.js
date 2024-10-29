@@ -18,7 +18,7 @@ router.post("/upload-screenshots" , async (req,res) => {
   try {
     const updateResult = await Candidate.updateOne({email: email, testcode: code},{
       $set: {
-        screenshots: screenshots
+        cam2Screenshots: screenshots
       },
     });
     
@@ -31,7 +31,7 @@ router.post("/upload-screenshots" , async (req,res) => {
 })
 
 router.post("/s3upload", async (req, res) => {
-  const { filename, contentType, testcode } = req.body;
+  const { filename, contentType, testcode,record='video' } = req.body;
   let command;
   if (contentType === "audio/webm") {
     command = new PutObjectCommand({
@@ -39,7 +39,7 @@ router.post("/s3upload", async (req, res) => {
       Key: `${testcode}/Audio/${filename}`,
       ContentType: contentType,
     });
-  } else if (contentType === "video/mp4") {
+  } else if (contentType === "video/mp4" && record==='video') {
     command = new PutObjectCommand({
       Bucket: "hm-video-audio-bucket",
       Key: `${testcode}/Videos/${filename}`,
@@ -53,7 +53,15 @@ router.post("/s3upload", async (req, res) => {
       ContentType: contentType,
       // ContentEncoding: 'base64',
     });
-  } else{
+  }
+  else if (contentType === "video/mp4" && record==='screen') {
+    command = new PutObjectCommand({
+      Bucket: "hm-video-audio-bucket",
+      Key: `${testcode}/screen/${filename}`,
+      ContentType: contentType,
+    });
+  }
+  else{
     res.status(200).json({ success: false,message:"No format matched" });  
   }
   const url = await getSignedUrl(s3Client, command);

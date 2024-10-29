@@ -6,6 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Webcam from "react-webcam";
 import {Buffer} from 'buffer';
+import HashLoader from "react-spinners/HashLoader";
 
 const Cam2UserVerify = () => {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ const Cam2UserVerify = () => {
   const [candidateEmail, setCandidateEmail] = useState(null);
   const [testCode, setTestCode] = useState(null);
   const [face2, setFace2] = useState(null);
-
+const [isLoading, setIsLoading] = useState(false);
   const webcamRef = useRef(null);
   let cam1FaceBlob;
   const [img, setImg] = useState(null);
@@ -25,7 +26,7 @@ const Cam2UserVerify = () => {
   const verifyFaces = async () => {
     
     try {
-      
+      setIsLoading(true);
       setCapturebtn(true);
       
       const imageSrc = webcamRef.current.getScreenshot();
@@ -45,8 +46,10 @@ const Cam2UserVerify = () => {
       
       await axios.put(cam1Faceurl, cam1FaceBlob);
       // console.
+      // 3.111.137.31
+      // https://ai.realtyai.in
       const inputString = imageSrc.replace("data:image/webp;base64,", "") + "," + face2.replace("data:image/webp;base64,", "");
-      const matchRes = await axios.post(`https://ai.aiplanet.me/compare_faces`, inputString,
+      const matchRes = await axios.post(`https://ai.realtyai.in/compare_faces`, inputString,
       {
         headers: {
           "Content-Type": "text/plain",
@@ -64,17 +67,19 @@ const Cam2UserVerify = () => {
         if (!res.data.success) {
           toast.error(res.data.message);
         }
-             
+        
         setNextbtn(true);
       } else {
         setImg(null);
         setCapturebtn(null);
         toast.warning("The face image from both the cameras did not match");
       }
+      setIsLoading(false);
     } catch (error) {
       console.log('error==' ,error);
       setImg(null);
       setCapturebtn(null);
+      setIsLoading(false);
       toast.warning("something went wrong please Try Again!!");
     }
   };
@@ -124,6 +129,28 @@ const Cam2UserVerify = () => {
         </p>
       </div>
       <div className="verifyface-images">
+      {isLoading && <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      display: "flex",
+      flexDirection:"column",
+      justifyContent: "center",
+      alignItems: "center",
+       backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+      zIndex: 1000, // Ensure it appears above other content
+    }}>
+    <HashLoader
+      color={"#1c4b74"}
+      loading={isLoading}
+      size={100}
+      aria-label="Loading Spinner"
+      data-testid="loader"
+    />
+  
+          </div>}
         {/* <div
           id="carouselExampleIndicators"
           className="carousel carousel-dark slide"

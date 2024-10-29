@@ -23,6 +23,7 @@ const Audio = () => {
         codQue: testInfo.codQue || 0,
         mcqQue: testInfo.mcqQue || 0,
         subjQue: testInfo.subjQue || 0,
+        testCode: testInfo?.testCode
       });
       result.current = res;
        dispatch({ type: "SET_QUESTION", payload: res.data.que });
@@ -64,11 +65,29 @@ const Audio = () => {
   return (
     <div className="audio">
       <div className="audio-head">
-        <h3>Anti-Cheating Measure 4 : Dual Voice Detection</h3>
-        <p>
+        <h3>Anti-Cheating Measure 4 : Dual Voice Detection & Screen Capture</h3>
+        <div 
+          style={{ border: '2px solid #ff6f61', padding: '10px', backgroundColor: '#fef6f5',
+                 borderRadius: '10px', color: '#333', 
+                  textAlign: 'center', marginTop: '16px' }}>
+        
+        <p style={{ fontSize: '16px', lineHeight: '1.5' }}>
+          To ensure the integrity of the test, random screenshots will be taken during your session. Please ensure that:
+        </p>
+        <ul style={{ textAlign: 'left', fontSize: '16px', marginLeft: '20px', color: '#1c4b74' }}>
+          <li>Your face is clearly visible on camera at all times.</li>
+          <li>Avoid leaving the test window or switching tabs during the test.</li>
+        </ul>
+        <p style={{ fontSize: '16px', lineHeight: '1.5' }}>
+          <strong>Your privacy is our priority.</strong> These screenshots are used solely for maintaining the security and fairness of the testing process.
+        </p>
+        <p style={{ fontSize: '16px', lineHeight: '1.5' }}>
           Warning: Tests are being monitored using anti cheating AI algorithms. If you are
           caught talking with people or there are multiple voices in the background, you will be disqualified.
         </p>
+      </div>
+
+        
       </div>
       <div className="audio-images">
         {/* <img src={lap} alt="demoimage" /> */}
