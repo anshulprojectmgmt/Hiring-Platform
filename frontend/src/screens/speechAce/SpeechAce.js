@@ -28,6 +28,7 @@ useEffect(()=> {
     setSpeechData();
   }
 },[candidateResult])
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -74,7 +75,7 @@ if (!resp.ok) {
 
   return (
     <div style={{marginTop: '1rem'}}>
-      {/* <form id="form" onSubmit={handleSubmit}>
+       <form id="form" onSubmit={handleSubmit}>
         <input
           type="file"
           accept="audio/*"
@@ -83,7 +84,7 @@ if (!resp.ok) {
         <button id="btn" type="submit" disabled={loading}>
           {loading ? "Processing..." : "Submit"}
         </button>
-      </form> */}
+      </form> 
 
       {responseText && (
         <>

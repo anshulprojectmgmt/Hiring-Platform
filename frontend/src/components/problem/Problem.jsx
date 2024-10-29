@@ -50,7 +50,9 @@ const indentedInsertedCode = questions[currentQuestion-1].wrapper_details[0].wra
 
   let  newCode = `
 ${userHelperFun(wrapTitle)}:
-# write your code here
+# write your code here and return the output
+
+
 
 
 # <fold>
@@ -105,7 +107,9 @@ const indentedInsertedCode = questions[currentQuestion+1].wrapper_details[0].wra
       
 let  newCode = `
 ${userHelperFun(wrapTitle)}:
-# write your code here
+# write your code here and return the output
+
+
 
 
 # <fold>
@@ -187,12 +191,12 @@ main()
           
            Input: <br/>
 
-          {questions[currentQuestion].testcases[0].input.map((inp) => (
-            <div>{inp}</div>
+          {questions[currentQuestion].testcases[0].input.map((inp,ind) => (
+            <div key={ind}>{inp}</div>
           ))}
            Output: <br/> 
-           {questions[currentQuestion].testcases[0].output.map((out) => (
-            <div>{out}</div>
+           {questions[currentQuestion].testcases[0].output.map((out,i) => (
+            <div key={i}>{out}</div>
           ))}
         </p>
       </div>

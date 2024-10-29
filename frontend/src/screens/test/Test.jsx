@@ -20,6 +20,7 @@ import { persistStore } from 'redux-persist';
 import store from '../../store'
 import Subjective from "../../components/subjective/Subjective";
 import TestTypeWrapper from "../../components/test-type-wrapper/TestTypeWrapper";
+
 const Test = () => {
  
 
@@ -40,27 +41,9 @@ const Test = () => {
   let tabSwitch = useRef(0);
   const videoFileName = `${candidateEmail}-video.mp4`;
   
-
-  
-
-  const getFullscreenElement = () => {
-    return (
-      document.fullscreenElement ||
-      document.webkitFullscreenElement ||
-      document.mozFullscreenElement ||
-      document.msFullscreenElement
-    );
-  };
-
-  // useEffect(() => {
-  //      if(timeRdx) {
-  //       setTime(timeRdx);
-  //       setTimeLeft(timeRdx)
-  //      }
-  // },[timeRdx])
-
   let videoBlob;
   let audioBlob;
+  let screenBlob;
   const timerRef = useRef(null);
   const webcamRef = useRef(null);
   const videoMediaRecorder = useRef(null);
@@ -69,6 +52,9 @@ const Test = () => {
   const audioChunks = useRef([]);
   const [isRecording, setIsRecording] = useState(false);
   const mediaStream = useRef(null);
+  const screenStream = useRef(null);
+   const screenshotInterval = useRef(null);
+  const screenshots = useRef([]);
   const audiomediaStream = useRef(null);
   const loader = useRef("false");
   const [show, setShow] = useState(false);
@@ -83,9 +69,30 @@ const isFullScreenRef = useRef(null);
 exitScreenRef.current = exitScreen;
 isFullScreenRef.current = isFullScreen;
 
+const getFullscreenElement = () => {
+  return (
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.mozFullscreenElement ||
+    document.msFullscreenElement
+  );
+};
+
   useEffect(() => {
     let timeId;
+    
     if(exitScreenRef.current>=1 && !getFullscreenElement()) {
+
+      toast.error("Please reset to Full-Screen mode, else Test will get Terminated after 1min", {
+        position: "top-left",
+        autoClose: 1000*60, // Duration in milliseconds (5000ms = 5 seconds)
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+  
+});
+
           timeId = setTimeout(() => {
             
             if(!isFullScreenRef.current) {
@@ -97,7 +104,7 @@ isFullScreenRef.current = isFullScreen;
               
               setVerdict({status: "Terminated" , message: "Test terminated due to Exit Full screen"})
             }
-          }, 1000*60*60)
+          }, 1000*70)
     }
 
     return () => {
@@ -106,53 +113,50 @@ isFullScreenRef.current = isFullScreen;
   }, [exitScreenRef.current])
 
      
-  const setFullScreen = (e) => {
+  const handleFullScreenChange = (e) => {
     
 
-    if(exitScreenRef.current>= 1 && !getFullscreenElement()) {
-      timeTaken.current = initialTime - timeLeft;
-      toast.error("Exam terminated.");
-      setVerdict((prev) => ({status: "Terminated" , message: "Test terminated due to Exit Full screen"}));
+    // if(exitScreenRef.current>= 2 && !getFullscreenElement()) {
+    //   timeTaken.current = initialTime - timeLeft;
+    //   toast.error("Exam terminated.");
+    //   setVerdict((prev) => ({status: "Terminated" , message: "Test terminated due to Exit Full screen"}));
       
-      setTimeLeft(0);
+    //   setTimeLeft(0);
     
       
-         return;
-       }
+    //      return;
+    //    }
        
        if(!getFullscreenElement()){
-          setExitScreen(prev => prev+1);
-           toast.error("Exam will get Terminate after 1 min, reset to Full-Screen mode", {
-             position: "top-left",
-             autoClose: 1000*60, // Duration in milliseconds (5000ms = 5 seconds)
-             hideProgressBar: false,
-             closeOnClick: true,
-             pauseOnHover: false,
-             draggable: false,
-       
-     });
+          
+           setExitScreen(prev => prev+1);
            }
    
-        setIsFullSreen(prev =>  prev? false  : true);
+        setIsFullSreen(prev =>  !prev);
       
      } 
 
   useEffect(() => {
   
- document.addEventListener('fullscreenchange',setFullScreen);
+ document.addEventListener('fullscreenchange',handleFullScreenChange);
  
   return () => {
-  document.removeEventListener('fullscreenchange',setFullScreen) 
+  document.removeEventListener('fullscreenchange',handleFullScreenChange) 
   }
 }, [])
 
 const resetToFullScreen =async () => {
- 
-  await  document.documentElement.requestFullscreen().catch((e) => {
-         console.log("full screen error==3" , e);
-       });
+ try {
+  await  document.documentElement.requestFullscreen()
+
+} catch (error) {
+
+  console.log("full screen error==3" , error);
+ }
        toast.dismiss();
 }
+
+
  
  useEffect(() => {
     // Add event listener for popstate which is triggered on back button
@@ -174,11 +178,57 @@ const resetToFullScreen =async () => {
     };
   }, []);
   
+  
 
+  const startScreenCapture = async () => {
+    try {
+      // Request screen capture once on component mount
+      screenStream.current = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+      });
+      
+      // Set an interval to capture screenshots every minute
+       screenshotInterval.current = setInterval(takeScreenScreenshot, 1000*60);
 
-  const startRecording = useCallback(async () => {
+      // Cleanup on unmount
+      
+    } catch (err) {
+      console.error("Error accessing screen capture:", err);
+    }
+  };
+
+  const takeScreenScreenshot = () => {
+  
+    if (screenStream.current) {
+      const video = document.createElement("video");
+      video.srcObject = screenStream.current;
+      video.onloadedmetadata = () => {
+        video.play();
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64String = reader.result;
+            console.log('screen screenshot==', base64String);
+            screenshots.current.push(base64String); // Store screenshot
+          };
+          reader.readAsDataURL(blob);
+        },
+        "image/jpeg", 0.3
+      );
+      };
+    }
+
+  };
+  
+
+const startRecording = useCallback(async () => {
     
-try {
+  try {
       const audioStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
@@ -190,7 +240,8 @@ try {
         },
       });
 
-      mediaStream.current = stream;
+      mediaStream.current  = stream;
+      // videoStream.current.scrObject = stream;
       audiomediaStream.current = audioStream;
 
       audioMediaRecorder.current = new MediaRecorder(audioStream);
@@ -212,6 +263,16 @@ try {
 
       audioMediaRecorder.current.start();
       videoMediaRecorder.current.start();
+
+      // start screen recording
+      if(testtype==='coding' || testtype==='mcq') {
+         startScreenCapture();
+      }
+        
+     
+      // Start taking screenshots every minute (60000ms)
+    // const interval = setInterval(takeScreenshot, 60000);
+
 
       setIsRecording(true);
 
@@ -255,10 +316,13 @@ try {
       }
 }
 
+  
 
  
 
   }, [isRecording]);
+
+  
 
 
 
@@ -283,9 +347,12 @@ try {
      } else {
       console.error("No video or audio data to download");
     }
+
+
   };
 
   const handleEndTest = async () => {
+    
     persistStore(store).purge();
    
     try {
@@ -297,6 +364,7 @@ try {
           timetaken: timeTaken.current,
           tabswitch: tabSwitch.current,
           verdict : JSON.stringify(verdict),
+          screenshots: screenshots.current
 
         });
         if (!res.data.success) {
@@ -368,7 +436,17 @@ try {
     } catch (error) {
       navigate("/testend",{replace: true});
       console.error("Error submitting test:", error);
+    } finally  {
+      // Cleanup: Stop all tracks to release screen stream resources
+      console.log('finally block get called');
+      if (screenshotInterval.current) {
+      clearInterval(screenshotInterval.current);
     }
+      if (screenStream) {
+        console.log('stop screen sharing');
+        screenStream.getTracks().forEach(track => track.stop());
+      }
+    };
   };
 
   const uploadVideo = async () => {
@@ -378,6 +456,7 @@ try {
 
     const audioFileName = `${candidateEmail}-audio.webm`;
     const videoFileName = `${candidateEmail}-video.mp4`;
+    const screenFileName = `${candidateEmail}-screen.mp4`;
    
     const ans = await axios.post(`${BASE_URL}/api/transcriptions`, {
       bucketName: testCode,
@@ -387,6 +466,7 @@ try {
       filename: videoFileName,   
       contentType: "video/mp4",
       testcode: testCode,
+      record: 'video',
     });
   
     const videos3url = videoRes.data.url;
@@ -396,46 +476,17 @@ try {
       filename: audioFileName,
       contentType: "audio/webm",
       testcode: testCode,
+      record: 'audio',
     });
   
     const audios3url = audioRes.data.url;
     const response = await axios.put(audios3url, audioBlob);
-  
- //   await handleStop(videoBlob,videoFileName , "video/mp4", testCode);
 } catch (error) {
   console.log('error: ', error)
 }
   };
 
-   // Function to handle stopping the recording and uploading the file
-   const handleStop = async (videoBlob, filename, contentType,testcode) => {
-    console.log('handle STOP rec' , videoBlob, filename, contentType,testcode);
-    
-    const file = new File([videoBlob], filename || "recording.mp4", { type: contentType });
-  console.log('file==', file);
-    // Create a FormData object and append the file and additional data
-    const formData = new FormData();
    
-    formData.append('testcode', testcode);
-    formData.append('filename', filename || "recording.mp4");
-    formData.append('contentType', contentType);
-    formData.append('file', file);
-   // Iterate and log FormData entries
-for (let [key, value] of formData.entries()) {
-  console.log(`${key}: ${value}`);
-}
-    try {
-      // Send a POST request to the backend to upload the file
-      const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      console.log('File uploaded successfully', response.data);
-    } catch (error) {
-      console.error('Error uploading file', error);
-    }
-  };
 
   const handleSubmitTest = async () => {
     try {
@@ -504,8 +555,8 @@ for (let [key, value] of formData.entries()) {
    
             await stopRecording();
             if(testtype!=="subjective") {
-               await downloadRecording();
-               await uploadVideo();
+                await downloadRecording();
+                await uploadVideo();
             }
 
           
@@ -559,6 +610,8 @@ for (let [key, value] of formData.entries()) {
       // handleEndTest();
     }
   }, [hideCount]);
+
+
 
   return (
     <div className="test-cont">

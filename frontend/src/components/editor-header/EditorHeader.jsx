@@ -123,7 +123,7 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
 // 65.1.56.8:2358
 // "https://compiler.aiplanet.me/submissions/batch"
       const response = await axios.post(
-        "https://compiler.aiplanet.me/submissions/batch",
+        "https://compiler.realtyai.in/submissions/batch",
         { ...requestBody }
       );
       
@@ -132,7 +132,7 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
       const userOutputs = await Promise.all(tokens.map(async (token) => {
         async function checkSubmissionStatus() {
           const statusResponse = await axios.get(
-            `https://compiler.aiplanet.me/submissions/${token}`
+            `https://compiler.realtyai.in/submissions/${token}`
           );
           // console.log('status respon===' , statusResponse);
           if (statusResponse.data.status.id === 1 || statusResponse.data.status.id === 2) {
@@ -289,14 +289,14 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
 
       try {
         const response = await axios.post(
-          "https://compiler.aiplanet.me/submissions",
+          "https://compiler.realtyai.in/submissions",
           { ...requestBody }
         );
         const token = response.data.token;
         // console.log(token);
         async function checkSubmissionStatus() {
           const statusResponse = await axios.get(
-            `https://compiler.aiplanet.me/submissions/${token}`
+            `https://compiler.realtyai.in/submissions/${token}`
           );
           // console.log(statusResponse)
           if (statusResponse.data.status.id === 1 || statusResponse.data.status.id === 2) {

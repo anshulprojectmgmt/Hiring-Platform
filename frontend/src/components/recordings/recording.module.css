@@ -70,12 +70,39 @@
   display: flex;
   text-align: center;
 }
+.rating {
+  display: inline-flex;
+  align-items: center;
+  background-color: #bbbe1fd8;  /* Gold background */
+  color: white;  /* Text color */
+  font-size: 1.5rem;  /* Increase the font size */
+  font-weight: bold;  /* Make text bold */
+  padding: 5px 12px;  /* Padding inside the rating */
+  border-radius: 12px;  /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Soft shadow */
+  min-width: 70px;  /* Ensures space for content */
+}
+
+.star {
+  margin-right: 6px;  /* Space between star and rating */
+  font-size: 1.5rem;  /* Star size */
+  color: #FFEA00;  /* Slightly brighter gold color for the star */
+}
+
  
  @media (max-width: 600px) {
     /* .capimg {
       width: 100%; 
       height: auto; 
     } */
+     .rating {
+      font-size: 1rem;
+      min-width: 50px;
+      padding: 3px 8px;
+     }
+     .star{
+      font-size: 1rem;
+     }
     .videocont {
       display: flex;
       flex-direction: column;

@@ -69,6 +69,10 @@ const candidateSchema = new Schema({
     type: [String],  // Array of strings
     default: [],     // Default value is an empty array
   },
+  cam2Screenshots: {
+    type: [String],  // Array of strings
+    default: [],     // Default value is an empty array
+  },
   
   verdict: {
     type: {
@@ -109,6 +113,9 @@ const candidateSchema = new Schema({
           },
           subjVideoUrl:{
             type: String,
+          },
+          speechResult: {
+            type: Object
           }
         },
       ],

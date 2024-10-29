@@ -55,13 +55,15 @@ router.post("/start-test", async (req, res) => {
 
 router.post("/validate-camera2-session", async (req,res) => {
   let _id = req.body.cid;
+  let face = req.body?.cam2Face || null;
 
   try {
     const validCandidate = await Candidate.find({_id});
     if(validCandidate.length > 0){
       const updated = await Candidate.updateOne({_id: _id},{
         $set: {
-          cam2: 1
+          cam2: 1,
+          cam2Face: face,
         },
       });
       if (updated.acknowledged) {
@@ -89,7 +91,7 @@ router.post("/check-if-cam2-enabled", async (req,res) => {
   try {
     const validCam2 = await Candidate.find({_id: new mongoose.Types.ObjectId(_id)});
     if(validCam2.length > 0){
-      return res.json({success: true, cam2status: validCam2[0].cam2});
+      return res.json({success: true, cam2status: validCam2[0].cam2, cam2Face: validCam2[0].cam2Face});
     }
     else{
       return res.json({success: false, error: "Cam2 not started"});

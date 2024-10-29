@@ -3,6 +3,7 @@ const initialState = [
     {
       question: "",
       subjVideoUrl: "",
+      speechResult:{}
       
     },
 ];
@@ -19,6 +20,7 @@ const savedSubjective = (state = initialState, action) => {
               ?  {
                 question: action.question,
                 subjVideoUrl: action.blobUrl,
+                speechResult: action.speechResult
                  }
               : item
           );
@@ -28,6 +30,7 @@ const savedSubjective = (state = initialState, action) => {
             {
                 question: action.question,
                 subjVideoUrl: action.blobUrl,
+                speechResult: action.speechResult
                 
             },
           ];

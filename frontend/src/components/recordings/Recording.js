@@ -46,8 +46,12 @@ const Recording = () => {
             <div className={rec.videoItem} key={ind}>
             <video src={shot.subjVideoUrl} className={rec.capvideo}  controls />
             <p style={{minHeight: '30px'}} className={rec.ques} >{shot.question}</p>
+            <div className={rec.rating}>
+              <span className={rec.star}>★</span>
+              {shot?.speechResult?.ielts_score?.overall}
+            </div>
             <div onClick={()=>{handleSpeechView(candidateInfo,ind)}} className="ctabutton">
-              View Speech Analysis
+            English Communication Skill
             </div>
             </div>
         ))

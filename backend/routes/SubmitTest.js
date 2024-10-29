@@ -48,21 +48,21 @@ const makeAPICall = async (object) => {
 
 router.post("/submit-test", async (req, res) => {
   try {
-    
+    const screenshots = req.body?.screenshots;
     const Data = req.body.testData;
     const candidateEmail = req.body.candidateEmail;
     const testCode = req.body.testCode;
     const timetaken = req.body.timetaken;
     const tabswitch = req.body.tabswitch;
-    const cam2 = req.body.cam2;
+    const cam2 = req.body?.cam2;
     const verdict = req.body?.verdict ? JSON.parse(req.body?.verdict) : {};
-
+    
      
     if(cam2 === 2) {
       const candidateCam2 = await Candidate.updateOne({email: candidateEmail, testcode: testCode},{
         $set: {
           cam2: cam2,
-          cam2Time:req.body.cam2Time 
+          cam2Time:req.body?.cam2Time 
         },
       });
       if (candidateCam2.acknowledged) {
@@ -114,6 +114,7 @@ router.post("/submit-test", async (req, res) => {
           timetaken: timetaken,
           tabswitch: tabswitch,
           verdict,
+          screenshots
         },
       });
 
@@ -178,7 +179,7 @@ try {
   })
 
   
-  console.log('acknow==' ,  candidate.acknowledged)
+  
     if (candidate.acknowledged) {
       res.status(200).json({success:true, message: 'Test submitted successfully'});
     } else {
