@@ -154,13 +154,13 @@ const MyEditor = ({ editorRef, inputRef, outputRef }) => {
     // setLoading(false);
    //};
 
-   useEffect(() => {
-    if (editorInstance && monacoInstance) {
-      // Use the saved editor and monaco instances to fold the main function
-   console.log('effect for fold get called')
-      foldMainFunction(editorInstance, monacoInstance);
-    }
-   },[currentQuestion, editorInstance])
+  //  useEffect(() => {
+  //   if (editorInstance && monacoInstance) {
+  //     // Use the saved editor and monaco instances to fold the main function
+  //  console.log('effect for fold get called')
+  //     foldMainFunction(editorInstance, monacoInstance);
+  //   }
+  //  },[currentQuestion, editorInstance])
  
   
   
@@ -183,7 +183,7 @@ ${userHelperFun(wrapTitle)}:
 # write your code here and return output
 
 
-
+${'\n'.repeat(100)}
 
 # <fold>
 def main():

@@ -53,7 +53,7 @@ ${userHelperFun(wrapTitle)}:
 # write your code here and return the output
 
 
-
+${'\n'.repeat(100)}
 
 # <fold>
 def main():
@@ -110,7 +110,7 @@ ${userHelperFun(wrapTitle)}:
 # write your code here and return the output
 
 
-
+${'\n'.repeat(100)}
 
 # <fold>
 def main():
