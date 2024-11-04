@@ -5,6 +5,7 @@ const ObjectId = mongoose.Types.ObjectId;
 {/*
   new ObjectId('66089589338be786d245c01a'),
   new ObjectId('660895a1338be786d245c045'),
+  new ObjectId('660895a1338be786d245c033'),// samp
   */}
 let idsArray = [
   new ObjectId('660895a1338be786d245c032'), // org
@@ -12,7 +13,7 @@ let idsArray = [
   new ObjectId('6716500c41f91b12fda1ccec'), // org
   new ObjectId('67164bd141f91b12fda1ccea'), // org
   
-  new ObjectId('660895a1338be786d245c033'),// samp
+  
   ];
 
   const subjIds = [
