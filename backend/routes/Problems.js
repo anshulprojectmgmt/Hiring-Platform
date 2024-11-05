@@ -23,13 +23,25 @@ let idsArray = [
     ];
 router.post("/questions", async (req, res) => {
   const { testtype, language, difficulty, questions, codQue , subjQue, mcqQue, testCode } = req.body;
-  
+  console.log('idsArray before: ', idsArray)
+  console.log('testcode: ', testCode)
+
   try {
     if (testtype === "coding") {
       if (language === "Python") {
         if(testCode === 'fiu51tZLJsEOATE') {
           idsArray =  [new ObjectId('660895a1338be786d245c033'),]
+        }else {
+           idsArray = [
+            new ObjectId('660895a1338be786d245c032'), // org
+            
+            new ObjectId('6716500c41f91b12fda1ccec'), // org
+            new ObjectId('67164bd141f91b12fda1ccea'), // org
+            
+            
+            ];
         }
+        console.log('idsArray after : ', idsArray)
         var problems;
         switch (difficulty) {
           // logic to attach wrapper

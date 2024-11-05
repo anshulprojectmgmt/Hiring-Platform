@@ -72,7 +72,7 @@ const Audio = () => {
         <div 
           style={{ border: '2px solid #ff6f61', padding: '10px', backgroundColor: '#fef6f5',
                  borderRadius: '10px', color: '#333', 
-                  textAlign: 'center', marginTop: '16px',minHeight: '180px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  textAlign: 'center', marginTop: '16px',minHeight: '150px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         
         {/* <p style={{ fontSize: '16px', lineHeight: '1.5' }}>
           To ensure the integrity of the test, random screenshots will be taken during your session. Please ensure that:
@@ -111,7 +111,7 @@ const Audio = () => {
         <div 
           style={{ border: '2px solid #ff6f61', padding: '10px', backgroundColor: '#fef6f5',
                  borderRadius: '10px', color: '#333', 
-                  textAlign: 'center', marginTop: '16px', minHeight: '180px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  textAlign: 'center', marginTop: '16px', minHeight: '150px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         
         <p style={{ fontSize: '16px', lineHeight: '1.5' }}>
           To ensure the integrity of the test, random screenshots will be taken during your session. Please ensure that:

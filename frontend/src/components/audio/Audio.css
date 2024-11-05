@@ -69,8 +69,8 @@
     justify-content: center;
     /* gap: 1rem; */
 }
-.audio-images img{
-    width: 35%;
+ img{
+    width: 65%;
     height: 100%;
     object-fit: contain;
     border: 8px solid var(--bg-color);
