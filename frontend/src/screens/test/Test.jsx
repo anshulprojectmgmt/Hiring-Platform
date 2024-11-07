@@ -85,7 +85,7 @@ const getFullscreenElement = () => {
     
     if(exitScreenRef.current>=1 && !getFullscreenElement()) {
 
-      toast.error("Please reset to Full-Screen mode, else Test will get Terminated after 1min", {
+      toast.error("Please reset to Full-Screen mode, by clicking on Full-Screen button on top right, else Test will get Terminated after 1-min", {
         position: "top-left",
         autoClose: 1000*60, // Duration in milliseconds (5000ms = 5 seconds)
         hideProgressBar: false,
@@ -268,7 +268,7 @@ const resetToFullScreen =async () => {
               // Step 2: Upload the blob to S3 using the pre-signed URL
                await axios.put(uploadUrl, blob);
               screenshots.current.push(trimUrl);
-              console.log('screen capture: ', trimUrl)
+              
             } catch (error) {
               console.error("Error uploading screenshot:", error);
             }
@@ -491,12 +491,12 @@ const startRecording = useCallback(async () => {
       console.error("Error submitting test:", error);
     } finally  {
       // Cleanup: Stop all tracks to release screen stream resources
-      console.log('finally block get called');
+      
       if (screenshotInterval.current) {
       clearInterval(screenshotInterval.current);
     }
       if (screenStream) {
-        console.log('stop screen sharing');
+        
         screenStream.getTracks().forEach(track => track.stop());
       }
     };

@@ -82,7 +82,7 @@ const Camera2 = () => {
   };
 
   // Function to get dashboard information
-  const getDashboardInfo = async (cid,face=null) => {
+  const getDashboardInfo = async (cid,face) => {
     try {
       const res = await axios.post(`${BASE_URL}/api/validate-camera2-session`, {
         cid,
@@ -346,7 +346,7 @@ const Camera2 = () => {
           }
         );
 
-        console.log("Screenshots uploaded successfully:", response.data);
+        
       } catch (error) {
         console.error("Error uploading screenshots:", error);
       }
