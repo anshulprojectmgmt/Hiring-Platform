@@ -51,6 +51,8 @@ const Camera2 = () => {
   const [sideView, setSideView] = useState(0);
   const screenshots = useRef([]);
   const [btnStyle, setBtnStyle] = useState("false");
+  const testCodeRef = useRef(testCode);
+  const candidateEmailRef = useRef(candidateEmail);
 
   // Function to get candidate details
   const getCandidateDetail = async (cid) => {
@@ -92,6 +94,9 @@ const Camera2 = () => {
       setCandidateValidation(res.data.success);
       setCandidateEmail(res.data.candidateEmail);
       setTestCode(res.data.testCode);
+      testCodeRef.current = res?.data?.testCode
+      candidateEmailRef.current = res?.data?.candidateEmail
+      
       }
     } catch (error) {
       console.error("Error validating camera2 session:", error);
@@ -165,32 +170,82 @@ const Camera2 = () => {
     }
   }, [cid]);
 
-  const takeScreenshot = useCallback(() => {
+  // const takeScreenshot = useCallback(() => {
+  //   if (mediaStream.current) {
+  //     const video = document.createElement("video");
+  //     video.srcObject = mediaStream.current;
+  //     video.onloadedmetadata = () => {
+  //       video.play();
+  //       const canvas = document.createElement("canvas");
+  //       canvas.width = video.videoWidth;
+  //       canvas.height = video.videoHeight;
+  //       const ctx = canvas.getContext("2d");
+  //       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  //       canvas.toBlob((blob) => {
+  //         const reader = new FileReader();
+  //         reader.onloadend = () => {
+  //           const base64String = reader.result;
+
+  //           // Store base64String for later use
+  //           screenshots.current.push(base64String);
+  //         };
+  //         reader.readAsDataURL(blob);
+  //       },
+  //     "image/jpeg", 0.3
+  //     );
+  //     };
+  //   }
+  // }, []);
+
+
+  const takeScreenshot = async (i) => {
+    const testCode = testCodeRef.current;
+    const candidateEmail = candidateEmailRef.current;
+
+    
+
     if (mediaStream.current) {
       const video = document.createElement("video");
       video.srcObject = mediaStream.current;
-      video.onloadedmetadata = () => {
+      video.onloadedmetadata = async () => {
         video.play();
         const canvas = document.createElement("canvas");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob((blob) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64String = reader.result;
 
-            // Store base64String for later use
-            screenshots.current.push(base64String);
-          };
-          reader.readAsDataURL(blob);
-        },
-      "image/jpeg", 0.3
-      );
+        // Convert canvas to blob and set quality to 0.3
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            const filename = `${candidateEmail}-screenshot(${i}).jpeg`;
+            const contentType = "image/jpeg";
+
+            try {
+              // Step 1: Request a pre-signed URL for S3 upload
+              const res = await axios.post(`${BASE_URL}/api/s3upload`, {
+                filename,
+                contentType,
+                testcode: testCode,
+                screenshot: "cam2-screenshot",
+                email: candidateEmail
+              });
+              const uploadUrl = res.data.url;
+              const trimUrl = uploadUrl.split('?')[0];
+              // Step 2: Upload the blob to S3 using the pre-signed URL
+               await axios.put(uploadUrl, blob);
+              screenshots.current.push(trimUrl);
+              
+            } catch (error) {
+              console.error("Error uploading screenshot:", error);
+            }
+          }
+        }, "image/jpeg", 0.3);
       };
     }
-  }, []);
+  };
+
+  
 
   const startRecording = useCallback(async () => {
     try {
@@ -237,9 +292,11 @@ const Camera2 = () => {
       setIsRecording(true);
 
       // Take a screenshot every minute
+      let i=1;
       const screenshotInterval = setInterval(() => {
         // if (isRecording) {
-        takeScreenshot();
+        takeScreenshot(i);
+        i++;
         // } else {
         //   clearInterval(screenshotInterval);
         // }
@@ -625,10 +682,10 @@ const Camera2 = () => {
            */}
           <div className="info">
             <ul>
-              <li>Please capture clear face image , to proceed further.</li>
+              <li>Please capture clear <strong>face image from Smartphone</strong> , to proceed further.</li>
               <li>
               After clicking on the face image, please position your device at an angle where
-              your hands on the keyboard are visible. Note that we are also recording you with a smartphone.
+              your <strong>Hands, Face, and Laptop</strong> Should be visible. Note that we are also recording you through your smartphone.
               </li>
               <li>Submit test from 'cam2' first ,for successfull end test.</li>
               

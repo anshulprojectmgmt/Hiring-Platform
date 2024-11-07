@@ -52,6 +52,13 @@ a{
     cursor: pointer;
     white-space: nowrap;
 }
+.btn-recording {
+     background-color: #5880F0; color:
+      white; border: none; padding: 5px 10px;
+       cursor: pointer; 
+    font-size: small;
+    }
+.btn-recording:hover { background-color: #1c4b74; }
 @media screen and (max-width: 768px) {
     .candidate-items{
         flex-direction: column;

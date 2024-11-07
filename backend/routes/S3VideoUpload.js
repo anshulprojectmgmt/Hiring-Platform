@@ -31,7 +31,7 @@ router.post("/upload-screenshots" , async (req,res) => {
 })
 
 router.post("/s3upload", async (req, res) => {
-  const { filename, contentType, testcode,record='video' } = req.body;
+  const { filename, contentType, testcode,record='video', screenshot, email } = req.body;
   let command;
   if (contentType === "audio/webm") {
     command = new PutObjectCommand({
@@ -47,12 +47,22 @@ router.post("/s3upload", async (req, res) => {
     });
   }
   else if (contentType === "image/jpeg") {
-    command = new PutObjectCommand({
-      Bucket: "hm-video-audio-bucket",
-      Key: `${testcode}/images/${filename}`,
-      ContentType: contentType,
-      // ContentEncoding: 'base64',
-    });
+    if(screenshot) {
+      command = new PutObjectCommand({
+        Bucket: "hm-video-audio-bucket",
+        Key: `${testcode}/${screenshot}/${email}/${filename}`,
+        ContentType: contentType,
+        // ContentEncoding: 'base64',
+      });
+    } else{
+      command = new PutObjectCommand({
+        Bucket: "hm-video-audio-bucket",
+        Key: `${testcode}/images/${filename}`,
+        ContentType: contentType,
+        // ContentEncoding: 'base64',
+      });
+    }
+
   }
   else if (contentType === "video/mp4" && record==='screen') {
     command = new PutObjectCommand({

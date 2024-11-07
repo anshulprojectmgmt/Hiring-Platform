@@ -12,6 +12,7 @@ import Audio from "../../components/audio/Audio";
 import Warning from "../../components/warning/Warning";
 import Angle2 from "../../components/angle2/Angle2";
 import Cam2UserVerify from "../../components/cam2Auth/Cam2UserVerify";
+import Cam2Instruction from "../../components/cam2-instruction/Cam2Instruction";
 
 const Instruction = () => {
   const currentpage = useSelector((state) => state.instructionState.currentpage);
@@ -23,10 +24,11 @@ const Instruction = () => {
         </div>
         <div className="instruction-body">
         {currentpage === 1 ? <Warning /> : currentpage === 2 
-                           ? <Angle2 /> : currentpage === 3 
-                           ?  <Cam2UserVerify />  : currentpage === 4 
-                           ? <Angle /> : currentpage === 5 
-                           ? <Face /> : currentpage === 6
+                           ? <Cam2Instruction /> :  currentpage === 3
+                           ? <Angle2 /> : currentpage === 4 
+                           ?  <Cam2UserVerify />  : currentpage === 5 
+                           ? <Angle /> : currentpage === 6 
+                           ? <Face /> : currentpage === 7
                            ? <Device /> : <Audio />}
 
 {/* {currentpage === 1 ? <Warning /> : currentpage === 2 ? <Angle2 />

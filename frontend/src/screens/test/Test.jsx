@@ -61,8 +61,10 @@ const Test = () => {
   const [isFullScreen, setIsFullSreen] = useState(true);
   const [exitScreen, setExitScreen] = useState(0);
   const [verdict,setVerdict] = useState({status: "Successfull" , message: "Test successfully submitted"});
-  
-  
+  let testCodeRef = useRef();
+  let candidateEmailRef = useRef();
+  testCodeRef.current = testCode 
+  candidateEmailRef.current = candidateEmail   
 
 const exitScreenRef = useRef(null);
 const isFullScreenRef = useRef(null);
@@ -188,7 +190,11 @@ const resetToFullScreen =async () => {
       });
       
       // Set an interval to capture screenshots every minute
-       screenshotInterval.current = setInterval(takeScreenScreenshot, 1000*60);
+      let i=1;
+       screenshotInterval.current = setInterval(()=> {
+        takeScreenScreenshot(i)
+        i++;
+       }, 1000*60);
 
       // Cleanup on unmount
       
@@ -197,32 +203,79 @@ const resetToFullScreen =async () => {
     }
   };
 
-  const takeScreenScreenshot = () => {
+  // const takeScreenScreenshot = () => {
   
+  //   if (screenStream.current) {
+  //     const video = document.createElement("video");
+  //     video.srcObject = screenStream.current;
+  //     video.onloadedmetadata = () => {
+  //       video.play();
+  //       const canvas = document.createElement("canvas");
+  //       canvas.width = video.videoWidth;
+  //       canvas.height = video.videoHeight;
+  //       const ctx = canvas.getContext("2d");
+  //       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  //       canvas.toBlob((blob) => {
+  //         const reader = new FileReader();
+  //         reader.onloadend = () => {
+  //           const base64String = reader.result;
+  //           console.log('screen screenshot==', base64String);
+  //           screenshots.current.push(base64String); // Store screenshot
+  //         };
+  //         reader.readAsDataURL(blob);
+  //       },
+  //       "image/jpeg", 0.3
+  //     );
+  //     };
+  //   }
+
+  // };
+
+  const takeScreenScreenshot = async (i) => {
+    const testCode = testCodeRef.current;
+    const candidateEmail = candidateEmailRef.current;
+
+    
+
     if (screenStream.current) {
       const video = document.createElement("video");
       video.srcObject = screenStream.current;
-      video.onloadedmetadata = () => {
+      video.onloadedmetadata = async () => {
         video.play();
         const canvas = document.createElement("canvas");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob((blob) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64String = reader.result;
-            console.log('screen screenshot==', base64String);
-            screenshots.current.push(base64String); // Store screenshot
-          };
-          reader.readAsDataURL(blob);
-        },
-        "image/jpeg", 0.3
-      );
+
+        // Convert canvas to blob and set quality to 0.3
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            const filename = `${candidateEmail}-screenshot(${i}).jpeg`;
+            const contentType = "image/jpeg";
+
+            try {
+              // Step 1: Request a pre-signed URL for S3 upload
+              const res = await axios.post(`${BASE_URL}/api/s3upload`, {
+                filename,
+                contentType,
+                testcode: testCode,
+                screenshot: "screen-capture",
+                email: candidateEmail
+              });
+              const uploadUrl = res.data.url;
+              const trimUrl = uploadUrl.split('?')[0];
+              // Step 2: Upload the blob to S3 using the pre-signed URL
+               await axios.put(uploadUrl, blob);
+              screenshots.current.push(trimUrl);
+              console.log('screen capture: ', trimUrl)
+            } catch (error) {
+              console.error("Error uploading screenshot:", error);
+            }
+          }
+        }, "image/jpeg", 0.3);
       };
     }
-
   };
   
 
