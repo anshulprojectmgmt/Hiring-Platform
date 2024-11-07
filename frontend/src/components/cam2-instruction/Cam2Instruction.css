@@ -1,11 +1,11 @@
-.audio{
+.smartphone{
     /* background-color: red !important; */
     background-color: var(--bg-color);
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
     flex-direction: column;
     gap: 1rem;
     padding: 0 1rem;
@@ -13,55 +13,48 @@
     /* background-color: var(--bg-color); */
 }
 
-.anti-cheating-container {
-    display: flex;
-    
-    justify-content: space-between;
-    gap: 2rem;
-}
-.screen-container{
+
+.smartphone-container{
     flex: 1;
 }
-.audio-container{
-    flex: 1;
-}
+
 .bar-loader {
     height: 0.3rem;
     width: 100%;
     border-radius: 50%;
     background-color: #1c4b74;
 }
-.audio-head{
+.smartphone-head{
     width: 100%;
     /* background-color: yellow; */
     text-align: center;
 }
-.audio-head h3{
+.smartphone-head h3{
     color: var(--color-heading);
     text-decoration: underline;
 }
-.audio-head p{
+.smartphone-head p{
     color: #ff4545;
     font-weight: 600;
     font-size: 1.1rem;
 }
-.audio-foot{
+.smartphone-foot{
     width: 100%;
     /* background-color: yellow; */
     text-align: center;
 }
-.audio-foot h4{
+.smartphone-foot h4{
     color: var(--color-heading);
     text-decoration: underline;
 }
-.audio-foot p{
+.smartphone-foot p{
     color: 	#339900;
     font-weight: 600;
 }
-.audio-foot span{
+.smartphone-foot span{
     color: #ff4545;
 }
-.audio-images-cont{
+.smartphone-images-cont{
     width: 100%;
     /* background-color: blue; */
     display: flex;
@@ -69,13 +62,15 @@
     justify-content: center;
     /* gap: 1rem; */
 }
-.audio-images{
-    width: 65%;
+.smartphone-images{
+    width: 30%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     border: 8px solid var(--bg-color);
+    max-height: 300px;
 }
-.audio-navigation{
+
+.smartphone-navigation{
     width: 100%;
     /* background-color: red; */
     display: flex;
@@ -86,19 +81,19 @@
 
 
 @media screen and (max-width: 760px) {
-    .audio{
+    .smartphone{
         flex-direction: column;
         padding: 2rem;
         gap: 2rem;
     }
 
-    .audio-images{
+    .smartphone-images{
         flex-direction: column;
     }
-    .audio-images img{
+    .smartphone-images img{
         width: 100%;
     }
-    .audio-navigation{
+    .smartphone-navigation{
         /* padding-right: 0; */
         padding: 0rem;
     }

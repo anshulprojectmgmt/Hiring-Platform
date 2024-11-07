@@ -80,6 +80,7 @@ const TestResult = () => {
                 <tr>
                   <th scope="col"></th>
                   <th scope="col">Name</th>
+                  <th scope="col">Recording</th>
                   <th scope="col">Email</th>
                   <th scope="col">Phone No.</th>
                   <th scope="col">TimeTaken</th>
@@ -100,14 +101,20 @@ const TestResult = () => {
                             <Link
                               to={`/candidate-${i + 1}`}
                               state={{ candidateInfo: candidate, sum: sum, type: type }}
+                              style={{ borderBottom: '2px solid #5880F0',  }}
                             >
-                              <i className="fa-solid fa-eye"></i>
+                              {/* <i className="fa-solid fa-eye"></i> */}
+                              <button className="btn-recording">Answers</button>
                             </Link>
                           </td>
-                          <td>{candidate.name} 
+                          <td>{candidate.name?.toUpperCase()} 
+                          </td>
+                          <td> 
                             <Link to="/recording"
+                            //  style={{ borderBottom: '2px solid #5880F0',  }}
                             state={{candidateInfo: candidate , sum: sum , testtype: type}}>
-                            <img src={rightUp} width={"20px"}  />
+                            {/* <img src={rightUp} width={"20px"}  /> */}
+                            <button className="btn-recording">View Recording</button>
                             </Link>
                           </td>
                           <td>{candidate.email}</td>
