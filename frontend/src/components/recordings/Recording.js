@@ -26,13 +26,19 @@ const Recording = () => {
     className={camType === 1 ? `${rec.rectitle} ${rec.active}` : `${rec.rectitle}`}
     onClick={() => setCamType(1)}
   >
-    Cam1
+    Cam1 Recoridng
   </div>
   <div
     className={camType === 2 ? `${rec.rectitle} ${rec.active}` : `${rec.rectitle}`}
     onClick={() => setCamType(2)}
   >
-    Cam2
+    Cam2 Recording
+  </div>
+  <div
+    className={camType === 3 ? `${rec.rectitle} ${rec.active}` : `${rec.rectitle}`}
+    onClick={() => setCamType(3)}
+  >
+    Screen Recording
   </div>
    </div>
        {testtype==="subjective" ? (
@@ -74,22 +80,39 @@ const Recording = () => {
 
     </div>
         
-        
-       ) : (
+    ) 
+    : (
        
        camType===1 ?
         <div style={{display:"flex", justifyContent:"center" ,alignItems:"center", fontSize:"20px" , fontWeight: "bold", width:"100%" ,minHeight:"300px"}} className={rec.videocont}>Primary cam recording , will add soon.</div>
       :
-      <div  className={rec.videocont}>
-        {(candidateInfo.screenshots && candidateInfo.screenshots.length > 0) ? 
-        candidateInfo.screenshots.map((shot) => (
-             <img className={rec.capimg} src={shot} alt='screenshot' />
+       camType === 2 ? (
+        <div  className={rec.recContainer}>
+        {(candidateInfo.cam2Screenshots && candidateInfo.cam2Screenshots?.length > 0) ? 
+        candidateInfo.cam2Screenshots.map((shot) => (
+            <div className={rec.imgContainer}>
+               <img className={rec.capimg} src={shot} alt='screenshot' />
+             </div>
            ))
+      : 
+      <div style={{display:"flex", justifyContent:"center" ,alignItems:"center", fontSize:"20px" , fontWeight: "bold", width:"100%" ,minHeight:"300px"}} className={rec.recContainer}>No screenshot present for secondary camera</div>
+      }
+      </div>
+       )
+       : (
+        <div  className={rec.recContainer}>
+        {(candidateInfo.screenshots && candidateInfo.screenshots?.length > 0) ? 
+        candidateInfo.screenshots.map((shot) => (
+          <div className={rec.imgContainer}>
+             <img className={rec.capimg} src={shot} alt='screenshot' />
+          </div>
+           ))
+           
       : 
       <div style={{display:"flex", justifyContent:"center" ,alignItems:"center", fontSize:"20px" , fontWeight: "bold", width:"100%" ,minHeight:"300px"}} className={rec.videocont}>No screenshot present for secondary camera</div>
       }
-    </div>
-        
+      </div>
+       )
        )}
         
         
