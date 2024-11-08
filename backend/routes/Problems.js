@@ -12,7 +12,9 @@ let idsArray = [
   
   new ObjectId('6716500c41f91b12fda1ccec'), // org
   new ObjectId('67164bd141f91b12fda1ccea'), // org
-  
+  new ObjectId('66089589338be786d245c01a'),
+  new ObjectId('660895a1338be786d245c045'),
+  new ObjectId('66089589338be786d245c022'),
   
   ];
 
@@ -37,7 +39,9 @@ router.post("/questions", async (req, res) => {
             
             new ObjectId('6716500c41f91b12fda1ccec'), // org
             new ObjectId('67164bd141f91b12fda1ccea'), // org
-            
+            new ObjectId('660895a1338be786d245c045'),
+            new ObjectId('66089589338be786d245c01a'),
+            new ObjectId('66089589338be786d245c022'),
             
             ];
         }
