@@ -66,7 +66,7 @@ const Cam2Instruction = () => {
       <div className="smartphone-images-cont">
         {/* <img src={lap} alt="demoimage" /> */}
         <img  className="smartphone-images" src={sideView1} alt="demoimage" />
-        <img  className="smartphone-images" src={sideView2} alt="demoimage" />
+        <img width={200} className="smartphone-images" src={sideView2} alt="demoimage" />
       </div>
       <div className="smartphone-foot">
         <h4>AI PROCTORING: FACE, HANDS, KEYBOARD and SCREEN DETECTION</h4>
