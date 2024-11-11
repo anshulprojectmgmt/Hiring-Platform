@@ -87,7 +87,7 @@ const getFullscreenElement = () => {
 
       toast.error("Please reset to Full-Screen mode, by clicking on Full-Screen button on top right, else Test will get Terminated after 1-min", {
         position: "top-left",
-        autoClose: 1000*60, // Duration in milliseconds (5000ms = 5 seconds)
+        autoClose: 1000*80, // Duration in milliseconds (5000ms = 5 seconds)
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
@@ -106,7 +106,7 @@ const getFullscreenElement = () => {
               
               setVerdict({status: "Terminated" , message: "Test terminated due to Exit Full screen"})
             }
-          }, 1000*70)
+          }, 1000*60*2)
     }
 
     return () => {
@@ -686,7 +686,7 @@ try {
             type="button"
             className="fullscreen-btn"
           >
-            Full Screen
+            Full Screen Mode
           </div>
            }
           <div

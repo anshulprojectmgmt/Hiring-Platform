@@ -62,6 +62,10 @@
     justify-content: center;
     /* gap: 1rem; */
 }
+.image-item {
+    text-align: center; /* Centers the text and image */
+ 
+  }
 .smartphone-images{
     /* width: 30%; */
     height: 100%;
@@ -69,6 +73,12 @@
     border: 8px solid var(--bg-color);
     max-height: 300px;
 }
+.smartphone-images-cont p {
+    font-size: 14px; /* Adjusts font size for descriptions */
+    padding: 0;
+    margin: 0;
+    font-weight: bold;
+  }
 
 .smartphone-navigation{
     width: 100%;
