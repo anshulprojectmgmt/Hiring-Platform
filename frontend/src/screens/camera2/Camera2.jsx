@@ -161,7 +161,7 @@ const Camera2 = () => {
         // Only call getDashboardInfo if getCandidateDetail did not signal to stop
         if (!shouldStop) {
           // 1. start camera
-          await startRecording();
+       //   await startRecording();
           await getDashboardInfo(cid);
         }
       };
@@ -249,20 +249,21 @@ const Camera2 = () => {
 
   const startRecording = useCallback(async () => {
     try {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const constraints = isMobile
-        ? {
-            video: true,
-            audio: false,
-          }
-        : {
-            video: {
-              width: { ideal: 640 },
-              height: { ideal: 360 },
-              frameRate: { ideal: 10 },
-            },
-            audio: false,
-          };
+      // const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      // const constraints = isMobile
+      //   ? {
+      //       video: true,
+      //       audio: false,
+      //     }
+      //   : {
+      //       video: {
+      //         width: { ideal: 640 },
+      //         height: { ideal: 360 },
+      //         frameRate: { ideal: 10 },
+      //       },
+      //       audio: false,
+      //     };
+      const constraints = {video: true, audio: false}
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
@@ -415,6 +416,7 @@ const Camera2 = () => {
         testcode: testCode,
       });
       const cam2Faceurl = cam2FaceRes.data.url;
+     
       await axios.put(cam2Faceurl, cam2FaceBlob);
       toast.success("Succefully captured, now click next on laptop to verify face.");
       setBtnStyle("false");
@@ -607,6 +609,18 @@ const Camera2 = () => {
             >
               keyboard/hands/face
             </div> */}
+            <div
+              type="button"
+              onClick={startRecording}
+              className="endtest-btn"
+              style={
+                btnStyle === "face"
+                  ? { backgroundColor: "white", color: "black" }
+                  : {}
+              }
+            >
+              start camera
+            </div>
             <div
               type="button"
               onClick={camera2Photo}
