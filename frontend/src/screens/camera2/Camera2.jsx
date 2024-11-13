@@ -574,6 +574,8 @@ const Camera2 = () => {
             //  await uploadVideo();
 
             // await handleEndTest();
+
+            await uploadScreenShots();
             clearInterval(timerRef.current);
             timerRef.current = null;
             // navigate("/testend");
