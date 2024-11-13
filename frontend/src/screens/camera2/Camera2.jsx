@@ -198,53 +198,91 @@ const Camera2 = () => {
   // }, []);
 
 
+  // const takeScreenshot = async (i) => {
+  //   const testCode = testCodeRef.current;
+  //   const candidateEmail = candidateEmailRef.current;
+
+    
+
+  //   if (mediaStream.current) {
+  //     const video = document.createElement("video");
+  //     video.srcObject = mediaStream.current;
+  //     video.onloadedmetadata = async () => {
+  //       video.play();
+  //       const canvas = document.createElement("canvas");
+  //       canvas.width = video.videoWidth;
+  //       canvas.height = video.videoHeight;
+  //       const ctx = canvas.getContext("2d");
+  //       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  //       // Convert canvas to blob and set quality to 0.3
+  //       canvas.toBlob(async (blob) => {
+  //         if (blob) {
+  //           const filename = `${candidateEmail}-screenshot(${i}).jpeg`;
+  //           const contentType = "image/jpeg";
+
+  //           try {
+  //             // Step 1: Request a pre-signed URL for S3 upload
+  //             const res = await axios.post(`${BASE_URL}/api/s3upload`, {
+  //               filename,
+  //               contentType,
+  //               testcode: testCode,
+  //               screenshot: "cam2-screenshot",
+  //               email: candidateEmail
+  //             });
+  //             const uploadUrl = res.data.url;
+  //             const trimUrl = uploadUrl.split('?')[0];
+  //             // Step 2: Upload the blob to S3 using the pre-signed URL
+  //              await axios.put(uploadUrl, blob);
+  //             screenshots.current.push(trimUrl);
+              
+  //           } catch (error) {
+  //             console.error("Error uploading screenshot:", error);
+  //           }
+  //         }
+  //       }, "image/jpeg", 0.3);
+  //     };
+  //   }
+  // };
+
   const takeScreenshot = async (i) => {
     const testCode = testCodeRef.current;
     const candidateEmail = candidateEmailRef.current;
 
-    
+    if (webcamRef.current) {
+      // Capture the screenshot as a base64 encoded image
+      const base64Image = webcamRef.current.getScreenshot();
+      if (!base64Image) return;
 
-    if (mediaStream.current) {
-      const video = document.createElement("video");
-      video.srcObject = mediaStream.current;
-      video.onloadedmetadata = async () => {
-        video.play();
-        const canvas = document.createElement("canvas");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Convert base64 to a Blob for upload
+      const blob = await fetch(base64Image).then((res) => res.blob());
 
-        // Convert canvas to blob and set quality to 0.3
-        canvas.toBlob(async (blob) => {
-          if (blob) {
-            const filename = `${candidateEmail}-screenshot(${i}).jpeg`;
-            const contentType = "image/jpeg";
+      const filename = `${candidateEmail}-screenshot(${i}).jpeg`;
+      const contentType = "image/jpeg";
 
-            try {
-              // Step 1: Request a pre-signed URL for S3 upload
-              const res = await axios.post(`${BASE_URL}/api/s3upload`, {
-                filename,
-                contentType,
-                testcode: testCode,
-                screenshot: "cam2-screenshot",
-                email: candidateEmail
-              });
-              const uploadUrl = res.data.url;
-              const trimUrl = uploadUrl.split('?')[0];
-              // Step 2: Upload the blob to S3 using the pre-signed URL
-               await axios.put(uploadUrl, blob);
-              screenshots.current.push(trimUrl);
-              
-            } catch (error) {
-              console.error("Error uploading screenshot:", error);
-            }
-          }
-        }, "image/jpeg", 0.3);
-      };
+      try {
+        // Request a pre-signed URL for S3 upload
+        const res = await axios.post(`${BASE_URL}/api/s3upload`, {
+          filename,
+          contentType,
+          testcode: testCode,
+          screenshot: "cam2-screenshot",
+          email: candidateEmail,
+        });
+        const uploadUrl = res.data.url;
+        const trimUrl = uploadUrl.split('?')[0];
+
+        // Upload the Blob to S3 using the pre-signed URL
+        await axios.put(uploadUrl, blob, {
+          headers: { "Content-Type": contentType },
+        });
+        screenshots.current.push(trimUrl);
+
+      } catch (error) {
+        console.error("Error uploading screenshot:", error);
+      }
     }
   };
-
   
 
   const startRecording = useCallback(async () => {
@@ -529,7 +567,7 @@ const Camera2 = () => {
             setShow(true);
             loader.current = "true";
 
-            await stopRecording();
+         //   await stopRecording();
 
             //   await downloadRecording();
 
@@ -568,6 +606,17 @@ const Camera2 = () => {
       timerRef.current = null;
     };
   }, [timeLeft, /* handleEndTest, */ startRecording, stopRecording]);
+
+  useEffect(() => {
+    // Set interval to take screenshot every minute
+    let i=1;
+    const intervalId = setInterval(() => {
+      takeScreenshot(i); // Use timestamp as unique identifier if needed
+    i++;
+    }, 60000);
+
+    return () => clearInterval(intervalId); // Clean up interval on unmount
+  }, []);
 
   return (
     <div className="camera2-cont">
@@ -609,7 +658,8 @@ const Camera2 = () => {
             >
               keyboard/hands/face
             </div> */}
-            <div
+
+            {/* <div
               type="button"
               onClick={startRecording}
               className="endtest-btn"
@@ -621,6 +671,8 @@ const Camera2 = () => {
             >
               start camera
             </div>
+             */}
+
             <div
               type="button"
               onClick={camera2Photo}
