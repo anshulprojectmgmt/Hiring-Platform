@@ -70,7 +70,7 @@ const Cam2Instruction = () => {
       </div>
   <div className="image-item">
     <p>Placement of SmartPhone</p>
-    <img width={200} className="smartphone-images" src={sideView2} alt="demoimage" />
+    <img  className="smartphone-images" src={sideView2} alt="demoimage" />
   </div>
       </div>
       <div className="smartphone-foot">
