@@ -349,17 +349,27 @@ const EditorHeader = ({ editorRef, inputRef, outputRef }) => {
   return (
     <div className="editor_header ">
       <div className="editor_header_left">
-        <button
+        <div className="run-btn">
+          <p className="info">▶️Please ensure  <strong>input box</strong> is not blank when you try to <strong>‘run’</strong> and test the code.</p>
+          <button
           disabled={codeStatus === CodeStatus.Running}
           onClick={handleRun}
           className="run_code_btn"
-        >
-          <i className="fa fa-play-circle" aria-hidden="true"></i>&nbsp; Run{" "}
-        </button>
-        <button onClick={handleSubmit} className="submit_code_btn">
-          {isRun === true ?  <BeatLoader size={12} color="#ffffff" /> : 'Save & Submit' }
-        </button>
-        <div className="info">Click on save&submit to submit answer for evaluation.</div>
+          >
+            <i className="fa fa-play-circle" aria-hidden="true"></i>&nbsp; Run{" "}
+
+          </button>
+        </div>
+       
+        <div className="submit-btn">
+           <p className="info"> ▶️Click on <strong>save&submit</strong> to submit the code.</p>
+            <button onClick={handleSubmit} className="submit_code_btn">
+            {isRun === true ?  <BeatLoader size={12} color="#ffffff" /> : 'Save & Submit' }
+            </button>
+           
+       </div>
+       
+
       </div>
       <div className="editor_header_right">
         <DropDown

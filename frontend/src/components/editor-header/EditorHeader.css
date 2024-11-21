@@ -1,5 +1,5 @@
 .editor_header{
-    height: 3rem;
+    /* height: 3rem; */
     width: 100%;
     display: flex;
   justify-content: space-between;
@@ -11,14 +11,17 @@
 }
 .editor_header_left{
   display: flex;
-    justify-content: space-between;
-    align-items: center;
+    /* justify-content: space-between; */
+    flex-direction: column;
+    /* align-items: center; */
     gap: 0.6rem;
 }
 .editor_header_left .info{
   /* background-color: yellow; */
   color: var(--color-heading);
-  font-size: 12px;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
 }
 .editor_header_right {
     display: flex;
@@ -53,6 +56,8 @@
   border-radius: 5px;
   color: white;
   transition: all 0.3s;
+  margin: 0;
+  min-width: 130px;
 }
 .run_code_btn:active{
   transform: scale(0.9);
@@ -69,6 +74,8 @@
   color: white;
   transition: all 0.3s;
   font-size: 15px;
+  margin: 0;
+  min-width: 130px;
 }
 .submit_code_btn:active{
 	transform: scale(0.9);

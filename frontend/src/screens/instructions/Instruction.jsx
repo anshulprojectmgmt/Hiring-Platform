@@ -13,6 +13,8 @@ import Warning from "../../components/warning/Warning";
 import Angle2 from "../../components/angle2/Angle2";
 import Cam2UserVerify from "../../components/cam2Auth/Cam2UserVerify";
 import Cam2Instruction from "../../components/cam2-instruction/Cam2Instruction";
+import PermissionsCheck from "../../components/permissions-check/PermissionsCheck";
+import UserFeedbackInstruction from "../../components/user-feedback-instruction/UserFeedbackInstruction";
 
 const Instruction = () => {
   const currentpage = useSelector((state) => state.instructionState.currentpage);
@@ -24,12 +26,15 @@ const Instruction = () => {
         </div>
         <div className="instruction-body">
         {currentpage === 1 ? <Warning /> : currentpage === 2 
-                           ? <Cam2Instruction /> :  currentpage === 3
-                           ? <Angle2 /> : currentpage === 4 
+                           ? <Angle2 /> :  currentpage === 3
+                           ? <Cam2Instruction /> : currentpage === 4 
                            ?  <Cam2UserVerify />  : currentpage === 5 
                            ? <Angle /> : currentpage === 6 
                            ? <Face /> : currentpage === 7
-                           ? <Device /> : <Audio />}
+                           ? <Device /> : currentpage === 8
+                           ? <Audio /> : currentpage === 9
+                           ?<UserFeedbackInstruction /> : <PermissionsCheck />
+                            }
 
 {/* {currentpage === 1 ? <Warning /> : currentpage === 2 ? <Angle2 />
            : currentpage === 3 ? <Angle /> 

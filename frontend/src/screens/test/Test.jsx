@@ -33,6 +33,7 @@ const Test = () => {
   const testCode = useSelector((state) => state.testInfo.testCode);
   const testtype = useSelector((state) => state.testInfo.testtype);
   const time = useSelector((state) => state.testInfo.duration);
+  const {screen} = useSelector((state) => state.userMediaStore);
   //const [time,setTime] = useState(null);
   const initialTime = time * 60;
   const [timeLeft, setTimeLeft] = useState(initialTime);
@@ -185,9 +186,11 @@ const resetToFullScreen =async () => {
   const startScreenCapture = async () => {
     try {
       // Request screen capture once on component mount
-      screenStream.current = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-      });
+      // screenStream.current = await navigator.mediaDevices.getDisplayMedia({
+      //   video: true,
+      // });
+      
+      screenStream.current = screen
       
       // Set an interval to capture screenshots every minute
       let i=1;
@@ -370,7 +373,7 @@ const startRecording = useCallback(async () => {
 }
 
   
-
+screenStream.current.getTracks().forEach((track) => track.stop());
  
 
   }, [isRecording]);
@@ -404,103 +407,7 @@ const startRecording = useCallback(async () => {
 
   };
 
-  const handleEndTest = async () => {
-    
-    persistStore(store).purge();
-   
-    try {
-      if(testtype === "coding"){
-        const res = await axios.post(`${BASE_URL}/api/submit-test`, {
-          testData: check,
-          candidateEmail: candidateEmail,
-          testCode: testCode,
-          timetaken: timeTaken.current,
-          tabswitch: tabSwitch.current,
-          verdict : JSON.stringify(verdict),
-          screenshots: screenshots.current
-
-        });
-        if (!res.data.success) {
-          toast.error(res.data.message);
-        } else {
-          // toast.success(res.data.message);
-          if (getFullscreenElement()) {
-            loader.current = "false";
-            toast.success(res.data.message);
-            try {
-              document.exitFullscreen();  
-            } catch (error) {
-              console.log('exit full screen error==' , error);
-            }
-            
-          }
-          navigate("/testend");
-        }
-      }
-      else if(testtype === "mcq"){
-        const res = await axios.post(`${BASE_URL}/api/submit-mcqtest`, {
-          testData: mcqData,
-          candidateEmail: candidateEmail,
-          testCode: testCode,
-          timetaken: timeTaken.current,
-          tabswitch: tabSwitch.current,
-          verdict : JSON.stringify(verdict),
-        });
-        if (!res.data.success) {
-          toast.error(res.data.message);
-        } else {
-          // toast.success(res.data.message);
-          if (getFullscreenElement()) {
-            loader.current = "false";
-            toast.success(res.data.message);
-            document.exitFullscreen();
-          }
-          navigate("/testend",{replace: true});
-        }
-      }
-      else if(testtype==="subjective") {
-     
-        const res = await axios.post(`${BASE_URL}/api/submit-subjectivetest`, {
-          testData: subjData,
-          candidateEmail: candidateEmail,
-          testCode: testCode,
-          timetaken: timeTaken.current,
-          tabswitch: tabSwitch.current,
-          verdict : JSON.stringify(verdict),
-        });
-        if (!res.data.success) {
-          toast.error(res.data.message);
-        } else {
-          // toast.success(res.data.message);
-          if (getFullscreenElement()) {
-            loader.current = "false";
-            toast.success(res.data.message);
-            document.exitFullscreen();
-          }
-          navigate("/testend",{replace: true});
-        }
-      }
-      else if(testtype==="coding+subjective"){
-        navigate("/testend",{replace: true});
-      }else{
-        navigate("/testend",{replace: true});
-      }
-      
-    } catch (error) {
-      navigate("/testend",{replace: true});
-      console.error("Error submitting test:", error);
-    } finally  {
-      // Cleanup: Stop all tracks to release screen stream resources
-      
-      if (screenshotInterval.current) {
-      clearInterval(screenshotInterval.current);
-    }
-      if (screenStream) {
-        
-        screenStream.getTracks().forEach(track => track.stop());
-      }
-    };
-  };
+  
 
   const uploadVideo = async () => {
     
@@ -587,6 +494,104 @@ try {
     // timeTaken.current = initialTime - timeLeft;
     // setTimeLeft(0);
 
+  };
+
+  const handleEndTest = async () => {
+    
+    persistStore(store).purge();
+   
+    try {
+      if(testtype === "coding"){
+        const res = await axios.post(`${BASE_URL}/api/submit-test`, {
+          testData: check,
+          candidateEmail: candidateEmail,
+          testCode: testCode,
+          timetaken: timeTaken.current,
+          tabswitch: tabSwitch.current,
+          verdict : JSON.stringify(verdict),
+          screenshots: screenshots.current
+
+        });
+        if (!res.data.success) {
+          toast.error(res.data.message);
+        } else {
+          // toast.success(res.data.message);
+          if (getFullscreenElement()) {
+            loader.current = "false";
+            toast.success(res.data.message);
+            try {
+              document.exitFullscreen();  
+            } catch (error) {
+              console.log('exit full screen error==' , error);
+            }
+            
+          }
+          navigate("/user-feedback");
+        }
+      }
+      else if(testtype === "mcq"){
+        const res = await axios.post(`${BASE_URL}/api/submit-mcqtest`, {
+          testData: mcqData,
+          candidateEmail: candidateEmail,
+          testCode: testCode,
+          timetaken: timeTaken.current,
+          tabswitch: tabSwitch.current,
+          verdict : JSON.stringify(verdict),
+        });
+        if (!res.data.success) {
+          toast.error(res.data.message);
+        } else {
+          // toast.success(res.data.message);
+          if (getFullscreenElement()) {
+            loader.current = "false";
+            toast.success(res.data.message);
+            document.exitFullscreen();
+          }
+          navigate("/testend",{replace: true});
+        }
+      }
+      else if(testtype==="subjective") {
+     
+        const res = await axios.post(`${BASE_URL}/api/submit-subjectivetest`, {
+          testData: subjData,
+          candidateEmail: candidateEmail,
+          testCode: testCode,
+          timetaken: timeTaken.current,
+          tabswitch: tabSwitch.current,
+          verdict : JSON.stringify(verdict),
+        });
+        if (!res.data.success) {
+          toast.error(res.data.message);
+        } else {
+          // toast.success(res.data.message);
+          if (getFullscreenElement()) {
+            loader.current = "false";
+            toast.success(res.data.message);
+            document.exitFullscreen();
+          }
+          navigate("/testend",{replace: true});
+        }
+      }
+      else if(testtype==="coding+subjective"){
+        navigate("/testend",{replace: true});
+      }else{
+        navigate("/testend",{replace: true});
+      }
+      
+    } catch (error) {
+      navigate("/testend",{replace: true});
+      console.error("Error submitting test:", error);
+    } finally  {
+      // Cleanup: Stop all tracks to release screen stream resources
+      
+      if (screenshotInterval.current) {
+      clearInterval(screenshotInterval.current);
+    }
+      if (screenStream) {
+        
+        screenStream.getTracks().forEach(track => track.stop());
+      }
+    };
   };
   
   useEffect(() => {
@@ -766,8 +771,10 @@ try {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Please wait, your test and video is being uploaded to server. Sometime
-          its takes 3-4 mins to upload.
+        <p style={{marginBottom:"8px"}}>   Please wait, your test and video is being uploaded to server. Sometime
+          its takes 3-4 mins to upload.</p>
+          <p style={{color: "red", fontWeight: "600", textAlign: 'center'}}>If you encounter any technical difficulties that prevent you from completing the test,
+             you may submit a request to reappear for the test through the feedback form.</p>
         </Modal.Body>
       </Modal>
     

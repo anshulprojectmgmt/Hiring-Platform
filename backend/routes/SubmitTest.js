@@ -192,4 +192,32 @@ try {
 
 })
 
+router.post("/user-feedback", async (req, res) => {
+  const { email, testCode, userFeedback } = req.body;
+
+  if (!email || !testCode || !userFeedback) {
+    return res.status(400).json({ error: "Missing required fields: email, testCode, or userFeedback." });
+  }
+
+  try {
+    // Find the candidate document based on email and testCode
+    const candidate = await Candidate.findOne({ email, testcode: testCode });
+
+    if (!candidate) {
+      return res.status(404).json({ error: "Candidate not found." });
+    }
+
+    // Update the userFeedback field
+    candidate.userFeedback = userFeedback;
+
+    // Save the updated document
+    await candidate.save();
+
+    res.status(200).json({ message: "User feedback updated successfully." });
+  } catch (error) {
+    console.error("Error updating user feedback:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
 module.exports = router;

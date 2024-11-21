@@ -38,7 +38,7 @@ const Angle = () => {
   return (
     <div className="angle">
       <div className="angle2-head">
-        <h3>Face side profile, Keyboard and hands detection</h3>
+        <h3>Step-1 face authentication between smartphone & laptop camera</h3>
         <p>
           Steps: In order to ensure that you are really the one taking the test,
            please scan the below QR code from your mobile device and setup your mobile device at an angle at which your face,
@@ -74,9 +74,10 @@ const Angle = () => {
               <div className="d-flex justify-center items-center gap-1">
               <img src={keyboard2}  alt="..."></img>
               {/**https://aiplanet.me
-               window.location.host
+               
+               https://realtyai.in
                */}
-              <QRCode value={'https://realtyai.in' + "/camera2/" + cid} size={256} />
+              <QRCode value={`${window.location.host}` + "/camera2/" + cid} size={256} />
               </div>
             </div>
 

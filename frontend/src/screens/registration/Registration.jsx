@@ -32,7 +32,7 @@ const Home = () => {
       // console.log(data.message);
       toast.error(data.message);
     } else {
-      console.log(data);
+      
       localStorage.setItem('cid', data.cid);
       dispatch({
         type: "TEST_INFO",

@@ -1,17 +1,24 @@
 .body_editor {
-  width: 100vw;
+  width: vw;
   /* height: calc(100vh - 50px); */
-  min-height: 50vh;
+  /* min-height: 50vh; */
   background-color: var(--bg-second);
   display: flex;
   flex-direction: column;
   align-items: center;
   font-family: var(--font-family);
+  overflow-y: scroll;
+  max-height: 100vh;
+  height: 100vh;
+  
 }
+
+
+
 
 .console {
   width: 50%;
-  height: 50vh;
+  /* height: 100vh; */
   background-color: white;
   /* border-left: 1px solid var(--color-heading); */
   /* background-color: red; */
@@ -29,29 +36,60 @@
 
 .console_body{
     width: 100%;
-    height: calc(100% - 3rem);
+    /* height: calc(100% - 3rem); */
     background-color: white;
     /* background-color: var(--color-text); */
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    margin-bottom: 1rem;
+    /* align-items: center; */
 }
-.console_body p{
+/* .console_body p{
     font-weight: 500;
-}
+} */
 
 .console_input{
     width: 100%;
     height: 100%;
     /* background-color: blue; */
     padding: 0.6rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 420px;
 }
+
 .console_output{
     width: 100%;
     height: 100%;
     /* background-color: red; */
     padding: 0.6rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 420px;
 }
+.console_input .info{
+  /* background-color: yellow; */
+  color: var(--color-heading);
+  font-size: 12px;
+  margin: 6px 0;
+  padding: 0;
+}
+.console_output .info{
+  /* background-color: yellow; */
+  color: var(--color-heading);
+  font-size: 12px;
+  margin: 6px 0;
+  padding: 0;
+}
+
+.info strong {
+  padding-bottom: 2px;
+  text-decoration: underline;
+}
+
 
 .clear_console_btn{
     font-size: 0.8rem;
@@ -62,6 +100,7 @@
     padding: 2px 6px;
     background-color: white;
     transition: all 0.3s;
+    color: black;
 }
 /* .clear_console_btn:hover{
     background-color: #3636362a;

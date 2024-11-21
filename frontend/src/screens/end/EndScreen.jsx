@@ -1,6 +1,7 @@
 import React, { useEffect, useRef  , } from 'react';
 import './EndScreen.css';
-import { useLocation, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
+
 
 const EndScreen = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const EndScreen = () => {
     <div className="home_screen_body">
           Test Ended
         </div>
+                
   </>
   )
 }

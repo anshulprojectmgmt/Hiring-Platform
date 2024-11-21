@@ -24,6 +24,9 @@ import Subjective from "./components/subjective/Subjective";
 import SpeechSuper from "./screens/super-speech/super-speech";
 import SpeechAce from "./screens/speechAce/SpeechAce";
 import ScreenRecorder from "./screens/super-speech/Screen-Recorder";
+import PermissionsCheck from "./components/permissions-check/PermissionsCheck";
+import UserFeedback from "./components/user-feedback-form/UserFeedback";
+import UserFeedbackInstruction from "./components/user-feedback-instruction/UserFeedbackInstruction";
 
 function App() {
   return (
@@ -47,6 +50,9 @@ function App() {
         <Route path="/subjective" element={<Subjective />} />
         <Route path="/speech-super" element={<ScreenRecorder /> } />
         <Route path="/speech-ace" element={<SpeechAce /> } />
+        <Route path="/permissions" element={<PermissionsCheck />} />
+        <Route path="/user-feedback" element={<UserFeedback />} />
+        <Route path="/feedback-inst" element={<UserFeedbackInstruction />} />
       </Routes>
       <ToastContainer position="top-right" autoClose={2000} />
     </>

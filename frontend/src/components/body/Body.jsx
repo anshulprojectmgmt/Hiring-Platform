@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import "./Body.css";
 import Problem from "../problem/Problem";
 import MyEditor from "../editor/MyEditor";
@@ -16,6 +16,18 @@ const Body = () => {
     
     backgroundColor : codeStatus === 1 ? '#FFD301' : codeStatus === 2 ? '#7BB662' : '#E03C32',
   }
+  const questions = useSelector((state) => state.getQuestion.questions);
+  
+  useEffect(() => {
+    if(questions) {
+     
+    let input_array = questions[0]?.testcases[0]?.input
+  
+    inputRef.current.innerText =   input_array.join('\n')
+ 
+  
+  } 
+  },[questions])
 
   return (
     <div className="body_editor">
@@ -41,14 +53,17 @@ const Body = () => {
         </div>
         <div className="console_body">
           <div className="console_input">
-            <p>
-              input 
-            </p>
+            <div>
+              INPUT BOX
+            </div>
+            <p className="info">▶️Please ensure <strong>input box</strong> is not blank when you try to <strong>‘run’</strong> and test the code.</p>
             <Result ioRef={inputRef} editable={true} />
           </div>
           <div className="console_output">
-            <p>output</p>
+            <div>OUTPUT BOX</div>
+            <p className="info">▶️If you are getting zero test cases passed, make sure you are not using <strong>print</strong>  to output, rather use <strong>return</strong> to output results.</p>
             <Result ioRef={outputRef} editable={false} />
+            
           </div>
         </div>
       </div>
