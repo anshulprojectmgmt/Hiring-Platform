@@ -8,6 +8,7 @@ import savedMcq from "./savedMcq";
 import instructionState from "./instructionState";
 import savedSubjective from "./savedSubjective";
 import candidateResult from "./candidateResult";
+import userMediaStore from "./userMediaStore";
 
 const reducer = combineReducers({
   editorTheme,
@@ -19,6 +20,7 @@ const reducer = combineReducers({
   instructionState,
   savedSubjective,
   candidateResult,
+  userMediaStore
 });
 
 export default reducer;

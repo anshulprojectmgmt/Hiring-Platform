@@ -1,0 +1,117 @@
+/* General container */
+.container {
+    font-family: 'Arial', sans-serif;
+    max-width: 600px;
+    margin: 100px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: center;
+
+  }
+  
+  /* Title */
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Status messages */
+  .statusContainer {
+    margin-bottom: 20px;
+  }
+  
+  .status {
+    font-size: 16px;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .pending {
+    background-color: #f7f7f7;
+    color: #666;
+  }
+  
+  .granted {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .denied {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  /* Buttons */
+  .buttonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .actionButton {
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    background-color: #5880F0;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    min-width: 192px;
+  }
+  
+  .actionButton:hover {
+    background-color: #1c4b74;
+  }
+  
+  /* Error messages */
+  .errorContainer {
+    margin: 20px 0;
+    text-align: left;
+  }
+  
+  .errorTitle {
+    color: #721c24;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .errorItem {
+    color: #721c24;
+    margin: 5px 0;
+    font-size: 14px;
+  }
+  
+  /* Start Test Button */
+  .startButton {
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .enabled {
+    background-color: #28a745;
+  }
+  
+  .enabled:hover {
+    background-color: #218838;
+  }
+  

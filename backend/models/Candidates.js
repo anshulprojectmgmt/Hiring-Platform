@@ -121,6 +121,10 @@ const candidateSchema = new Schema({
       ],
       default: [], 
     },
+  userFeedback: {
+    type: Object,
+    default: {}
+  }
   });
   
 module.exports = mongoose.model("Candidate", candidateSchema);

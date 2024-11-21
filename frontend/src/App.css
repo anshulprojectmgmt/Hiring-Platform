@@ -11,9 +11,9 @@
 	--color-input-placeholder: #00000033;
 	--bg-second: #F2F2F2;
 }
-::-webkit-scrollbar{
+/* ::-webkit-scrollbar{
     display: none;
-  }
+  } */
 body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;

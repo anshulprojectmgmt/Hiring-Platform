@@ -26,7 +26,10 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
     if(questions[currentQuestion-1].type === "coding") {
 
     
-    inputRef.current.innerText = "";
+    
+    let input_array = questions[currentQuestion-1]?.testcases[0]?.input
+    inputRef.current.innerText =   input_array.join('\n')  
+   
     outputRef.current.innerText = "";
     const index = savedCode.findIndex((e) => e.queNumber === currentQuestion-1);
 
@@ -85,7 +88,9 @@ main()
      if(questions[currentQuestion+1].type === "coding") {
 
      
-    inputRef.current.innerText = "";
+      let input_array = questions[currentQuestion+1]?.testcases[0]?.input
+      inputRef.current.innerText =   input_array.join('\n')
+     
     outputRef.current.innerText = "";
     const index = savedCode.findIndex((e) => e.queNumber === currentQuestion+1);
     if (index !== -1) {
