@@ -38,7 +38,7 @@ const Angle = () => {
   return (
     <div className="angle">
       <div className="angle2-head">
-        <h3>Step-1 face authentication between smartphone & laptop camera</h3>
+        <h3>Step-1 Face Authentication Between Smartphone & Laptop Camera</h3>
         <p>
           Steps: In order to ensure that you are really the one taking the test,
            please scan the below QR code from your mobile device and setup your mobile device at an angle at which your face,
