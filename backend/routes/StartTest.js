@@ -30,7 +30,17 @@ router.post("/start-test", async (req, res) => {
     if(existingCandidate){
       return res.json({success:false, message:"you have already given the test"})
     }
-    else{
+    
+    // first check candidate with this email have practice  submiteed test or not
+    if(testcode === "nnGhFpQRyxZMaMy") {
+      const isSampleSubmitted = await Candidate.findOne({email, "testcode":'fiu51tZLJsEOATE'});
+      if(!isSampleSubmitted){
+      return res.json({success:false, message:"Kindly complete the sample test first to become eligible for the hiring test."})
+      }
+    }
+    
+    
+    
       try {
         await Candidate.create({
           name: name,
@@ -46,7 +56,7 @@ router.post("/start-test", async (req, res) => {
         console.log(error);
         res.json({ success: false, message: "something went wrong" });
       }
-    }
+    
     
   }
 });
