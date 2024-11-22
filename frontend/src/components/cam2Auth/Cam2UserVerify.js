@@ -88,7 +88,7 @@ const [isLoading, setIsLoading] = useState(false);
     const getFace2Img =async () => {
       const face2 = await fetch(`https://hm-video-audio-bucket.s3.ap-south-1.amazonaws.com/${testCode}/images/${candidateEmail}-cam2face.jpeg`).then((res) => {
         return res.text(); });
-        console.log('face222222222====', face2);
+        
         setFace2(face2);
     }
     if(testCode && candidateEmail) {

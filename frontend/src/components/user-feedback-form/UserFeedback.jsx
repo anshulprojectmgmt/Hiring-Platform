@@ -42,8 +42,7 @@ const UserFeedback = () => {
     },
   });
   const testInfo = useSelector((state) => state.testInfo);
-console.log('test info==', testInfo);
-console.log('feedback==', feedback)
+
   const handleInputChange = (field, value, category = null) => {
     if (category) {
       setFeedback((prev) => ({
@@ -371,6 +370,7 @@ console.log('feedback==', feedback)
         </div>
 
               {/* test platform */}
+        {testInfo?.testtype === "coding" && 
         <div className="mb-4 p-3 border rounded">
           <h5>5. Ease of Use of Test Platform.*</h5>
           <div className="mb-3">
@@ -626,6 +626,7 @@ console.log('feedback==', feedback)
         </div>
 
         </div>
+        }
 
         <button 
           type="submit"

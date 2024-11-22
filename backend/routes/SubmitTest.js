@@ -139,6 +139,7 @@ router.post("/submit-mcqtest", async (req, res) => {
     const timetaken = req.body.timetaken;
     const tabswitch = req.body.tabswitch;
     const verdict = JSON.parse(req.body.verdict);
+    const screenshots = req.body?.screenshots;
     
     const testData = data.slice(1);
    
@@ -149,6 +150,7 @@ router.post("/submit-mcqtest", async (req, res) => {
         timetaken: timetaken,
         tabswitch: tabswitch,
         verdict,
+        screenshots,
       },
     });
     

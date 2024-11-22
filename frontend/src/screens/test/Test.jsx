@@ -355,25 +355,31 @@ const startRecording = useCallback(async () => {
   }, [startRecording]);
 
   const stopRecording = useCallback(async () => {
-    if (
-      videoMediaRecorder.current &&
-      audioMediaRecorder.current &&
-      isRecording
-    ) {
-      await videoMediaRecorder.current.stop();
-      await audioMediaRecorder.current.stop();
-       setIsRecording(false);
     
-       
-       if (mediaStream.current) {
-        await mediaStream.current.stream
-          .getTracks()
-          .forEach((track) => track.stop());
-      }
-}
-
+      if (
+        videoMediaRecorder.current &&
+        audioMediaRecorder.current &&
+        isRecording
+      ) {
+        await videoMediaRecorder.current.stop();
+        await audioMediaRecorder.current.stop();
+         setIsRecording(false);
+      
+         
+         if (mediaStream.current) {
+          await mediaStream.current.stream
+            .getTracks()
+            .forEach((track) => track.stop());
+        }
+  }
   
-screenStream.current.getTracks().forEach((track) => track.stop());
+  try {
+  screenStream.current.getTracks().forEach((track) => track.stop());
+   
+      
+    } catch (error) {
+      console.log('failed to stop recoring', error);
+    }
  
 
   }, [isRecording]);
@@ -526,7 +532,7 @@ try {
             }
             
           }
-          navigate("/user-feedback");
+          navigate("/user-feedback",{replace: true});
         }
       }
       else if(testtype === "mcq"){
@@ -537,6 +543,7 @@ try {
           timetaken: timeTaken.current,
           tabswitch: tabSwitch.current,
           verdict : JSON.stringify(verdict),
+          screenshots: screenshots.current
         });
         if (!res.data.success) {
           toast.error(res.data.message);
@@ -547,7 +554,8 @@ try {
             toast.success(res.data.message);
             document.exitFullscreen();
           }
-          navigate("/testend",{replace: true});
+          // navigate("/testend",{replace: true});
+          navigate("/user-feedback",{replace: true});
         }
       }
       else if(testtype==="subjective") {
