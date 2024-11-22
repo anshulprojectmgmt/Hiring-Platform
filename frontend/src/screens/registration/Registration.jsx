@@ -30,7 +30,9 @@ const Home = () => {
   const Notification = (data) => {
     if (!data.success) {
       // console.log(data.message);
-      toast.error(data.message);
+      toast.error(data.message, {
+        autoClose: 1000*15
+      });
     } else {
       
       localStorage.setItem('cid', data.cid);
@@ -57,6 +59,7 @@ const Home = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    toast.dismiss();
     try {
       const response = await axios.post(`${BASE_URL}/api/start-test`, {
         ...userData,
