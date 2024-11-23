@@ -123,7 +123,7 @@ const candidateSchema = new Schema({
     },
   userFeedback: {
     type: Object,
-    default: {}
+    default: null
   }
   });
   
