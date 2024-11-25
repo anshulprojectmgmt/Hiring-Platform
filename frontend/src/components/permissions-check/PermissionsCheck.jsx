@@ -80,7 +80,7 @@ const PermissionsCheck = () => {
   
       // Check if the shared media is "entire screen" using the label of the video track
       const videoTrack = screenState.getVideoTracks()[0];
-      const isEntireScreen = videoTrack.label.toLowerCase().includes("screen");
+      const isEntireScreen = (videoTrack.label.toLowerCase().includes("screen") ||  (width > 1920 && height > 1080));
   
       if (isEntireScreen) {
         updatePermissions("screen", true);
