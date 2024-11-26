@@ -32,7 +32,7 @@ router.post("/start-test", async (req, res) => {
     }
     
     // first check candidate with this email have practice  submiteed test or not
-    if(testcode === "nnGhFpQRyxZMaMy") {
+    if(testcode === "nnGhFpQRyxZMaMy" || testcode ==="NRt9TvbxPtXMvJD") {
       const isSampleSubmitted = await Candidate.findOne({email, "testcode":'fiu51tZLJsEOATE'});
       if(!isSampleSubmitted){
       return res.json({success:false, message:"Kindly complete the sample test first to become eligible for the hiring test."})
