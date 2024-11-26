@@ -1,13 +1,14 @@
-import React, { useState, useRef, useCallback } from "react";
-import Body from "../../components/body/Body";
+import React, { useState, useRef, useCallback, lazy , Suspense, useEffect} from "react";
+// import Body from "../../components/body/Body";
+
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import Mcq from "../../components/mcqscreen/Mcq";
+
+// import Mcq from "../../components/mcqscreen/Mcq";
 import BASE_URL from "../../Api";
-import Webcam from "react-webcam";
+// import Webcam from "react-webcam";
 // import ClipLoader from "react-spinners/ClipLoader";
 import BarLoader from "react-spinners/BarLoader";
 import "./Test.css";
@@ -16,10 +17,15 @@ import Modal from "react-bootstrap/Modal";
 // import webgazer from "webgazer";
 // eslint-disable-next-line
 
-import { persistStore } from 'redux-persist';
-import store from '../../store'
-import Subjective from "../../components/subjective/Subjective";
-import TestTypeWrapper from "../../components/test-type-wrapper/TestTypeWrapper";
+
+// import Subjective from "../../components/subjective/Subjective";
+// import TestTypeWrapper from "../../components/test-type-wrapper/TestTypeWrapper";
+const Body = lazy(() => import("../../components/body/Body"))
+const Mcq = lazy(() => import("../../components/mcqscreen/Mcq"))
+const Subjective = lazy(() => import("../../components/subjective/Subjective"));
+const TestTypeWrapper = lazy(() => import("../../components/test-type-wrapper/TestTypeWrapper"));
+// const Modal = lazy(() => import("react-bootstrap/Modal"));
+const Webcam = lazy(() => import("react-webcam"));
 
 const Test = () => {
  
@@ -72,14 +78,14 @@ const isFullScreenRef = useRef(null);
 exitScreenRef.current = exitScreen;
 isFullScreenRef.current = isFullScreen;
 
-const getFullscreenElement = () => {
+const getFullscreenElement = useCallback( () => {
   return (
     document.fullscreenElement ||
     document.webkitFullscreenElement ||
     document.mozFullscreenElement ||
     document.msFullscreenElement
   );
-};
+},[]);
 
   useEffect(() => {
     let timeId;
@@ -183,7 +189,7 @@ const resetToFullScreen =async () => {
   
   
 
-  const startScreenCapture = async () => {
+  const startScreenCapture = useCallback( async () => {
     try {
       // Request screen capture once on component mount
       // screenStream.current = await navigator.mediaDevices.getDisplayMedia({
@@ -204,7 +210,7 @@ const resetToFullScreen =async () => {
     } catch (err) {
       console.error("Error accessing screen capture:", err);
     }
-  };
+  }, [screen]);
 
   // const takeScreenScreenshot = () => {
   
@@ -374,7 +380,8 @@ const startRecording = useCallback(async () => {
   }
   
   try {
-  screenStream.current.getTracks().forEach((track) => track.stop());
+    screenStream.current.getTracks()
+      .forEach((track) => track.stop());
    
       
     } catch (error) {
@@ -504,7 +511,7 @@ try {
 
   const handleEndTest = async () => {
     
-    persistStore(store).purge();
+    
    
     try {
       if(testtype === "coding"){
@@ -587,7 +594,7 @@ try {
       }
       
     } catch (error) {
-      navigate("/testend",{replace: true});
+      navigate("/user-feedback",{replace: true});
       console.error("Error submitting test:", error);
     } finally  {
       // Cleanup: Stop all tracks to release screen stream resources
@@ -680,6 +687,7 @@ try {
 
 
   return (
+    <Suspense fallback={<h2 style={{textAlign:"center"}}>Loading...</h2>}>
     <div className="test-cont">
     <div id="fullscreen">
       <div className="navbar">
@@ -794,6 +802,7 @@ try {
         }
     </div>
     </div>
+    </Suspense>
   );
 };
 

@@ -1,12 +1,16 @@
 import React, { useEffect, useRef  , } from 'react';
 import './EndScreen.css';
 import {  useNavigate } from 'react-router-dom';
-
+import {persistor} from "../../store"
 
 const EndScreen = () => {
   const navigate = useNavigate();
 
- useEffect(() => {
+  useEffect(() => {
+    persistor.purge();
+  }, [])
+ 
+  useEffect(() => {
     // Add event listener for popstate which is triggered on back button
     const handlePopState = () => {
       // Redirect to /home when back button is pressed
