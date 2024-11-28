@@ -28,9 +28,11 @@ const Angle = () => {
    
   };
 
-  //  const handleNext = () => {
+
+  // const handleNext = () => {
   //   dispatch({ type: "NEXT" });
-  // }; 
+  // };
+   
   const handleBack = () => {
     dispatch({ type: "BACK" });
   };
@@ -46,7 +48,7 @@ const Angle = () => {
         </p>
       </div>
       <div className="angle2-images">
-        <div
+        {/* <div
           id="carouselExampleIndicators"
           className="carousel carousel-dark slide"
           data-bs-ride="carousel"
@@ -73,10 +75,7 @@ const Angle = () => {
             <div className="carousel-item active ">
               <div className="d-flex justify-center items-center gap-1">
               <img src={keyboard2}  alt="..."></img>
-              {/**https://aiplanet.me
-               
-               https://realtyai.in
-               */}
+              
               <QRCode value={`${window.location.host}` + "/camera2/" + cid} size={256} />
               </div>
             </div>
@@ -106,14 +105,21 @@ const Angle = () => {
             <span className="carousel-control-next-icon" aria-hidden="true"></span>
             <span className="visually-hidden">Next</span>
           </button>
-        </div>
+        </div> */}
+
+          <div className="d-flex justify-center items-center gap-1">
+              
+              <QRCode value={`${window.location.host}` + "/camera2/" + cid} size={256} />
+           </div>
+
       </div>
-      <div className="angle2-foot">
+
+      {/* <div className="angle2-foot">
         <h4>AI PROCTORING: Face, hands and keyboard detection</h4>
         <p>
           Our system will flag off any missing video frames which detect that your hands, face or the keyboard of the laptop you are attempting the test on, is not detected
         </p>
-      </div>
+      </div> */}
       <div className="angle2-navigation">
         <button onClick={handleBack} className="ctabutton">Back</button>
         <button onClick={handleNext} className="ctabutton">

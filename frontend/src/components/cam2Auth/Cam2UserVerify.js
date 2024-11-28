@@ -23,6 +23,8 @@ const [isLoading, setIsLoading] = useState(false);
   const [capturebtn, setCapturebtn] = useState(null);
   const [nextbtn, setNextbtn] = useState(null);
 
+  const [noFaceVerification, setNoFaceVerification] = useState(false);
+  
   const verifyFaces = async () => {
     
     try {
@@ -72,17 +74,31 @@ const [isLoading, setIsLoading] = useState(false);
       } else {
         setImg(null);
         setCapturebtn(null);
-        toast.warning("The face image from both the cameras did not match");
+        setNoFaceVerification(true);
+        toast.warning("The face image from both the cameras did not matched, please Try Again!!");
       }
       setIsLoading(false);
     } catch (error) {
       console.log('error==' ,error);
+      setNoFaceVerification(true);
       setImg(null);
       setCapturebtn(null);
       setIsLoading(false);
       toast.warning("something went wrong please Try Again!!");
     }
   };
+
+  const handleNoFaceAuth = () => {
+    axios.post(`${BASE_URL}/api//update-candidate`,{
+      email: candidateEmail,
+      code: testCode,
+      data: {
+        faceAuthenticated: false
+      }
+    })
+
+    dispatch({ type: "NEXT" });
+  }
 
   useEffect(() => {
     const getFace2Img =async () => {
@@ -96,6 +112,7 @@ const [isLoading, setIsLoading] = useState(false);
      }
       
   },[testCode])
+
   useEffect(() => {
     const getDashboardInfo = async () => {
         const res = await axios.post(`${BASE_URL}/api/validate-camera2-session`, {
@@ -123,9 +140,9 @@ const [isLoading, setIsLoading] = useState(false);
   return (
     <div className="verifyface">
       <div className="verifyface-head">
-        <h3>Face side profile, Keyboard and hands detection</h3>
+        <h3>Face Authentication Between Smartphone & Laptop Camera</h3>
         <p>
-          Steps: Align yourself in front of the laptop camera so that your face matches as close as possible to the image captured from camera 2. Once done, click on capture & verify button below
+          Steps: Align yourself in front of the laptop camera so that your face matches as close as possible to the image captured from smartphone . Once done, click on capture & verify button below
         </p>
       </div>
       <div className="verifyface-images">
@@ -186,12 +203,15 @@ const [isLoading, setIsLoading] = useState(false);
 
       </div>
       <div className="verifyface-foot">
-        <button onClick={verifyFaces} className="ctabutton" style={capturebtn ? { display: 'none' } : {}}>Capture & verify faces</button>
-
-        <h4>AI PROCTORING: Face, hands and keyboard detection</h4>
+        <button onClick={verifyFaces} className="ctabutton me-5" style={capturebtn ? { display: 'none' } : {}}>Capture & verify faces</button>
+       {noFaceVerification && 
+          <button onClick={handleNoFaceAuth} className="ctabutton" style={capturebtn ? { display: 'none' } : {}}>Proceed without authentication</button>
+        }
+        
+        {/* <h4>AI PROCTORING: Face, hands and keyboard detection</h4>
         <p>
           Our system will flag off any missing video frames which detect that your hands, face or the keyboard of the laptop you are attempting the test on, is not detected
-        </p>
+        </p> */}
       </div>
       <div className="verifyface-navigation">
         <button onClick={handleBack} className="ctabutton">Back</button>

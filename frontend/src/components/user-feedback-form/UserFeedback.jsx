@@ -5,12 +5,12 @@ import BASE_URL from "../../Api";
 import axios from "axios";
 import {  useNavigate } from "react-router-dom";
 
-import runBtn from "../../assests/runBtn.jpg"
-import submitBtn from "../../assests/submitBtn.jpg"
+import runBtn from "../../assests/runBtn.png"
+import submitBtn from "../../assests/submitBtn.png"
 import permission from "../../assests/permission.jpg"
-import qrPic from "../../assests/qr-pic.jpg"
-import rtnOut from "../../assests/return-output.jpg"
-import inpOutBox from "../../assests/inp-out-box.jpg"
+import faceAuth from "../../assests/face_auth.png"
+import rtnOut from "../../assests/return_msg.png"
+import inpOutBox from "../../assests/inp-out-box.png"
 
 const UserFeedback = () => {
   const navigate = useNavigate();
@@ -284,7 +284,7 @@ const UserFeedback = () => {
               </label>
             </div>
             </div>
-            <img style={{borderRadius:'5px'}} src={qrPic} width={200} height={90} />
+            <img style={{borderRadius:'5px'}} src={faceAuth} width={300} height={200} />
             </div>
             {feedback.faceAuth.setupEasyFace === "NO" && (
           <div className="mb-4">
@@ -350,7 +350,7 @@ const UserFeedback = () => {
               </label>
             </div>
             </div>
-            <img style={{borderRadius:'5px'}} src={permission} width={200} height={90} />
+            <img style={{borderRadius:'5px'}} src={permission} width={300} height={200} />
             </div>
             {feedback.mediaSharing.setupEasyMedia === "NO" && (
           <div className="mb-4">
@@ -414,7 +414,7 @@ const UserFeedback = () => {
               </label>
             </div>
             </div>
-            <img style={{borderRadius:'5px'}} src={runBtn} width={200} height={90} />
+            <img style={{borderRadius:'5px'}} src={runBtn} width={300} height={200} />
             </div>
             {feedback.platformUsage.runButtonConfusion === "YES" && (
           <div className="mb-4">
@@ -476,7 +476,7 @@ const UserFeedback = () => {
               </label>
             </div>
             </div>
-            <img style={{borderRadius:'5px'}} src={submitBtn} width={200} height={90} />
+            <img style={{borderRadius:'5px'}} src={submitBtn} width={300} height={200} />
             </div>
             {feedback.platformUsage.submitButtonPurpose === "NO" && (
           <div className="mb-4">
@@ -538,7 +538,7 @@ const UserFeedback = () => {
               </label>
             </div>            
           </div>
-          <img style={{borderRadius:'5px'}} src={inpOutBox} width={200} height={90} />
+          <img style={{borderRadius:'5px'}} src={inpOutBox} width={300} height={200} />
         </div>
 
             
@@ -605,7 +605,7 @@ const UserFeedback = () => {
               </label>
             </div>
             </div>
-            <img style={{borderRadius:'5px'}} src={rtnOut} width={200} height={90} />
+            <img style={{borderRadius:'5px'}} src={rtnOut} width={300} height={200} />
             </div>
             {feedback.platformUsage.returnInstructionClear === "NO" && (
           <div className="mb-4">

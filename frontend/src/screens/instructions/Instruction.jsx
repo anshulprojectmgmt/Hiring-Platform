@@ -27,8 +27,8 @@ const Instruction = () => {
         <div className="instruction-body">
         {currentpage === 1 ? <Warning /> : currentpage === 2 
                            ? <Angle2 /> :  currentpage === 3
-                           ? <Cam2Instruction /> : currentpage === 4 
-                           ?  <Cam2UserVerify />  : currentpage === 5 
+                           ? <Cam2UserVerify /> : currentpage === 4 
+                           ?  <Cam2Instruction />  : currentpage === 5 
                            ? <Angle /> : currentpage === 6 
                            ? <Face /> : currentpage === 7
                            ? <Device /> : currentpage === 8

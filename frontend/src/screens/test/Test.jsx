@@ -789,8 +789,9 @@ try {
         <Modal.Body>
         <p style={{marginBottom:"8px"}}>   Please wait, your test and video is being uploaded to server. Sometime
           its takes 3-4 mins to upload.</p>
-          <p style={{color: "red", fontWeight: "600", textAlign: 'center'}}>If you encounter any technical difficulties that prevent you from completing the test,
+          <p style={{color: "green", fontWeight: "600", textAlign: 'center'}}>If you encounter any technical difficulties that prevent you from completing the test,
              you may submit a request to reappear for the test through the feedback form.</p>
+            <p style={{color: "red", fontWeight: "600", textAlign: 'center'}}>"Filling out this feedback form is mandatory. Failure to submit the form will result in the disqualification of your test results." </p> 
         </Modal.Body>
       </Modal>
     

@@ -124,6 +124,14 @@ const candidateSchema = new Schema({
   userFeedback: {
     type: Object,
     default: null
+  },
+  isInterested: {
+    type: String,
+    default: null,
+  },
+  faceAuthenticated: {
+    type: Boolean,
+    default: true,
   }
   });
   
