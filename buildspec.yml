@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+    commands:
+      - echo Installing dependencies...
+      - cd frontend && npm install
+      - cd ../backend && npm install
+  build:
+    commands:
+      - echo Building the frontend...
+      - cd frontend && npm run build
+      
+artifacts:
+  files:
+    - frontend/build/**/*
+    - backend/**/*
+  discard-paths: no
