@@ -9,12 +9,28 @@ const axios = require('axios');
 const FormData = require('form-data'); // Ensure this is the correct form-data for Node.js
 
 // Configure multer for handling file uploads
-const storage = multer.diskStorage({
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//       cb(null, './uploads'); // Save the audio files in an "uploads" folder
+//     },
+//     filename: (req, file, cb) => {
+//       cb(null, `audio_${Date.now()}_${Math.floor(Math.random()*90000)}`); // Save file with unique name
+//     }
+//   });
+
+  const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, './uploads'); // Save the audio files in an "uploads" folder
+      const uploadPath = path.join(__dirname, '../uploads');
+  
+      // Check if uploads folder exists, if not, create it
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+      }
+  
+      cb(null, uploadPath); // Save the audio files in an "uploads" folder
     },
     filename: (req, file, cb) => {
-      cb(null, `audio_${Date.now()}_${Math.floor(Math.random()*90000)}`); // Save file with unique name
+      cb(null, `audio_${Date.now()}_${Math.floor(Math.random() * 90000)}`);
     }
   });
 
@@ -30,7 +46,7 @@ const speechResult = async (req, res) => {
     if(!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
-console.log('path: ', req.file.path);
+
     const audioPath = req.file.path;
 
   const formData = new FormData();
