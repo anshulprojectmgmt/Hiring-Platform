@@ -289,7 +289,8 @@ const startAudioRec = async () => {
    return () => clearTimeout(timeId);
   }, [currentQuestion])
 
-
+console.log('questions:', questions);
+console.log('currentQuestion:', currentQuestion);
 
   return (
     <div className={styles.mcqScreen}>   
@@ -340,13 +341,13 @@ const startAudioRec = async () => {
         
       </div>
 
-      {!questions ? <BarLoader color="#5880F0" width={550} /> : 
+      {questions.length == 0 ? <BarLoader color="#5880F0" width={550} /> : 
         <div className={styles.mcqBody}>
         <div className={styles.mcqQuestion}>
           <h4 className="problem_body_heading">
             Question {currentQuestion + 1}
           </h4>
-          <p className={styles.para}>{questions[currentQuestion].question}
+          <p className={styles.para}>{questions[currentQuestion]?.question}
             <br/>
             <hr/>
             <p>key points:</p>
