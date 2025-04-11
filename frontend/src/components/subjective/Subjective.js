@@ -10,6 +10,7 @@ import BASE_URL from "../../Api";
 import { toast } from "react-toastify";
 import ClipLoader from "react-spinners/ClipLoader";
 import HashLoader from "react-spinners/HashLoader"
+import BarLoader from "react-spinners/BarLoader";
 // const questions = [
 // {question: "Explain about your most interesting project."},
 //   {question: "What challenges did you face in your last project?"},
@@ -317,6 +318,7 @@ const startAudioRec = async () => {
   </div>
 )}
 
+
       <div className={styles.mcqHead}>
       <div>
         {currentQuestion!==0 && 
@@ -337,7 +339,9 @@ const startAudioRec = async () => {
         </div>
         
       </div>
-      <div className={styles.mcqBody}>
+
+      {!questions ? <BarLoader color="#5880F0" width={550} /> : 
+        <div className={styles.mcqBody}>
         <div className={styles.mcqQuestion}>
           <h4 className="problem_body_heading">
             Question {currentQuestion + 1}
@@ -409,7 +413,8 @@ const startAudioRec = async () => {
       )}
       </div>
     </div>
-    </div>
+        </div>
+      }
     <Modal
           show={show}
           onHide={handleClose}
