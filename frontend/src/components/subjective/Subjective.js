@@ -289,8 +289,7 @@ const startAudioRec = async () => {
    return () => clearTimeout(timeId);
   }, [currentQuestion])
 
-console.log('questions:', questions);
-console.log('currentQuestion:', currentQuestion);
+
 
   return (
     <div className={styles.mcqScreen}>   
@@ -349,16 +348,17 @@ console.log('currentQuestion:', currentQuestion);
           </h4>
           <p className={styles.para}>{questions[currentQuestion]?.question}
             <br/>
-            <hr/>
+            {/* <hr/>
             <p>key points:</p>
             <ul>
               <li>Give breif intro about project</li>
               <li>Mention all the tech you have used</li>
               <li>Mention few of the features of your project</li>
               
-            </ul>
+            </ul> */}
           </p>
           <hr/>
+
           <p className={styles.para}>
           <h4 className="problem_body_heading">
             Note: 
@@ -368,7 +368,7 @@ console.log('currentQuestion:', currentQuestion);
               <li>You can <span style={{fontSize: '16px' , "fontWeight": "bold", color:"black"}}>STOP</span> the recording when you are finished. 
                <span style={{fontSize: '16px' , "fontWeight": "bold", color:"black"}}> Max limit is 2 Mins </span>
                  after which it will automatically stop.</li>
-              <li>consider all the above key points while recording your answer.</li>
+              {/* <li>consider all the above key points while recording your answer.</li> */}
               
             </ol>
           </p>
@@ -384,7 +384,7 @@ console.log('currentQuestion:', currentQuestion);
         : 
         <>
          <video className={styles.video} src={mediaBlobUrl} controls autoPlay loop muted />
-         <audio src={audioBlobUrl} controls  />
+         {/* <audio src={audioBlobUrl} controls  /> */}
          </>
      }
      </div> 

@@ -18,15 +18,18 @@ let idsArray = [
   
   ];
 
-  const subjIds = [
-    new ObjectId('66e1482b7c62462198bcd2b0'),
-    new ObjectId('66e2912142fefec820956b5b'),
-   
+// Sample subjective question IDs (replace with actual IDs from your database)
+  let subjIds = [
+    // new ObjectId('66e1482b7c62462198bcd2b0'),
+    // new ObjectId('66e2912142fefec820956b5b'),
+    new ObjectId('67fcea9c9219df29ed76f7a7'),
+    new ObjectId('67fceb4c9219df29ed76f7a8') ,
+    new ObjectId('67fcec279219df29ed76f7a9'),
     ];
-router.post("/questions", async (req, res) => {
+
+    router.post("/questions", async (req, res) => {
   const { testtype, language, difficulty, questions, codQue , subjQue, mcqQue, testCode } = req.body;
-  console.log('idsArray before: ', idsArray)
-  console.log('testcode: ', testCode)
+  
 
   try {
     if (testtype === "coding") {
@@ -100,8 +103,12 @@ router.post("/questions", async (req, res) => {
       res.json({ success: true, que: problems });
     }
     else if (testtype === "subjective") {
-    
-     
+
+      if(testCode === 'oM35Gz1Wh1w2VQB') {
+        subjIds =  [new ObjectId('67fcf0399219df29ed76f7aa'),]
+      }
+      
+     try {
       var problems = await mongoose.connection
         .collection("subjective_question")
         .aggregate([
@@ -109,6 +116,11 @@ router.post("/questions", async (req, res) => {
           ])
         .toArray();
       res.json({ success: true, que: problems });
+
+     } catch (error) {
+      console.log('failed to receive subjective questions=' , error);
+      res.status(500).json({ success: false, message: 'Failed to receive subjective questions' });
+     }
     }
     else if(testtype === "coding+subjective") {
       let  problems=[];
