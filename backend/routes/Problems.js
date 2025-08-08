@@ -34,7 +34,7 @@ let idsArray = [
   try {
     if (testtype === "coding") {
       if (language === "Python") {
-        if(testCode === 'fiu51tZLJsEOATE') {
+        if(testCode === 'SKY3ryBUHZkUN2D') {
           idsArray =  [new ObjectId('660895a1338be786d245c033'),]
         }else {
            idsArray = [
