@@ -108,9 +108,9 @@ let idsArray = [
         subjIds =  [new ObjectId('67fcf0399219df29ed76f7aa'),]
       } else {
         subjIds = [
-          new ObjectId('6881d270a99542f6f59582fc'),
-          new ObjectId('6881d2a0a99542f6f59582fd') ,
-          new ObjectId('6881d2a9a99542f6f59582fe'),
+          new ObjectId('689c1e34304c58ea1704005a'),
+          new ObjectId('689c1e5b304c58ea1704005b'),
+          new ObjectId('689c1e67304c58ea1704005c'),
           ];
       }
       
