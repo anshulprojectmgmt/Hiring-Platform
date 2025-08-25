@@ -124,7 +124,17 @@ const Mcq = () => {
           <h4 className="problem_body_heading">
             Question {currentQuestion + 1}
           </h4>
-          <p>{questions[currentQuestion].question}</p>
+          {/* <p>{questions[currentQuestion].question}</p> */}
+        <p>
+  {questions[currentQuestion].question
+    .split("\n")
+    .map((line, idx) => (
+      <React.Fragment key={idx}>
+        {line}
+        <br />
+      </React.Fragment>
+    ))}
+</p>
         </div>
         <div className="mcq-options">
           <h4>Select Correct Option</h4>
