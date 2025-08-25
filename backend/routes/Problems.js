@@ -102,11 +102,7 @@ let idsArray = [
         .toArray();
 
       
-      // Wrap question with <pre>
-      problems = problems.map(p => ({
-      ...p,
-     question: `<pre>${p.question}</pre>`
-      }));
+
 
       res.json({ success: true, que: problems });
 
