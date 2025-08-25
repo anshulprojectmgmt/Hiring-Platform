@@ -78,6 +78,8 @@ const Mcq = () => {
     setClickedOption(idx);
   };
 
+
+
   return (
     <div className="mcq-screen">
       <div className="mcq-head">
@@ -127,6 +129,7 @@ const Mcq = () => {
           {/* <p>{questions[currentQuestion].question}</p> */}
         <p>
   {questions[currentQuestion].question
+   .replace(/\\n/g, "\n") 
     .split("\n")
     .map((line, idx) => (
       <React.Fragment key={idx}>
