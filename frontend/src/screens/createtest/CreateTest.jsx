@@ -122,6 +122,7 @@ const CreateTest = () => {
                 Select Language
               </option>
               <option value="Python">Python</option>
+              <option value="Javascript">Javascript</option>
               {/* <option value="SQL">SQL</option> */}
             </select>
             <select

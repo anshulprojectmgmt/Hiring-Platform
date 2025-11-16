@@ -54,21 +54,32 @@ let idsArray = [
           // logic to attach wrapper
           // code to each problem need to implement here
           case "easy":
-           
-          problems = await mongoose.connection
-          .collection("pythoneasy")
-          .aggregate([
-            { $match: { _id: { $in: idsArray } } },
+  problems = await mongoose.connection
+    .collection("pythoneasy")
+    .aggregate([
+      { $match: { _id: { $in: idsArray } } },
+      {
+        $lookup: {
+          from: "wrapper_map",
+          let: { input_type_local: "$input_type" }, // local field
+          pipeline: [
             {
-              $lookup: {
-                from: 'wrapper_map',
-                localField: 'input_type',
-                foreignField: 'title',
-                as: 'wrapper_details'
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$title", "$$input_type_local"] }, // match title
+                    { $eq: ["$language", language] }           // match language passed
+                  ]
+                }
               }
             }
-          ])
-          .toArray();
+          ],
+          as: "wrapper_details"
+        }
+      }
+  ])
+  .toArray();           
+
             break;
           case "medium":
             problems = await mongoose.connection
@@ -91,7 +102,76 @@ let idsArray = [
             break;
         }
         res.json({ success: true, que: problems });
-      } else {
+      }
+      else if (language === "Javascript") {
+        if(testCode === 'SKY3ryBUHZkUN2D') {
+          idsArray =  [new ObjectId('660895a1338be786d245c033'),]
+        }
+        else {
+           idsArray = [
+            new ObjectId('68ec8f73407bf87f27e2f1d9'), // org
+            new ObjectId('68ec8fba407bf87f27e2f1dc'), // org
+            new ObjectId('69031a3aed02a11ea8b2099d'),
+            
+            ];
+        }
+
+        var problems;
+        switch (difficulty) {
+          // logic to attach wrapper
+          // code to each problem need to implement here
+          case "easy":
+             problems = await mongoose.connection
+    .collection("javascripteasy")
+    .aggregate([
+      { $match: { _id: { $in: idsArray } } },
+      {
+        $lookup: {
+          from: "wrapper_map",
+          let: { input_type_local: "$input_type" }, // local field
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$title", "$$input_type_local"] }, // match title
+                    { $eq: ["$language", language] }           // match language passed
+                  ]
+                }
+              }
+            }
+          ],
+          as: "wrapper_details"
+        }
+      }
+  ])
+  .toArray();
+ 
+
+            break;
+          case "medium":
+            problems = await mongoose.connection
+              .collection("pythonmedium")
+              .aggregate([{$sample: {size: questions}}])
+              .toArray();
+            break;
+          case "hard":
+            problems = await mongoose.connection
+              .collection("pythonhard")
+              .aggregate([{$sample: {size: questions}}])
+              .toArray();
+            break;
+          default:
+           
+            problems = await mongoose.connection
+              .collection("pythoneasy")
+              .aggregate([{$sample: {size: questions}}])
+              .toArray();
+            break;
+        }
+        res.json({ success: true, que: problems });
+      }
+       else {
         res.json({ que: "no language matched " });
       }
     } else if (testtype === "mcq") {
@@ -111,13 +191,15 @@ let idsArray = [
     }
     else if (testtype === "subjective") {
 
+      // replace sample test ID  here
       if(testCode === 'oM35Gz1Wh1w2VQB') {
         subjIds =  [new ObjectId('67fcf0399219df29ed76f7aa'),]
       } else {
         subjIds = [
-          new ObjectId('689c1e34304c58ea1704005a'),
+          new ObjectId('689c1e34304c58ea1704005a'), // repalce 690f218da30abf930f77d9bd
           new ObjectId('689c1e5b304c58ea1704005b'),
           new ObjectId('689c1e67304c58ea1704005c'),
+          
           ];
       }
       

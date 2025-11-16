@@ -16,10 +16,10 @@ const Body = () => {
     
     backgroundColor : codeStatus === 1 ? '#FFD301' : codeStatus === 2 ? '#7BB662' : '#E03C32',
   }
-  const questions = useSelector((state) => state.getQuestion.questions);
+  const questions = useSelector((state) => state?.getQuestion?.questions);
   
   useEffect(() => {
-    if(questions) {
+    if(questions.length > 0) {
      
     let input_array = questions[0]?.testcases[0]?.input
   
