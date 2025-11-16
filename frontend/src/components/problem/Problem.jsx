@@ -13,6 +13,7 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
     (state) => state.getQuestion.currentQuestion
   );
   
+  const language = useSelector((state) => state.testInfo.language);
   
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -40,8 +41,9 @@ const Problem = ({ editorRef, inputRef, outputRef }) => {
 
     } 
     else if(index === -1){
-      dispatch({type: "CHANGE_LANGUAGE", payload: "Python"})
-      const wrapTitle=    questions[currentQuestion-1]?.wrapper_details[0]?.title
+      dispatch({type: "CHANGE_LANGUAGE", payload: language})
+      if(language === "Python") {
+          const wrapTitle=    questions[currentQuestion-1]?.wrapper_details[0]?.title
     // Calculate base indentation
 const baseIndentation = '    '; // assuming the base indentation is 4 spaces
 
@@ -72,6 +74,38 @@ main()
 `;
 
       editorRef.current.setValue(newCode);
+
+      }
+   else if(language === "Javascript") {
+
+        // write similar code for javascript boilerplate
+        const wrapTitle=    questions[currentQuestion-1]?.wrapper_details[0]?.title
+            const wrapper = questions[currentQuestion-1].wrapper_details[0].wrapper
+          
+const newCode = `
+function ${userHelperFun(wrapTitle)} {
+            // write your code here and return output
+        }
+        
+        ${'\n'.repeat(100)}
+        
+ // <fold>
+ function main() {
+     // pre define --------********
+     ${wrapper}
+     // ***** end ************
+ 
+     console.log(${createHelperFun(wrapTitle)});
+ }
+ 
+ main();
+ // </fold>
+ `;
+
+        editorRef.current.setValue(newCode);
+
+      }
+      
     }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
   }
@@ -99,8 +133,9 @@ main()
     
     }
     else if(index === -1){
-      dispatch({type: "CHANGE_LANGUAGE", payload: "Python"})
-      const wrapTitle=    questions[currentQuestion+1]?.wrapper_details[0]?.title
+      dispatch({type: "CHANGE_LANGUAGE", payload: language})
+      if(language === "Python") {
+          const wrapTitle=    questions[currentQuestion+1]?.wrapper_details[0]?.title
    // Calculate base indentation
 const baseIndentation = '    '; // assuming the base indentation is 4 spaces
 
@@ -131,6 +166,34 @@ main()
 `;
 
   editorRef.current.setValue(newCode);
+      }
+      else if(language === "Javascript") {
+         const wrapTitle=    questions[currentQuestion+1]?.wrapper_details[0]?.title
+            const wrapper = questions[currentQuestion+1].wrapper_details[0].wrapper
+          
+const newCode = `
+function ${userHelperFun(wrapTitle)} {
+    // write your code here and return output
+}
+
+${'\n'.repeat(100)}
+
+// <fold>
+function main() {
+    // pre define --------********
+    ${wrapper}
+    // ***** end ************
+
+    console.log(${createHelperFun(wrapTitle)});
+}
+
+main();
+// </fold>
+`;
+
+        editorRef.current.setValue(newCode);
+      }
+      
      }
     dispatch({ type: "CHANGE_CODE_STATUS", payload: CodeStatus.Finished });
     }
@@ -188,7 +251,7 @@ main()
       </Modal>
       <div className="problem_body">
         <h3 className="problem_body_heading">Problem {currentQuestion + 1}</h3>
-        <p>{questions[currentQuestion].question}</p>
+        <p>{questions[currentQuestion]?.question}</p>
         <p className="examples">
           <strong>
             <em className="problem_body_heading">Example:</em>
@@ -196,11 +259,11 @@ main()
           
            Input: <br/>
 
-          {questions[currentQuestion].testcases[0].input.map((inp,ind) => (
+          {questions[currentQuestion]?.testcases[0].input.map((inp,ind) => (
             <div key={ind}>{inp}</div>
           ))}
            Output: <br/> 
-           {questions[currentQuestion].testcases[0].output.map((out,i) => (
+           {questions[currentQuestion]?.testcases[0].output.map((out,i) => (
             <div key={i}>{out}</div>
           ))}
         </p>

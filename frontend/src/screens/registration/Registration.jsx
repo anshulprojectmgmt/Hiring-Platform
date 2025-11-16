@@ -46,6 +46,7 @@ const Home = () => {
         testcode: data.info.tests[0].testcode,
         candidateemail: data.candidateEmail,
       });
+      dispatch({ type: "CHANGE_LANGUAGE", payload: data.info.tests[0].language });
       toast.success("Registered succesfully!");
       setUserData({
         name: "",

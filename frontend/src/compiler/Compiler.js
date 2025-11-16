@@ -31,7 +31,7 @@ export const CodeStatus = {
 
   export const languageCode = {
     "Cpp": 52,
-    Javascript: 93,
+    Javascript: 63,
     Python: 71,
   };
 

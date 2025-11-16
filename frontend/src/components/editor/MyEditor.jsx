@@ -17,12 +17,13 @@ const MyEditor = ({ editorRef, inputRef, outputRef }) => {
   const [editorInstance, setEditorInstance] = useState(null); 
   const [loading,setLoading] = useState(null);
   
-  const language = useSelector((state) => state.editorTheme.language);
+  // const language = useSelector((state) => state.editorTheme.language);
   const theme = useSelector((state) => state.editorTheme.theme);
   const font = useSelector((state) => state.editorTheme.fontSize);
   const currentQuestion = useSelector(
     (state) => state.getQuestion.currentQuestion
   );
+   const language = useSelector((state) => state.testInfo.language);
   
   const savedCode = useSelector((state) => state.savedCode);
   const questions = useSelector((state) => state.getQuestion.questions);
@@ -106,12 +107,14 @@ const MyEditor = ({ editorRef, inputRef, outputRef }) => {
  
   // Called when the editor is mounted
   const onMount = (editor, monaco) => {
-    setMonacoInstance(monaco); // Save the monaco instance for later use
-    setEditorInstance(editor);
-    
-    console.log('editor on mount:', );
-    // Add custom folding provider
-    monaco.languages.registerFoldingRangeProvider('python', {
+  setMonacoInstance(monaco);
+  setEditorInstance(editor);
+
+  
+
+  // Folding for Python
+  if (language.toLowerCase() === 'python') {
+    monaco.languages.registerFoldingRangeProvider(language.toLowerCase(), {
       provideFoldingRanges: (model, context, token) => {
         const ranges = [];
         const lines = model.getLinesContent();
@@ -135,13 +138,52 @@ const MyEditor = ({ editorRef, inputRef, outputRef }) => {
         return ranges;
       },
     });
+  }
 
-    // Initially fold the main function
-    // foldMainFunction(editor, monaco);
-    
-    // Call additional mount handler if necessary
-    handleMount && handleMount(editor, monaco);
-  };
+  // Folding for JavaScript
+  if (language.toLowerCase() === 'javascript') {
+    console.log('registering js fold provider');
+    monaco.languages.registerFoldingRangeProvider('javascript', {
+      provideFoldingRanges: (model, context, token) => {
+        const ranges = [];
+        const lines = model.getLinesContent();
+
+        lines.forEach((line, i) => {
+          if (line.includes('// <fold>')) {
+            console.log('found fold start at line', i + 1);
+            const start = i + 1;
+            for (let j = start; j < lines.length; j++) {
+              if (lines[j].includes('// </fold>')) {
+                  console.log('found fold end at line', j + 1);
+                ranges.push({
+                  start: start,
+                  end: j + 1,
+                  kind: monaco.languages.FoldingRangeKind.Comment,
+                });
+                break;
+              }
+            }
+          }
+        });
+
+        return ranges;
+      },
+    });
+  }
+
+  // force monaco to refresh folding
+  // const model = editor.getModel();
+  // console.log('Model for folding:', model);
+  // if (model) {
+  //   // monaco.editor.foldAll(model);
+  //   console.log("Triggering fold all action");
+  //   editor.getAction('editor.foldAll').run();
+  // }
+
+  // Call additional mount handler if necessary
+  handleMount && handleMount(editor, monaco);
+};
+
 
   // Called when editor content changes
    //const monacoEditorChange = (newValue, event) => {
@@ -169,17 +211,17 @@ const quesBoilerCode = (lang) => {
   if(lang=="Python"){
     const wrapTitle=    questions[currentQuestion]?.wrapper_details[0]?.title
      // Calculate base indentation
-const baseIndentation = '    '; // assuming the base indentation is 4 spaces
+    const baseIndentation = '    '; // assuming the base indentation is 4 spaces
 
 
 // Indent the inserted code
-const indentedInsertedCode = questions[currentQuestion].wrapper_details[0].wrapper
+const indentedInsertedCode = questions[currentQuestion]?.wrapper_details[0].wrapper
   .split('\n')
   .map(line => baseIndentation + line) // add base indentation to each line
   .join('\n');
       
 newCode = `
-${userHelperFun(wrapTitle)}:
+def ${userHelperFun(wrapTitle)}:
 # write your code here and return output
 
 
@@ -199,7 +241,36 @@ main()
 `;
 
 return newCode;
-  }
+  } 
+  else if(lang=="Javascript"){
+     const wrapTitle=    questions[currentQuestion]?.wrapper_details[0]?.title
+     
+     const wrapper = questions[currentQuestion]?.wrapper_details[0].wrapper
+  
+newCode = `
+function ${userHelperFun(wrapTitle)} {
+    // write your code here and return output
+}
+
+${'\n'.repeat(100)}
+
+// <fold>
+function main() {
+    // pre define --------********
+    ${wrapper}
+    // ***** end ************
+
+    console.log(${createHelperFun(wrapTitle)});
+}
+
+main();
+
+// </fold>
+`;
+
+
+return newCode;  
+}
 }
  
 
@@ -232,13 +303,13 @@ return newCode;
           break;
         case "Javascript":
           const i = savedCode.findIndex(
-            (e) => e.question === currentQuestion
+            (e) => e.queNumber === currentQuestion
           );
           if (i !== -1) {
             console.log('js')
             editorRef?.current?.setValue(savedCode[i].code);
           } else if (i === -1) {
-            editorRef?.current?.setValue(javascriptCode);
+            editorRef?.current?.setValue(quesBoilerCode("Javascript"));
           }
           break;
         case "Sql":
@@ -269,7 +340,7 @@ return newCode;
         theme={theme}
         height="100%"
         language={language.toLowerCase()}
-        value={`${editorRef?.current?.getValue() ? editorRef.current.getValue() : quesBoilerCode("Python")}`}        
+        value={`${editorRef?.current?.getValue() ? editorRef.current.getValue() : quesBoilerCode(language)}`}        
         
         options={{
           saveViewState: false,
