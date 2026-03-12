@@ -1,5 +1,11 @@
 import "./App.css";
 import CreateTest from "./screens/createtest/CreateTest";
+import PaymentPage from "./screens/createtest/PaymentPage";
+import Signup from "./screens/auth/Signup";
+import LoginAuth from "./screens/auth/Login";
+import OtpVerify from "./screens/auth/OtpVerify";
+import { useState } from "react";
+import { signup as signupApi, login as loginApi } from "./screens/auth/api";
 import EndScreen from "./screens/end/EndScreen";
 import Home from "./screens/registration/Registration";
 import Landing from "./screens/landing/Landing";
@@ -17,6 +23,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 
 import DetailedResult from "./screens/detailedResult/DetailedResult";
+import ProfilePopup from "./components/ProfilePopup";
 import CameraCapture from "../src/components/camera-capture/camera-capture";
 import Recording from "./components/recordings/Recording";
 import QuestionForm from "./screens/questionform/QuestionForm";
@@ -29,11 +36,86 @@ import UserFeedback from "./components/user-feedback-form/UserFeedback";
 import UserFeedbackInstruction from "./components/user-feedback-instruction/UserFeedbackInstruction";
 
 function App() {
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [showOtp, setShowOtp] = useState(false);
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch {
+      return null;
+    }
+  });
+
+  // Signup handler
+  const handleSignup = async (form) => {
+    await signupApi({
+      fullName: form.username, // assuming username is full name, adjust if needed
+      email: form.email,
+      username: form.username,
+      password: form.password,
+    });
+    setPendingEmail(form.email);
+    setShowOtp(true);
+  };
+
+  // Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    window.location.href = "/login";
+  };
+  // Login handler
+  const handleLogin = async (credentials) => {
+    const { data } = await loginApi({
+      emailOrUsername: credentials.username,
+      password: credentials.password,
+    });
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    setUser(data.user);
+    window.location.href = "/";
+  };
+
+  // ProtectedRoute component
+  const ProtectedRoute = ({ children }) => {
+    if (!user) {
+      window.location.href = "/login";
+      return null;
+    }
+    return children;
+  };
+
+  // Wrapper to redirect logged-in users away from login/signup
+  const PublicOnlyRoute = ({ children }) => {
+    if (user) {
+      window.location.href = "/";
+      return null;
+    }
+    return children;
+  };
+
   return (
     <>
+      <ProfilePopup user={user} onLogout={handleLogout} />
       <Routes>
+        <Route path="/signup" element={
+          <PublicOnlyRoute>
+            {showOtp && pendingEmail ? (
+              <OtpVerify email={pendingEmail} onVerified={() => { setShowOtp(false); setPendingEmail(""); window.location.href = "/login"; }} />
+            ) : (
+              <Signup onSignup={handleSignup} />
+            )}
+          </PublicOnlyRoute>
+        } />
+        <Route path="/login" element={
+          <PublicOnlyRoute>
+            <LoginAuth onLogin={handleLogin} />
+          </PublicOnlyRoute>
+        } />
         <Route path="/" element={<Landing />} />
-        <Route path="/create" element={<CreateTest />} />
+        <Route path="/create" element={<ProtectedRoute><CreateTest /></ProtectedRoute>} />
+        <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
         <Route path="/home" element={<Home />} />
         <Route path="/test" element={<Test />} />
         <Route path="/testend" element={<EndScreen />} />

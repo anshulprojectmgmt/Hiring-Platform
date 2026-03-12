@@ -1,0 +1,73 @@
+.profile-popup {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  position: relative;
+  padding: 0 0.5rem;
+  height: 48px;
+  background: transparent;
+}
+
+.profile-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #1c4b74;
+}
+
+.profile-icon {
+  font-size: 1.3rem;
+  margin-right: 0.2rem;
+}
+
+.profile-username {
+  font-weight: 600;
+  margin-right: 0.3rem;
+  color: #222;
+}
+
+.profile-submsg {
+  font-size: 0.95rem;
+  color: #222;
+  background: transparent;
+  border-radius: 4px;
+  padding: 0;
+  margin-left: 0.3rem;
+  font-weight: 500;
+}
+
+.profile-logout-btn {
+  padding: 6px 18px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #e0e4ea;
+  color: #1c4b74;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+}
+.profile-logout-btn:hover {
+  background: #d1d7e6;
+}
+
+@media (max-width: 600px) {
+  .profile-popup {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    height: auto;
+    padding: 0.2rem 0.5rem;
+  }
+  .profile-user {
+    font-size: 0.95rem;
+  }
+  .profile-logout-btn {
+    font-size: 0.95rem;
+    padding: 5px 12px;
+  }
+}

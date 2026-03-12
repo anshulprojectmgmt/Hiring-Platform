@@ -59,6 +59,7 @@ const s3Client = new S3Client({
 module.exports = { s3Client, sqsClient};
 
 
+app.use("/api/auth", require("./routes/auth"));
 app.use("/api", require("./routes/Queries"));
 app.use("/api", require("./routes/Problems"));
 app.use("/api", require("./routes/Evaluate"));

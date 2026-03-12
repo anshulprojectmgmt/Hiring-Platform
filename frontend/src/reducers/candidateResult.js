@@ -1,3 +1,4 @@
+
 const intialState = {
    candidateResult: null,
    videoIndex: -1

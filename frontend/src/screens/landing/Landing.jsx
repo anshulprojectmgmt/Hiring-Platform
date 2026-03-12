@@ -1,29 +1,82 @@
-import React from "react";
+import React, { useState } from "react";
+import { checkSubscription } from "../../utility/subscription";
 import "./Landing.css";
 import { Link } from "react-router-dom";
 import image from "../../assests/landingpage.svg";
 import clientsLogo from "../../assests/clientslogo";
 import aiImage from "../../assests/ai.svg";
-import { useState } from "react";
+// Removed duplicate import
+import ProfilePopup from "../../components/ProfilePopup";
 import Face from "../../components/videos/Face";
 import Device from "../../components/videos/Device";
 import Audio from "../../components/videos/Audio";
 
 const Landing = () => {
   const [procFeature, setFeature] = useState(1);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   // console.log(procFeature);
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem("user"));
+  } catch {}
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  };
+
+  const handleCreateTestClick = async (e) => {
+    e.preventDefault();
+    // Check subscription status before showing modal
+    const sub = await checkSubscription();
+    if (sub.status === "active") {
+      window.location.href = "/create";
+    } else {
+      setShowPaymentModal(true);
+    }
+  };
+
+  const handleProceedPayment = () => {
+    setShowPaymentModal(false);
+    window.location.href = "/payment";
+  };
+
+  const handleCancelPayment = () => {
+    setShowPaymentModal(false);
+  };
 
   return (
     <>
       {/* NAVBAR */}
       <div className="navbar landing-page-navbar">
-        <div className=" logo">
-          <img className="logos" src="./Aiplanet_logo.jpeg" />
-          AiPlanet</div>
-        <div>
-          <Link className="dashboard-login" to="/login-dashboard">
-            Dashboard
-          </Link>
+        <div className="navbar-content">
+          <div className="navbar-logo">
+            <img className="logos" src="./Aiplanet_logo.jpeg" alt="logo" style={{height:"32px"}} />
+            AiPlanet
+          </div>
+          <div className="navbar-links navbar-links-right">
+            <div className="navbar-divider" />
+            {user ? (
+              <ProfilePopup user={user} onLogout={handleLogout} />
+            ) : (
+              <>
+                <Link
+                  className="navbar-btn login"
+                  to={user ? "#" : "/login"}
+                  onClick={e => { if (user) e.preventDefault(); }}
+                >
+                  <span role="img" aria-label="login" style={{marginRight:5}}>🔑</span>Login
+                </Link>
+                <Link
+                  className="navbar-btn signup"
+                  to={user ? "#" : "/signup"}
+                  onClick={e => { if (user) e.preventDefault(); }}
+                >
+                  <span role="img" aria-label="signup" style={{marginRight:5}}>📝</span>Signup
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -45,14 +98,29 @@ const Landing = () => {
             </p>
           </div>
           <div className="landing-cta">
-            <a href="/create">
-              {/* <CtaButton text="Create a test" /> */}
-              <button className="ctabutton">Create test</button>
-            </a>
-
+            {user ? (
+              <>
+                <button className="ctabutton" onClick={handleCreateTestClick}>Create test</button>
+                {showPaymentModal && (
+                  <div className="modal-overlay">
+                    <div className="modal-box">
+                      <h3>Subscribe to Access</h3>
+                      <p>To access this feature, you need to subscribe for ₹1 per month.</p>
+                      <div className="modal-actions">
+                        <button className="ctabutton proceed" onClick={handleProceedPayment}>Proceed</button>
+                        <button className="ctabutton cancel" onClick={handleCancelPayment}>Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <Link to="/login">
+                <button className="ctabutton">Create test</button>
+              </Link>
+            )}
             <div className="desc">OR</div>
             <a href="/home">
-              {/* <CtaButton text="Create a test" /> */}
               <button className="ctabutton">Join test</button>
             </a>
           </div>

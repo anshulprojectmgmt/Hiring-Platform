@@ -1,9 +1,13 @@
+
 const express = require("express");
 const router = express.Router();
 const HiringManager = require("../models/HiringManager");
 const ShortUniqueId = require("short-unique-id");
+const auth = require("../middleware/auth");
+const subscription = require("../middleware/subscription");
 
-router.post("/create-test", async (req, res) => {
+// Protect this route: must be logged in and subscribed
+router.post("/create-test", auth, subscription, async (req, res) => {
   const {
     name,
     email,

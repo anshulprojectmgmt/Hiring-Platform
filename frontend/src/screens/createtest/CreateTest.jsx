@@ -1,13 +1,26 @@
-import React, { useRef, useState } from "react";
+
+import React, { useRef, useState, useEffect } from "react";
 import "./CreateTest.css";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import BASE_URL from "../../Api";
+import { checkSubscription } from "../../utility/subscription";
 import "bootstrap/dist/js/bootstrap.bundle.js";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const CreateTest = () => {
+  const [subStatus, setSubStatus] = useState({ status: '', daysLeft: 0 });
+  const navigate = useNavigate();
+  useEffect(() => {
+    (async () => {
+      const sub = await checkSubscription();
+      setSubStatus(sub);
+      if (sub.status !== "active") {
+        navigate("/payment");
+      }
+    })();
+  }, [navigate]);
   const codeRef = useRef(null);
   const [testData, setTestData] = useState({
     name: "",
@@ -69,6 +82,13 @@ const CreateTest = () => {
     <>
       <div className="client-create">
         <div className="logo">AiPlanet</div>
+        <div style={{ margin: '10px 0', color: subStatus.status === 'active' ? 'green' : 'red', fontWeight: 600 }}>
+          {subStatus.status === 'active'
+            ? `Subscription expires in ${subStatus.daysLeft} day${subStatus.daysLeft === 1 ? '' : 's'}`
+            : subStatus.status === 'expired'
+              ? 'Subscription expired'
+              : ''}
+        </div>
         <div className="create-form">
           <h1 className="title-heading">Create a test</h1>
           <form onSubmit={handleSubmit} className="input-fields">
@@ -104,7 +124,7 @@ const CreateTest = () => {
               onChange={handleChange}
               
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Select Test Type
               </option>
               <option value="coding">Coding</option>
@@ -118,7 +138,7 @@ const CreateTest = () => {
               value={testData.language}
               onChange={handleChange}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Select Language
               </option>
               <option value="Python">Python</option>
@@ -131,7 +151,7 @@ const CreateTest = () => {
               value={testData.difficulty}
               onChange={handleChange}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Difficulty level
               </option>
               <option value="easy">Easy</option>
@@ -144,7 +164,7 @@ const CreateTest = () => {
               value={testData.questions}
               onChange={handleChange}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Number of Questions
               </option>
               {Array.from(Array(10), (e, i) => {
