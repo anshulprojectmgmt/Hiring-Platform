@@ -1,17 +1,17 @@
-import axios from 'axios';
+import axios from "axios";
 
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api/auth',
+  baseURL: process.env.REACT_APP_API_URL || "https://api.realtyai.in/api/auth",
 });
 
 export const signup = async (data) => {
-  return API.post('/signup', data);
+  return API.post("/signup", data);
 };
 
 export const verifyOtp = async (data) => {
-  return API.post('/verify-otp', data);
+  return API.post("/verify-otp", data);
 };
 
 export const login = async (data) => {
-  return API.post('/login', data);
+  return API.post("/login", data);
 };
