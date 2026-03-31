@@ -58,9 +58,9 @@ router.post("/payment/verify-payment", async (req, res) => {
       return res.status(400).json({ success: false, message: "Payment verification failed!" });
     }
 
-    // Activate subscription for 30 days
-    const now = new Date();
-    const expiry = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+      // Activate subscription for 30 days (1 month)
+      const now = new Date();
+      const expiry = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
     //const expiry = new Date(now.getTime() + 10 * 1000);
     await User.findByIdAndUpdate(userId, {
       isSubscribed: true,

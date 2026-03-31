@@ -61,11 +61,17 @@ const CreateTest = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await axios.post(`${BASE_URL}/api/create-test`, {
-      ...testData,
-    });
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      `${BASE_URL}/api/create-test`,
+      { ...testData },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     setTestCode(response.data.testcode);
-    // console.log(response.data);
     Notification(response.data);
   };
 
