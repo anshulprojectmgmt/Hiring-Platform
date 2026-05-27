@@ -1,7 +1,10 @@
 import axios from "axios";
 
+// const API = axios.create({
+//   baseURL: process.env.REACT_APP_API_URL || "https://api.realtyai.in/api/auth",
+// });
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "https://api.realtyai.in/api/auth",
+  baseURL: process.env.REACT_APP_API_URL || "https://localhost:5000/api/auth",
 });
 
 export const signup = async (data) => {
